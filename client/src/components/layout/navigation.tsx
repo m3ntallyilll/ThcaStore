@@ -35,6 +35,9 @@ export function Navigation() {
                 <Link href="/products" className="hover:text-gold transition-colors duration-300">
                   Products
                 </Link>
+                <Link href="/rewards" className="hover:text-gold transition-colors duration-300">
+                  Rewards
+                </Link>
                 <a href="#about" className="hover:text-gold transition-colors duration-300">
                   About
                 </a>

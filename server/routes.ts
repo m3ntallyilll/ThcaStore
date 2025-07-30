@@ -1,7 +1,17 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { insertUserSchema, loginSchema, insertProductSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
+import { storage } from "./database-storage";
+import { aiAssistant } from "./ai-assistant";
+import { 
+  insertUserSchema, 
+  loginSchema, 
+  insertProductSchema, 
+  insertCartItemSchema, 
+  insertOrderSchema,
+  insertPointTransactionSchema,
+  insertReferralProgramSchema,
+  insertSpecialOfferSchema 
+} from "@shared/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -204,7 +214,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/cart/:id", authenticateToken, async (req: any, res) => {
     try {
-      const deleted = await storage.removeFromCart(req.params.id);
+      const deleted = await storage.removeCartItem(req.params.id);
       if (!deleted) {
         return res.status(404).json({ message: "Cart item not found" });
       }
@@ -217,7 +227,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order routes
   app.get("/api/orders", authenticateToken, async (req: any, res) => {
     try {
-      const orders = await storage.getOrders(req.user.id);
+      const orders = await storage.getUserOrders(req.user.id);
       res.json(orders);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -226,7 +236,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/orders", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const orders = await storage.getAllOrders();
+      const orders = await storage.getOrders();
       res.json(orders);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -279,8 +289,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const products = await storage.getProducts();
-      const orders = await storage.getAllOrders();
-      const users = Array.from((storage as any).users.values());
+      const orders = await storage.getOrders();
+      // For now, we'll calculate from orders since we don't have direct user count method
+      const uniqueUserIds = new Set(orders.map(order => order.userId));
+      const users = Array.from(uniqueUserIds);
       
       const totalProducts = products.length;
       const totalOrders = orders.length;
@@ -293,6 +305,184 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalRevenue: totalRevenue.toFixed(2),
         activeUsers,
       });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Initialize database with sample data
+  await storage.initialize();
+
+  // Rewards and Loyalty System routes
+  app.get("/api/rewards", authenticateToken, async (req: any, res) => {
+    try {
+      const userRewards = await storage.getUserRewards(req.user.id);
+      const tiers = await storage.getRewardTiers();
+      const transactions = await storage.getPointTransactions(req.user.id);
+      
+      res.json({
+        userRewards,
+        tiers,
+        recentTransactions: transactions.slice(0, 10)
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/rewards/tiers", async (req, res) => {
+    try {
+      const tiers = await storage.getRewardTiers();
+      res.json(tiers);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/rewards/redeem", authenticateToken, async (req: any, res) => {
+    try {
+      const { points, description } = req.body;
+      
+      const userRewards = await storage.getUserRewards(req.user.id);
+      if (!userRewards || userRewards.totalPoints < points) {
+        return res.status(400).json({ message: "Insufficient points" });
+      }
+
+      const transaction = await storage.addPointTransaction({
+        userId: req.user.id,
+        points: -points,
+        type: 'redeemed',
+        description: description || 'Points redeemed',
+        multiplier: '1.00'
+      });
+
+      res.json(transaction);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Referral Program routes
+  app.get("/api/referrals", authenticateToken, async (req: any, res) => {
+    try {
+      const referrals = await storage.getUserReferrals(req.user.id);
+      res.json(referrals);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/referrals", authenticateToken, async (req: any, res) => {
+    try {
+      const referralCode = `${req.user.username.toUpperCase().slice(0, 4)}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      
+      const referral = await storage.createReferral({
+        referrerId: req.user.id,
+        referralCode,
+        status: 'pending',
+        referrerReward: 500,
+        refereeReward: 250
+      });
+
+      res.status(201).json(referral);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/referrals/:code", async (req, res) => {
+    try {
+      const referral = await storage.getReferralByCode(req.params.code);
+      if (!referral) {
+        return res.status(404).json({ message: "Referral code not found" });
+      }
+      res.json(referral);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Special Offers routes
+  app.get("/api/offers", async (req, res) => {
+    try {
+      const offers = await storage.getActiveOffers();
+      res.json(offers);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/offers", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const offers = await storage.getSpecialOffers();
+      res.json(offers);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/offers", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const offerData = insertSpecialOfferSchema.parse(req.body);
+      const offer = await storage.createSpecialOffer(offerData);
+      res.status(201).json(offer);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // AI Assistant routes
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { message, sessionId, userId } = req.body;
+      
+      // Get user context if authenticated
+      let userContext = {};
+      if (userId) {
+        const userRewards = await storage.getUserRewards(userId);
+        const recentOrders = await storage.getUserOrders(userId);
+        userContext = {
+          userId,
+          userRewards,
+          recentPurchases: recentOrders.slice(0, 5),
+          userTier: userRewards?.currentTierId ? await storage.getRewardTiers().then(tiers => 
+            tiers.find(t => t.id === userRewards.currentTierId)
+          ) : null
+        };
+      }
+
+      const response = await aiAssistant.generateResponse(
+        message,
+        userContext,
+        sessionId || `session_${Date.now()}`
+      );
+
+      res.json(response);
+    } catch (error: any) {
+      console.error('AI Chat Error:', error);
+      res.status(500).json({ 
+        message: "I'm experiencing some technical difficulties. Please try again.",
+        response: "I apologize, but I'm having trouble processing your request right now. How can I help you find the perfect THCA products?",
+        intent: "error_recovery",
+        sentiment: "neutral"
+      });
+    }
+  });
+
+  app.post("/api/ai/conversion", authenticateToken, async (req: any, res) => {
+    try {
+      const { sessionId, converted } = req.body;
+      await aiAssistant.updateConversionResult(sessionId, req.user.id, converted);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/ai/personalized-offers", authenticateToken, async (req: any, res) => {
+    try {
+      const offers = await aiAssistant.generatePersonalizedOffers(req.user.id);
+      res.json(offers);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

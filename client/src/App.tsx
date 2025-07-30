@@ -10,11 +10,13 @@ import { Navigation } from "@/components/layout/navigation";
 import { Footer } from "@/components/layout/footer";
 import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { ToastProvider } from "@/components/ui/toast-provider";
+import { AIChat } from "@/components/ai/ai-chat";
 
 // Pages
 import Home from "@/pages/home";
 import Products from "@/pages/products";
 import Admin from "@/pages/admin";
+import Rewards from "@/pages/rewards";
 import NotFound from "@/pages/not-found";
 
 // Hooks
@@ -42,12 +44,14 @@ function AppContent() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/products" component={Products} />
+          <Route path="/rewards" component={Rewards} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       </main>
       <Footer />
       <CartSidebar />
+      <AIChat />
       <ToastProvider />
     </div>
   );
