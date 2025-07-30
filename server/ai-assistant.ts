@@ -9,7 +9,7 @@ import {
 } from '@shared/schema';
 import { eq, and, gte, desc, lte } from 'drizzle-orm';
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
 interface AIAssistantContext {
   userId?: string;
@@ -35,6 +35,11 @@ export class AIAssistant {
     actionItems?: any[];
   }> {
     try {
+      // Check if Groq is available
+      if (!groq) {
+        return this.getFallbackResponse(message, context);
+      }
+
       // Get user context and active offers
       const activeOffers = await this.getActiveOffers(context.userTier?.name);
       const products = await this.getProducts();
@@ -97,15 +102,39 @@ export class AIAssistant {
       
     } catch (error) {
       console.error('AI Assistant Error:', error);
-      return {
-        response: "I apologize, but I'm experiencing some technical difficulties. How can I assist you with our premium THCA products today?",
-        intent: "error_recovery",
-        sentiment: "neutral",
-        recommendedProducts: [],
-        suggestedOffers: [],
-        actionItems: []
-      };
+      return this.getFallbackResponse(message, context);
     }
+  }
+
+  private getFallbackResponse(message: string, context: AIAssistantContext) {
+    const lowerMessage = message.toLowerCase();
+    
+    // Simple intent detection for fallback
+    let intent = "general_assistance";
+    let response = "Hi! I'm here to help you with our premium THCA products. What can I assist you with today?";
+    let recommendedProducts: string[] = [];
+    
+    if (lowerMessage.includes("product") || lowerMessage.includes("buy") || lowerMessage.includes("shop")) {
+      intent = "product_recommendation";
+      response = "I'd be happy to help you find the perfect THCA products! Our selection includes premium flower, concentrates, and edibles. What type of product interests you most?";
+    } else if (lowerMessage.includes("reward") || lowerMessage.includes("point")) {
+      intent = "rewards_inquiry";
+      response = context.userId 
+        ? `Great question about rewards! You currently have ${context.userRewards?.totalPoints || 0} points. You can earn more points with every purchase and referral!`
+        : "Our rewards program lets you earn points with every purchase! Sign up to start earning points you can redeem for discounts.";
+    } else if (lowerMessage.includes("price") || lowerMessage.includes("cost") || lowerMessage.includes("$")) {
+      intent = "price_inquiry";
+      response = "Our THCA products are competitively priced with frequent special offers! Check out our products page to see current prices and any active promotions.";
+    }
+    
+    return {
+      response,
+      intent,
+      sentiment: "positive",
+      recommendedProducts,
+      suggestedOffers: [],
+      actionItems: []
+    };
   }
 
   private buildSystemPrompt(
@@ -216,23 +245,29 @@ Remember: Every interaction should move toward a sale while providing genuine va
   }
 
   async generatePersonalizedOffers(userId: string): Promise<any[]> {
-    // Get user's purchase history and preferences
-    const userRewardsData = await db
-      .select()
-      .from(userRewards)
-      .where(eq(userRewards.userId, userId))
-      .limit(1);
+    try {
+      // Get user's purchase history and preferences
+      const userRewardsData = await db
+        .select()
+        .from(userRewards)
+        .where(eq(userRewards.userId, userId))
+        .limit(1);
 
-    const recentOrders = await db
-      .select()
-      .from(orders)
-      .where(eq(orders.userId, userId))
-      .orderBy(desc(orders.createdAt))
-      .limit(5);
+      const recentOrders = await db
+        .select()
+        .from(orders)
+        .where(eq(orders.userId, userId))
+        .orderBy(desc(orders.createdAt))
+        .limit(5);
 
-    // Generate AI-powered personalized offers
-    const prompt = `Based on this customer data, generate 3 personalized special offers:
-    
+      // If Groq is not available, return default offers
+      if (!groq) {
+        return this.getDefaultOffers(userRewardsData[0], recentOrders.length);
+      }
+
+      // Generate AI-powered personalized offers
+      const prompt = `Based on this customer data, generate 3 personalized special offers:
+      
 Customer Profile:
 - Total Points: ${userRewardsData[0]?.totalPoints || 0}
 - Lifetime Spent: $${userRewardsData[0]?.lifetimeSpent || '0.00'}
@@ -241,7 +276,6 @@ Customer Profile:
 
 Generate offers that would entice this customer to make another purchase. Include double points days, category discounts, and bundle deals.`;
 
-    try {
       const completion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
         messages: [
@@ -255,8 +289,52 @@ Generate offers that would entice this customer to make another purchase. Includ
       return JSON.parse(response);
     } catch (error) {
       console.error('Failed to generate personalized offers:', error);
-      return [];
+      return this.getDefaultOffers();
     }
+  }
+
+  private getDefaultOffers(userRewards?: any, orderCount: number = 0): any[] {
+    const offers = [
+      {
+        name: "Welcome Back",
+        description: "Get 15% off your next order",
+        value: "15",
+        type: "discount"
+      },
+      {
+        name: "Double Points Weekend",
+        description: "Earn 2x points on all purchases this weekend",
+        value: "100",
+        type: "points_multiplier"
+      },
+      {
+        name: "Bundle Deal",
+        description: "Buy 2 products, get 1 at 50% off",
+        value: "50",
+        type: "bundle_discount"
+      }
+    ];
+
+    // Customize based on user activity
+    if (userRewards?.totalPoints > 500) {
+      offers[0] = {
+        name: "VIP Discount",
+        description: "Exclusive 20% off for loyal customers",
+        value: "20",
+        type: "discount"
+      };
+    }
+
+    if (orderCount === 0) {
+      offers[0] = {
+        name: "First Purchase",
+        description: "Get 25% off your first order",
+        value: "25",
+        type: "discount"
+      };
+    }
+
+    return offers;
   }
 }
 

@@ -457,19 +457,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { message, sessionId, userId } = req.body;
       
+      if (!message || typeof message !== 'string') {
+        return res.status(400).json({ 
+          message: "Please provide a message",
+          response: "Hi! I'm here to help. What would you like to know about our THCA products?",
+          intent: "general_assistance",
+          sentiment: "neutral"
+        });
+      }
+      
       // Get user context if authenticated
       let userContext = {};
       if (userId) {
-        const userRewards = await storage.getUserRewards(userId);
-        const recentOrders = await storage.getUserOrders(userId);
-        userContext = {
-          userId,
-          userRewards,
-          recentPurchases: recentOrders.slice(0, 5),
-          userTier: userRewards?.currentTierId ? await storage.getRewardTiers().then(tiers => 
-            tiers.find(t => t.id === userRewards.currentTierId)
-          ) : null
-        };
+        try {
+          const userRewards = await storage.getUserRewards(userId);
+          const recentOrders = await storage.getUserOrders(userId);
+          userContext = {
+            userId,
+            userRewards,
+            recentPurchases: recentOrders.slice(0, 5),
+            userTier: userRewards?.currentTierId ? await storage.getRewardTiers().then(tiers => 
+              tiers.find(t => t.id === userRewards.currentTierId)
+            ) : null
+          };
+        } catch (contextError) {
+          console.warn('Failed to load user context:', contextError);
+          userContext = { userId };
+        }
       }
 
       const response = await aiAssistant.generateResponse(
