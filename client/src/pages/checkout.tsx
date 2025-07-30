@@ -15,7 +15,7 @@ import { Loader2, Package, Truck, Shield } from 'lucide-react';
 // recreating the `Stripe` object on every render.
 const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
   ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
-  : null;
+  : Promise.resolve(null);
 
 interface ShippingRate {
   id: string;
@@ -353,6 +353,19 @@ export default function Checkout() {
           <div className="text-center">
             <h1 className="text-4xl font-bold text-white mb-4">Your cart is empty</h1>
             <p className="text-purple-200">Add some products to your cart before checking out.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-white mb-4">Checkout Not Available</h1>
+            <p className="text-purple-200">Stripe is not configured. Add VITE_STRIPE_PUBLIC_KEY to enable payments.</p>
           </div>
         </div>
       </div>

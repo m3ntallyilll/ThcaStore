@@ -21,7 +21,7 @@ interface AIAssistantContext {
 }
 
 export class AIAssistant {
-  
+
   async generateResponse(
     message: string, 
     context: AIAssistantContext,
@@ -43,10 +43,10 @@ export class AIAssistant {
       // Get user context and active offers
       const activeOffers = await this.getActiveOffers(context.userTier?.name);
       const products = await this.getProducts();
-      
+
       // Create system prompt with context
       const systemPrompt = this.buildSystemPrompt(context, activeOffers, products);
-      
+
       // Use Groq with message prefilling for structured response
       const completion = await groq.chat.completions.create({
         model: "llama-3.3-70b-versatile",
@@ -71,7 +71,7 @@ export class AIAssistant {
 
       const responseText = completion.choices[0]?.message?.content || "";
       let parsedResponse;
-      
+
       try {
         parsedResponse = JSON.parse(responseText);
       } catch (parseError) {
@@ -99,7 +99,7 @@ export class AIAssistant {
       });
 
       return parsedResponse;
-      
+
     } catch (error) {
       console.error('AI Assistant Error:', error);
       return this.getFallbackResponse(message, context);
@@ -108,12 +108,12 @@ export class AIAssistant {
 
   private getFallbackResponse(message: string, context: AIAssistantContext) {
     const lowerMessage = message.toLowerCase();
-    
+
     // Simple intent detection for fallback
     let intent = "general_assistance";
     let response = "Hi! I'm here to help you with our premium THCA products. What can I assist you with today?";
     let recommendedProducts: string[] = [];
-    
+
     if (lowerMessage.includes("product") || lowerMessage.includes("buy") || lowerMessage.includes("shop")) {
       intent = "product_recommendation";
       response = "I'd be happy to help you find the perfect THCA products! Our selection includes premium flower, concentrates, and edibles. What type of product interests you most?";
@@ -126,7 +126,7 @@ export class AIAssistant {
       intent = "price_inquiry";
       response = "Our THCA products are competitively priced with frequent special offers! Check out our products page to see current prices and any active promotions.";
     }
-    
+
     return {
       response,
       intent,
@@ -203,7 +203,7 @@ Remember: Every interaction should move toward a sale while providing genuine va
   private async getActiveOffers(userTier?: string): Promise<any[]> {
     const now = new Date();
     const currentDay = now.toLocaleLowerCase().slice(0, 3); // mon, tue, wed, etc.
-    
+
     return await db
       .select()
       .from(specialOffers)
@@ -267,7 +267,7 @@ Remember: Every interaction should move toward a sale while providing genuine va
 
       // Generate AI-powered personalized offers
       const prompt = `Based on this customer data, generate 3 personalized special offers:
-      
+
 Customer Profile:
 - Total Points: ${userRewardsData[0]?.totalPoints || 0}
 - Lifetime Spent: $${userRewardsData[0]?.lifetimeSpent || '0.00'}

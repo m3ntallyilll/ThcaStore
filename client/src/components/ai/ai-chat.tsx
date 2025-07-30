@@ -298,7 +298,7 @@ How can I help you today? I can:
                             )}
                           </div>
                         )}
-                        
+
                         <p className="text-sm whitespace-pre-wrap">
                           {msg.isUser ? msg.message : msg.response}
                         </p>
@@ -361,7 +361,7 @@ How can I help you today? I can:
                       </div>
                     </motion.div>
                   ))}
-                  
+
                   {isLoading && (
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -380,7 +380,7 @@ How can I help you today? I can:
                       </div>
                     </motion.div>
                   )}
-                  
+
                   <div ref={messagesEndRef} />
                 </div>
 
@@ -403,7 +403,7 @@ How can I help you today? I can:
                       <Send className="w-4 h-4" />
                     </Button>
                   </div>
-                  
+
                   <div className="flex flex-wrap gap-2 mt-3">
                     {['Show me deals', 'Best flower strains', 'My reward points', 'Product recommendations'].map((suggestion) => (
                       <Button
