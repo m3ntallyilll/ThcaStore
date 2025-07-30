@@ -24,11 +24,13 @@ interface ChatMessage {
 interface AIChatProps {
   onProductRecommendation?: (productId: string) => void;
   onOfferSuggestion?: (offer: any) => void;
+  autoOpen?: boolean;
 }
 
-export function AIChat({ onProductRecommendation, onOfferSuggestion }: AIChatProps) {
+export function AIChat({ onProductRecommendation, onOfferSuggestion, autoOpen = false }: AIChatProps) {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [hasAutoOpened, setHasAutoOpened] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +44,17 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion }: AIChatPro
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Auto-open on first visit
+  useEffect(() => {
+    if (autoOpen && !hasAutoOpened) {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+        setHasAutoOpened(true);
+      }, 2000); // Open after 2 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [autoOpen, hasAutoOpened]);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {

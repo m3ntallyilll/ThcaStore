@@ -15,6 +15,7 @@ import { AIChat } from "@/components/ai/ai-chat";
 // Pages
 import Home from "@/pages/home";
 import Products from "@/pages/products";
+import Checkout from "@/pages/checkout";
 import Admin from "@/pages/admin";
 import Rewards from "@/pages/rewards";
 import NotFound from "@/pages/not-found";
@@ -44,6 +45,7 @@ function AppContent() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/products" component={Products} />
+          <Route path="/checkout" component={Checkout} />
           <Route path="/rewards" component={Rewards} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
@@ -51,7 +53,7 @@ function AppContent() {
       </main>
       <Footer />
       <CartSidebar />
-      <AIChat />
+      <AIChat autoOpen={true} />
       <ToastProvider />
     </div>
   );

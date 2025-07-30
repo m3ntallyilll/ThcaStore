@@ -1,4 +1,4 @@
-import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { X, Minus, Plus, Trash2, ShoppingBag, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -6,6 +6,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/components/ui/toast-provider';
 import { apiRequest } from '@/lib/queryClient';
+import { useLocation } from 'wouter';
 
 export function CartSidebar() {
   const { 
@@ -21,6 +22,7 @@ export function CartSidebar() {
   } = useCart();
   const { isAuthenticated, user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleQuantityUpdate = async (itemId: string, newQuantity: number) => {
     if (newQuantity <= 0) {
@@ -44,7 +46,7 @@ export function CartSidebar() {
     }
   };
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!isAuthenticated) {
       toast('Please login to checkout', 'warning');
       return;
@@ -55,21 +57,8 @@ export function CartSidebar() {
       return;
     }
 
-    try {
-      const orderData = {
-        status: 'pending',
-        total: getTotal().toFixed(2),
-        subtotal: getSubtotal().toFixed(2),
-        tax: getTax().toFixed(2),
-      };
-
-      await apiRequest('POST', '/api/orders', orderData);
-      clearCart();
-      toast('Order placed successfully!', 'success');
-      toggleCart();
-    } catch (error) {
-      toast('Failed to place order', 'error');
-    }
+    toggleCart();
+    setLocation('/checkout');
   };
 
   return (
@@ -184,9 +173,10 @@ export function CartSidebar() {
                   </div>
                   <Button
                     onClick={handleCheckout}
-                    className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-gold/30 transition-all duration-300"
+                    className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    Proceed to Checkout
+                    <CreditCard className="w-5 h-5" />
+                    Secure Checkout
                   </Button>
                 </div>
               </div>

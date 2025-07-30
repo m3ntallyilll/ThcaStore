@@ -32,7 +32,9 @@ import {
   rewardTiers, 
   pointTransactions, 
   referralProgram, 
-  specialOffers 
+  specialOffers,
+  shippingRates,
+  prohibitedStates
 } from '@shared/schema';
 
 export class DatabaseStorage {
@@ -40,6 +42,8 @@ export class DatabaseStorage {
   // Initialize default data
   async initialize(): Promise<void> {
     await this.initializeRewardTiers();
+    await this.initializeShippingRates();
+    await this.initializeProhibitedStates();
     await this.initializeSampleProducts();
     await this.initializeSpecialOffers();
   }
@@ -89,6 +93,83 @@ export class DatabaseStorage {
     await db.insert(rewardTiers).values(tiers);
   }
 
+  private async initializeShippingRates(): Promise<void> {
+    const existingRates = await db.select().from(shippingRates).limit(1);
+    if (existingRates.length > 0) return;
+
+    const rates = [
+      {
+        method: 'standard',
+        name: 'Standard Shipping',
+        description: 'Standard ground shipping via USPS/UPS',
+        baseRate: '8.99',
+        perPoundRate: '2.50',
+        freeShippingThreshold: '75.00',
+        estimatedDays: '5-7 business days',
+        trackingIncluded: true,
+        isActive: true
+      },
+      {
+        method: 'express',
+        name: 'Express Shipping',
+        description: 'Expedited shipping for faster delivery',
+        baseRate: '19.99',
+        perPoundRate: '4.00',
+        freeShippingThreshold: '150.00',
+        estimatedDays: '2-3 business days',
+        trackingIncluded: true,
+        isActive: true
+      },
+      {
+        method: 'tracked',
+        name: 'Priority Tracked',
+        description: 'Premium tracked shipping with signature confirmation',
+        baseRate: '29.99',
+        perPoundRate: '6.00',
+        freeShippingThreshold: '200.00',
+        estimatedDays: '1-2 business days',
+        trackingIncluded: true,
+        isActive: true
+      }
+    ];
+
+    await db.insert(shippingRates).values(rates);
+  }
+
+  private async initializeProhibitedStates(): Promise<void> {
+    const existingStates = await db.select().from(prohibitedStates).limit(1);
+    if (existingStates.length > 0) return;
+
+    const prohibited = [
+      {
+        stateCode: 'ID',
+        stateName: 'Idaho',
+        reason: 'Cannabis products including THCA are prohibited under state law',
+        isActive: true
+      },
+      {
+        stateCode: 'SD',
+        stateName: 'South Dakota',
+        reason: 'THCA products not permitted under current state regulations',
+        isActive: true
+      },
+      {
+        stateCode: 'KS',
+        stateName: 'Kansas',
+        reason: 'Hemp-derived THCA products prohibited',
+        isActive: true
+      },
+      {
+        stateCode: 'WY',
+        stateName: 'Wyoming',
+        reason: 'Cannabis derivatives including THCA not permitted',
+        isActive: true
+      }
+    ];
+
+    await db.insert(prohibitedStates).values(prohibited);
+  }
+
   private async initializeSampleProducts(): Promise<void> {
     const existingProducts = await db.select().from(products).limit(1);
     if (existingProducts.length > 0) return;
@@ -101,6 +182,7 @@ export class DatabaseStorage {
         category: "flower",
         imageUrl: "https://images.unsplash.com/photo-1560718547-8c2234c7d1c4?w=400",
         stock: 23,
+        weight: "0.25",
         featured: true,
         rating: "4.8",
         thcaContent: "28.5",
@@ -114,6 +196,7 @@ export class DatabaseStorage {
         category: "concentrates",
         imageUrl: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
         stock: 12,
+        weight: "0.05",
         featured: true,
         rating: "4.9",
         thcaContent: "99.2",
@@ -127,6 +210,7 @@ export class DatabaseStorage {
         category: "edibles",
         imageUrl: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400",
         stock: 45,
+        weight: "0.15",
         featured: false,
         rating: "4.7",
         thcaContent: "10.0",
@@ -140,6 +224,7 @@ export class DatabaseStorage {
         category: "accessories",
         imageUrl: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400",
         stock: 18,
+        weight: "0.75",
         featured: false,
         rating: "4.6",
         thcaContent: null,
@@ -544,6 +629,87 @@ export class DatabaseStorage {
   async createSpecialOffer(offer: InsertSpecialOffer): Promise<SpecialOffer> {
     const [newOffer] = await db.insert(specialOffers).values(offer).returning();
     return newOffer;
+  }
+
+  // Shipping Methods
+  async getShippingRates() {
+    return await db.select().from(shippingRates).where(eq(shippingRates.isActive, true));
+  }
+
+  async calculateShippingCost(method: string, weight: number, subtotal: number) {
+    const [rate] = await db.select().from(shippingRates)
+      .where(and(eq(shippingRates.method, method), eq(shippingRates.isActive, true)));
+    
+    if (!rate) {
+      throw new Error('Shipping method not found');
+    }
+
+    const baseRate = parseFloat(rate.baseRate);
+    const perPoundRate = parseFloat(rate.perPoundRate);
+    const freeThreshold = rate.freeShippingThreshold ? parseFloat(rate.freeShippingThreshold) : null;
+
+    // Check if qualifies for free shipping
+    const isFree = freeThreshold && subtotal >= freeThreshold;
+    
+    if (isFree) {
+      return { cost: 0, isFree: true, method: rate.method };
+    }
+
+    const totalCost = baseRate + (weight * perPoundRate);
+    return { cost: Math.max(totalCost, 0), isFree: false, method: rate.method };
+  }
+
+  async isStateProhibited(stateCode: string): Promise<boolean> {
+    const [state] = await db.select().from(prohibitedStates)
+      .where(and(eq(prohibitedStates.stateCode, stateCode.toUpperCase()), eq(prohibitedStates.isActive, true)));
+    return !!state;
+  }
+
+  async getProhibitedState(stateCode: string) {
+    const [state] = await db.select().from(prohibitedStates)
+      .where(eq(prohibitedStates.stateCode, stateCode.toUpperCase()));
+    return state;
+  }
+
+  // Enhanced Order Management
+  async getAllOrdersWithDetails() {
+    return await db.select({
+      id: orders.id,
+      userId: orders.userId,
+      status: orders.status,
+      subtotal: orders.subtotal,
+      shippingCost: orders.shippingCost,
+      tax: orders.tax,
+      total: orders.total,
+      shippingMethod: orders.shippingMethod,
+      trackingNumber: orders.trackingNumber,
+      estimatedDelivery: orders.estimatedDelivery,
+      shippingName: orders.shippingName,
+      shippingEmail: orders.shippingEmail,
+      shippingPhone: orders.shippingPhone,
+      shippingAddress: orders.shippingAddress,
+      shippingAddress2: orders.shippingAddress2,
+      shippingCity: orders.shippingCity,
+      shippingState: orders.shippingState,
+      shippingZip: orders.shippingZip,
+      shippingCountry: orders.shippingCountry,
+      paymentStatus: orders.paymentStatus,
+      createdAt: orders.createdAt
+    }).from(orders).orderBy(desc(orders.createdAt));
+  }
+
+  async updateOrderStatus(orderId: string, status: string, trackingNumber?: string) {
+    const updateData: any = { status };
+    if (trackingNumber) {
+      updateData.trackingNumber = trackingNumber;
+    }
+
+    const [order] = await db.update(orders)
+      .set(updateData)
+      .where(eq(orders.id, orderId))
+      .returning();
+    
+    return order;
   }
 
   async updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined> {

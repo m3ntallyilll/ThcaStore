@@ -22,6 +22,7 @@ export const products = pgTable("products", {
   category: text("category").notNull(),
   imageUrl: text("image_url").notNull(),
   stock: integer("stock").notNull().default(0),
+  weight: decimal("weight", { precision: 8, scale: 2 }).default("0.10"), // Weight in pounds for shipping
   featured: boolean("featured").default(false),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("0"),
   thcaContent: decimal("thca_content", { precision: 5, scale: 2 }),
@@ -42,16 +43,32 @@ export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id).notNull(),
   status: text("status").notNull().default("pending"),
-  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }).notNull().default("0.00"),
   tax: decimal("tax", { precision: 10, scale: 2 }).notNull(),
-  shippingAddress: jsonb("shipping_address").$type<{
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-  }>(),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  
+  // Shipping Details
+  shippingMethod: text("shipping_method").notNull().default("standard"), // standard, express, tracked
+  trackingNumber: text("tracking_number"),
+  estimatedDelivery: text("estimated_delivery"),
+  totalWeight: decimal("total_weight", { precision: 8, scale: 2 }).default("0.00"),
+  
+  // Shipping Address
+  shippingName: text("shipping_name").notNull(),
+  shippingEmail: text("shipping_email").notNull(),
+  shippingPhone: text("shipping_phone"),
+  shippingAddress: text("shipping_address").notNull(),
+  shippingAddress2: text("shipping_address2"),
+  shippingCity: text("shipping_city").notNull(),
+  shippingState: text("shipping_state").notNull(),
+  shippingZip: text("shipping_zip").notNull(),
+  shippingCountry: text("shipping_country").notNull().default("US"),
+  
+  // Payment
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  paymentStatus: text("payment_status").notNull().default("pending"),
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -199,6 +216,31 @@ export const salesMetrics = pgTable('sales_metrics', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Shipping Configuration
+export const shippingRates = pgTable('shipping_rates', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  method: text('method').notNull(), // standard, express, tracked
+  name: text('name').notNull(),
+  description: text('description'),
+  baseRate: decimal('base_rate', { precision: 8, scale: 2 }).notNull(),
+  perPoundRate: decimal('per_pound_rate', { precision: 8, scale: 2 }).default('0.00'),
+  freeShippingThreshold: decimal('free_shipping_threshold', { precision: 10, scale: 2 }),
+  estimatedDays: text('estimated_days').notNull(),
+  trackingIncluded: boolean('tracking_included').default(false),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Prohibited States - Cannabis laws vary by state
+export const prohibitedStates = pgTable('prohibited_states', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  stateCode: text('state_code').notNull().unique(), // 'ID', 'SD', etc.
+  stateName: text('state_name').notNull(),
+  reason: text('reason').notNull(),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Relations
 export const rewardTiersRelations = relations(rewardTiers, ({ many }) => ({
   userRewards: many(userRewards),
@@ -234,6 +276,8 @@ export const insertReferralProgramSchema = createInsertSchema(referralProgram);
 export const insertSpecialOfferSchema = createInsertSchema(specialOffers);
 export const insertAiInteractionSchema = createInsertSchema(aiInteractions);
 export const insertSalesMetricSchema = createInsertSchema(salesMetrics);
+export const insertShippingRateSchema = createInsertSchema(shippingRates);
+export const insertProhibitedStateSchema = createInsertSchema(prohibitedStates);
 
 // Types
 export type InsertRewardTier = z.infer<typeof insertRewardTierSchema>;
@@ -250,6 +294,10 @@ export type InsertAiInteraction = z.infer<typeof insertAiInteractionSchema>;
 export type AiInteraction = typeof aiInteractions.$inferSelect;
 export type InsertSalesMetric = z.infer<typeof insertSalesMetricSchema>;
 export type SalesMetric = typeof salesMetrics.$inferSelect;
+export type InsertShippingRate = z.infer<typeof insertShippingRateSchema>;
+export type ShippingRate = typeof shippingRates.$inferSelect;
+export type InsertProhibitedState = z.infer<typeof insertProhibitedStateSchema>;
+export type ProhibitedState = typeof prohibitedStates.$inferSelect;
 
 // Auth user type for frontend
 export interface AuthUser {

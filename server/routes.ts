@@ -2,6 +2,15 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./database-storage";
 import { aiAssistant } from "./ai-assistant";
+import Stripe from "stripe";
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.warn('STRIPE_SECRET_KEY not found - Stripe payments will not work');
+}
+
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2023-10-16",
+}) : null;
 import { 
   insertUserSchema, 
   loginSchema, 
@@ -238,6 +247,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orders = await storage.getOrders();
       res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/orders/:orderId", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { orderId } = req.params;
+      const { status, trackingNumber } = req.body;
+      
+      const order = await storage.updateOrderStatus(orderId, status, trackingNumber);
+      res.json(order);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -483,6 +504,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const offers = await aiAssistant.generatePersonalizedOffers(req.user.id);
       res.json(offers);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Stripe Payment Routes
+  app.post("/api/create-payment-intent", async (req, res) => {
+    if (!stripe) {
+      return res.status(500).json({ message: "Stripe not configured" });
+    }
+
+    try {
+      const { items, subtotal, shippingCost } = req.body;
+      const total = Math.round((subtotal + (shippingCost || 0)) * 100); // Convert to cents
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: total,
+        currency: "usd",
+        metadata: {
+          itemCount: items?.length || 0,
+          subtotal: subtotal.toString(),
+          shippingCost: (shippingCost || 0).toString()
+        }
+      });
+
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      console.error('Payment intent error:', error);
+      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Shipping Routes
+  app.get("/api/shipping/rates", async (req, res) => {
+    try {
+      const rates = await storage.getShippingRates();
+      res.json(rates);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/shipping/calculate", async (req, res) => {
+    try {
+      const { method, weight, subtotal } = req.body;
+      const shippingCost = await storage.calculateShippingCost(method, weight, subtotal);
+      res.json(shippingCost);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/shipping/validate-state", async (req, res) => {
+    try {
+      const { state } = req.body;
+      const isProhibited = await storage.isStateProhibited(state);
+      
+      if (isProhibited) {
+        const prohibitedState = await storage.getProhibitedState(state);
+        return res.status(400).json({ 
+          message: `We cannot ship to ${prohibitedState?.stateName || state}. ${prohibitedState?.reason || 'This state restricts THCA products.'}`
+        });
+      }
+      
+      res.json({ valid: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Enhanced Admin Panel - Orders with Shipping
+  app.get("/api/admin/orders", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrdersWithDetails();
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.patch("/api/admin/orders/:orderId", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { status, trackingNumber } = req.body;
+      
+      const updatedOrder = await storage.updateOrderStatus(orderId, status, trackingNumber);
+      res.json(updatedOrder);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

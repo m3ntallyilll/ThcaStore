@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Package, 
   ShoppingCart, 
@@ -7,18 +7,59 @@ import {
   Users, 
   Edit, 
   Trash2, 
-  Plus 
+  Plus,
+  Truck,
+  MapPin,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  Search
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/use-auth';
+import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 import type { AdminStats } from '@/lib/types';
 import type { Product } from '@shared/schema';
 
+interface OrderWithDetails {
+  id: string;
+  userId: string;
+  status: string;
+  subtotal: string;
+  shippingCost: string;
+  tax: string;
+  total: string;
+  shippingMethod: string;
+  trackingNumber?: string;
+  estimatedDelivery?: string;
+  shippingName: string;
+  shippingEmail: string;
+  shippingPhone?: string;
+  shippingAddress: string;
+  shippingAddress2?: string;
+  shippingCity: string;
+  shippingState: string;
+  shippingZip: string;
+  shippingCountry: string;
+  paymentStatus: string;
+  createdAt: string;
+}
+
 export function AdminDashboard() {
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState('products');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [activeSection, setActiveSection] = useState('orders');
+  const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
+  const [orderSearch, setOrderSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   // Fetch admin stats
   const { data: stats } = useQuery<AdminStats>({
@@ -31,6 +72,132 @@ export function AdminDashboard() {
     queryKey: ['/api/products'],
     enabled: user?.isAdmin,
   });
+
+  // Fetch orders with full details
+  const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderWithDetails[]>({
+    queryKey: ['/api/admin/orders'],
+    enabled: user?.isAdmin,
+  });
+
+  // Update order status mutation
+  const updateOrderMutation = useMutation({
+    mutationFn: async ({ orderId, status, trackingNumber }: { orderId: string; status: string; trackingNumber?: string }) => {
+      const response = await apiRequest('PATCH', `/api/admin/orders/${orderId}`, { status, trackingNumber });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      toast({
+        title: "Order Updated",
+        description: "Order status has been updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update order status.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Filter orders
+  const filteredOrders = orders.filter(order => {
+    const matchesSearch = orderSearch === '' || 
+      order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      order.shippingName.toLowerCase().includes(orderSearch.toLowerCase()) ||
+      order.shippingEmail.toLowerCase().includes(orderSearch.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'bg-yellow-500/20 text-yellow-300';
+      case 'processing': return 'bg-blue-500/20 text-blue-300';
+      case 'shipped': return 'bg-purple-500/20 text-purple-300';
+      case 'delivered': return 'bg-green-500/20 text-green-300';
+      case 'cancelled': return 'bg-red-500/20 text-red-300';
+      default: return 'bg-gray-500/20 text-gray-300';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'pending': return <Clock className="w-4 h-4" />;
+      case 'processing': return <AlertCircle className="w-4 h-4" />;
+      case 'shipped': return <Truck className="w-4 h-4" />;
+      case 'delivered': return <CheckCircle className="w-4 h-4" />;
+      case 'cancelled': return <AlertCircle className="w-4 h-4" />;
+      default: return <Clock className="w-4 h-4" />;
+    }
+  };
+
+  // Order Status Dialog Component
+  const OrderStatusDialog = ({ 
+    order, 
+    onUpdate, 
+    isLoading 
+  }: { 
+    order: OrderWithDetails | null; 
+    onUpdate: (status: string, trackingNumber?: string) => void;
+    isLoading: boolean;
+  }) => {
+    const [status, setStatus] = useState(order?.status || 'pending');
+    const [trackingNumber, setTrackingNumber] = useState(order?.trackingNumber || '');
+
+    useEffect(() => {
+      if (order) {
+        setStatus(order.status);
+        setTrackingNumber(order.trackingNumber || '');
+      }
+    }, [order]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      onUpdate(status, trackingNumber || undefined);
+    };
+
+    if (!order) return null;
+
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="status">Order Status</Label>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="processing">Processing</SelectItem>
+              <SelectItem value="shipped">Shipped</SelectItem>
+              <SelectItem value="delivered">Delivered</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Label htmlFor="tracking">Tracking Number (Optional)</Label>
+          <Input
+            id="tracking"
+            value={trackingNumber}
+            onChange={(e) => setTrackingNumber(e.target.value)}
+            placeholder="Enter tracking number"
+          />
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Updating...' : 'Update Order'}
+          </Button>
+        </div>
+      </form>
+    );
+  };
 
   if (!user?.isAdmin) {
     return (
@@ -251,16 +418,153 @@ export function AdminDashboard() {
             </Card>
           )}
 
-          {/* Other sections */}
+          {/* Order Management Section */}
           {activeSection === 'orders' && (
-            <Card className="glass">
-              <CardHeader>
-                <CardTitle>Order Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-400">Order management features coming soon...</p>
-              </CardContent>
-            </Card>
+            <div className="space-y-6">
+              <Card className="glass">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5" />
+                    Order Management
+                  </CardTitle>
+                  <div className="flex gap-4 mt-4">
+                    <div className="flex-1">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          placeholder="Search orders by ID, name, or email..."
+                          value={orderSearch}
+                          onChange={(e) => setOrderSearch(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-48">
+                        <SelectValue placeholder="Filter by status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Orders</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {ordersLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin w-8 h-8 border-4 border-purple-400 border-t-transparent rounded-full" />
+                    </div>
+                  ) : filteredOrders.length === 0 ? (
+                    <div className="text-center py-8">
+                      <ShoppingCart className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                      <p className="text-gray-400">No orders found</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {filteredOrders.map((order) => (
+                        <Card key={order.id} className="bg-dark-800/50 border-gray-700">
+                          <CardContent className="p-6">
+                            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                              {/* Order Info */}
+                              <div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Badge className={getStatusColor(order.status)}>
+                                    {getStatusIcon(order.status)}
+                                    <span className="ml-1 capitalize">{order.status}</span>
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-400">Order #{order.id.slice(0, 8)}</p>
+                                <p className="text-sm text-gray-400">
+                                  {new Date(order.createdAt).toLocaleDateString()}
+                                </p>
+                                <p className="font-semibold text-lg mt-2">${parseFloat(order.total).toFixed(2)}</p>
+                              </div>
+
+                              {/* Customer Info */}
+                              <div>
+                                <h4 className="font-semibold mb-2">Customer</h4>
+                                <p className="text-sm">{order.shippingName}</p>
+                                <p className="text-sm text-gray-400">{order.shippingEmail}</p>
+                                {order.shippingPhone && (
+                                  <p className="text-sm text-gray-400">{order.shippingPhone}</p>
+                                )}
+                              </div>
+
+                              {/* Shipping Info */}
+                              <div>
+                                <h4 className="font-semibold mb-2 flex items-center gap-2">
+                                  <MapPin className="w-4 h-4" />
+                                  Shipping Address
+                                </h4>
+                                <div className="text-sm text-gray-400 space-y-1">
+                                  <p>{order.shippingAddress}</p>
+                                  {order.shippingAddress2 && <p>{order.shippingAddress2}</p>}
+                                  <p>{order.shippingCity}, {order.shippingState} {order.shippingZip}</p>
+                                  <p className="capitalize">
+                                    <Truck className="w-3 h-3 inline mr-1" />
+                                    {order.shippingMethod} shipping
+                                  </p>
+                                  {order.trackingNumber && (
+                                    <p className="text-purple-400">
+                                      Tracking: {order.trackingNumber}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex flex-col gap-2">
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setSelectedOrder(order)}
+                                    >
+                                      <Edit className="w-4 h-4 mr-2" />
+                                      Update Status
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent>
+                                    <DialogHeader>
+                                      <DialogTitle>Update Order Status</DialogTitle>
+                                    </DialogHeader>
+                                    <OrderStatusDialog
+                                      order={selectedOrder}
+                                      onUpdate={(status, trackingNumber) => {
+                                        if (selectedOrder) {
+                                          updateOrderMutation.mutate({
+                                            orderId: selectedOrder.id,
+                                            status,
+                                            trackingNumber
+                                          });
+                                        }
+                                      }}
+                                      isLoading={updateOrderMutation.isPending}
+                                    />
+                                  </DialogContent>
+                                </Dialog>
+                                
+                                <div className="text-xs text-gray-500 space-y-1">
+                                  <p>Subtotal: ${parseFloat(order.subtotal).toFixed(2)}</p>
+                                  <p>Shipping: ${parseFloat(order.shippingCost).toFixed(2)}</p>
+                                  <p>Tax: ${parseFloat(order.tax).toFixed(2)}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {activeSection === 'users' && (
