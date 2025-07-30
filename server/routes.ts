@@ -1,0 +1,303 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { insertUserSchema, loginSchema, insertProductSchema, insertCartItemSchema, insertOrderSchema } from "@shared/schema";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+// Middleware to verify JWT token
+const authenticateToken = async (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    const user = await storage.getUser(decoded.userId);
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+    req.user = user;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid token' });
+  }
+};
+
+// Middleware to check admin privileges
+const requireAdmin = (req: any, res: any, next: any) => {
+  if (!req.user?.isAdmin) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = insertUserSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      
+      const user = await storage.createUser({
+        ...userData,
+        password: hashedPassword,
+      });
+
+      // Generate JWT token
+      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+
+      res.json({
+        user: { ...user, password: undefined },
+        token,
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = loginSchema.parse(req.body);
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+
+      res.json({
+        user: { ...user, password: undefined },
+        token,
+      });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/auth/me", authenticateToken, async (req: any, res) => {
+    res.json({ ...req.user, password: undefined });
+  });
+
+  // Product routes
+  app.get("/api/products", async (req, res) => {
+    try {
+      const { category, featured } = req.query;
+      
+      let products;
+      if (category) {
+        products = await storage.getProductsByCategory(category as string);
+      } else if (featured === 'true') {
+        products = await storage.getFeaturedProducts();
+      } else {
+        products = await storage.getProducts();
+      }
+      
+      res.json(products);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/products/:id", async (req, res) => {
+    try {
+      const product = await storage.getProduct(req.params.id);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/products", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const productData = insertProductSchema.parse(req.body);
+      const product = await storage.createProduct(productData);
+      res.status(201).json(product);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/products/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const productData = insertProductSchema.partial().parse(req.body);
+      const product = await storage.updateProduct(req.params.id, productData);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.json(product);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/products/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const deleted = await storage.deleteProduct(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Cart routes
+  app.get("/api/cart", authenticateToken, async (req: any, res) => {
+    try {
+      const cartItems = await storage.getCartItems(req.user.id);
+      res.json(cartItems);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/cart", authenticateToken, async (req: any, res) => {
+    try {
+      const cartItemData = insertCartItemSchema.parse({
+        ...req.body,
+        userId: req.user.id,
+      });
+      
+      const cartItem = await storage.addToCart(cartItemData);
+      res.status(201).json(cartItem);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/cart/:id", authenticateToken, async (req: any, res) => {
+    try {
+      const { quantity } = req.body;
+      const cartItem = await storage.updateCartItem(req.params.id, quantity);
+      if (!cartItem) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+      res.json(cartItem);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/cart/:id", authenticateToken, async (req: any, res) => {
+    try {
+      const deleted = await storage.removeFromCart(req.params.id);
+      if (!deleted) {
+        return res.status(404).json({ message: "Cart item not found" });
+      }
+      res.status(204).send();
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Order routes
+  app.get("/api/orders", authenticateToken, async (req: any, res) => {
+    try {
+      const orders = await storage.getOrders(req.user.id);
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/orders", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/orders", authenticateToken, async (req: any, res) => {
+    try {
+      const orderData = insertOrderSchema.parse({
+        ...req.body,
+        userId: req.user.id,
+      });
+      
+      const order = await storage.createOrder(orderData);
+      
+      // Create order items from cart
+      const cartItems = await storage.getCartItems(req.user.id);
+      for (const cartItem of cartItems) {
+        await storage.createOrderItem({
+          orderId: order.id,
+          productId: cartItem.productId,
+          quantity: cartItem.quantity,
+          price: cartItem.product.price,
+        });
+      }
+      
+      // Clear cart after creating order
+      await storage.clearCart(req.user.id);
+      
+      res.status(201).json(order);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/orders/:id/status", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { status } = req.body;
+      const order = await storage.updateOrderStatus(req.params.id, status);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      res.json(order);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Admin stats route
+  app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const products = await storage.getProducts();
+      const orders = await storage.getAllOrders();
+      const users = Array.from((storage as any).users.values());
+      
+      const totalProducts = products.length;
+      const totalOrders = orders.length;
+      const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
+      const activeUsers = users.length;
+      
+      res.json({
+        totalProducts,
+        totalOrders,
+        totalRevenue: totalRevenue.toFixed(2),
+        activeUsers,
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

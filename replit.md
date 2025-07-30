@@ -1,0 +1,125 @@
+# THCA Store
+
+## Overview
+
+THCA Store is a full-stack eCommerce web application designed specifically for selling THCA products. It's a modern, responsive platform built with React and Express.js, featuring user authentication, product management, shopping cart functionality, and an admin dashboard.
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Styling**: Tailwind CSS with shadcn/ui component library
+- **State Management**: Zustand for global state (authentication, cart)
+- **Data Fetching**: TanStack Query for server state management
+- **Routing**: Wouter for client-side routing
+- **Animations**: Framer Motion for UI animations
+- **Build Tool**: Vite for development and production builds
+
+### Backend Architecture
+- **Framework**: Express.js with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **Database Provider**: Neon serverless PostgreSQL
+- **Authentication**: JWT-based authentication with bcryptjs for password hashing
+- **API Design**: RESTful API with JSON responses
+- **Session Management**: In-memory storage with fallback to database sessions
+
+### Key Design Decisions
+The application uses a monorepo structure with clear separation between client, server, and shared code. The shared schema ensures type safety across the full stack. The choice of Drizzle ORM provides type-safe database operations while maintaining flexibility for complex queries.
+
+## Key Components
+
+### Database Schema
+- **Users**: Authentication and profile management with admin role support
+- **Products**: Full product catalog with categories, pricing, stock, and THCA-specific fields
+- **Cart Items**: Shopping cart functionality with user association
+- **Orders**: Order management with status tracking and detailed order items
+- **Order Items**: Individual items within orders with product references
+
+### Authentication System
+- JWT-based authentication with secure token management
+- Role-based access control (admin/user)
+- Password hashing with bcryptjs
+- Protected routes and middleware
+
+### Product Management
+- Comprehensive product catalog with categories (flower, concentrates, edibles, accessories)
+- Product search and filtering capabilities
+- Featured products system
+- Stock management
+- THCA-specific metadata (content percentage, strain types, effects)
+
+### Shopping Cart
+- Real-time cart management with Zustand
+- Persistent cart state for authenticated users
+- Quantity updates and item removal
+- Cart sidebar with immediate access
+
+### Admin Dashboard
+- Product management (CRUD operations)
+- Order management and status updates
+- User management
+- Sales analytics and reporting
+
+## Data Flow
+
+### Client-Server Communication
+1. Client makes API requests using TanStack Query
+2. Server validates JWT tokens for protected routes
+3. Database operations through Drizzle ORM
+4. Responses formatted as JSON with consistent error handling
+
+### State Management Flow
+1. Authentication state managed globally with Zustand
+2. Cart state synced between client and server
+3. Product data cached with TanStack Query
+4. Form state managed locally with React Hook Form
+
+### User Journey
+1. User browses products (public)
+2. User registers/logs in for cart functionality
+3. User adds items to cart (persisted)
+4. User proceeds to checkout
+5. Admin manages orders and products
+
+## External Dependencies
+
+### UI Components
+- **Radix UI**: Headless UI primitives for accessibility
+- **shadcn/ui**: Pre-built component library built on Radix
+- **Lucide React**: Icon library for consistent iconography
+
+### Database & Backend
+- **Neon**: Serverless PostgreSQL hosting
+- **Drizzle**: Type-safe ORM with PostgreSQL dialect
+- **bcryptjs**: Password hashing for security
+- **jsonwebtoken**: JWT implementation for authentication
+
+### Development Tools
+- **TypeScript**: Type safety across the entire stack
+- **ESBuild**: Fast bundling for production builds
+- **PostCSS**: CSS processing with Tailwind CSS
+
+## Deployment Strategy
+
+### Production Build Process
+1. Frontend built with Vite to static assets
+2. Backend bundled with ESBuild for Node.js runtime
+3. Database migrations handled by Drizzle Kit
+4. Environment variables for database connection and JWT secrets
+
+### Environment Configuration
+- Development: Local development server with hot reloading
+- Production: Optimized builds with static asset serving
+- Database: Connection string via DATABASE_URL environment variable
+
+### Scaling Considerations
+- Stateless server design for horizontal scaling
+- Database connection pooling through Neon
+- Static asset serving optimized for CDN deployment
+- JWT tokens eliminate server-side session storage
+
+The application is designed to be easily deployable on platforms like Replit, Vercel, or traditional hosting providers, with minimal configuration required for production deployment.
