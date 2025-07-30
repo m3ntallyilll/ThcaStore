@@ -15,7 +15,7 @@ import { AIChat } from "@/components/ai/ai-chat";
 // Pages
 import Home from "@/pages/home";
 import Products from "@/pages/products";
-import Checkout from "@/pages/checkout";
+import Checkout from './pages/checkout';
 import Admin from "@/pages/admin";
 import Rewards from "@/pages/rewards";
 import NotFound from "@/pages/not-found";

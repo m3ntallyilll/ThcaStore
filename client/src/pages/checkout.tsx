@@ -47,7 +47,7 @@ const CheckoutForm = ({
   const { toast } = useToast();
   const { items } = useCart();
   const total = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState<string>('standard');
   const [shippingAddress, setShippingAddress] = useState({
@@ -71,7 +71,7 @@ const CheckoutForm = ({
         weight: totalWeight,
         subtotal: total
       });
-      
+
       if (response.ok) {
         const shippingCost = await response.json();
         onShippingChange(shippingCost);
@@ -99,7 +99,7 @@ const CheckoutForm = ({
       const stateResponse = await apiRequest('POST', '/api/shipping/validate-state', {
         state: shippingAddress.state
       });
-      
+
       if (!stateResponse.ok) {
         const error = await stateResponse.json();
         toast({
@@ -144,7 +144,7 @@ const CheckoutForm = ({
         description: "Thank you for your purchase!",
       });
     }
-    
+
     setIsLoading(false);
   };
 
@@ -181,7 +181,7 @@ const CheckoutForm = ({
                 />
               </div>
             </div>
-            
+
             <div>
               <Label htmlFor="phone">Phone (Optional)</Label>
               <Input
@@ -331,7 +331,7 @@ export default function Checkout() {
           subtotal: total,
           shippingCost: shippingCost.cost
         });
-        
+
         if (response.ok) {
           const data = await response.json();
           setClientSecret(data.clientSecret);
@@ -373,7 +373,7 @@ export default function Checkout() {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold text-white mb-8 text-center">Secure Checkout</h1>
-        
+
         {/* Order Summary */}
         <div className="mb-8">
           <Card>
