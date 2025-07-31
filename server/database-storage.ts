@@ -1,5 +1,5 @@
 import { db } from './db';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, or } from 'drizzle-orm';
 import type { 
   User, 
   InsertUser, 
@@ -20,7 +20,9 @@ import type {
   ReferralProgram,
   InsertReferralProgram,
   SpecialOffer,
-  InsertSpecialOffer
+  InsertSpecialOffer,
+  BlogPost,
+  InsertBlogPost
 } from '@shared/schema';
 import { 
   users, 
@@ -34,7 +36,8 @@ import {
   referralProgram, 
   specialOffers,
   shippingRates,
-  prohibitedStates
+  prohibitedStates,
+  blogPosts
 } from '@shared/schema';
 
 export class DatabaseStorage {
@@ -187,7 +190,7 @@ export class DatabaseStorage {
         rating: "4.8",
         thcaContent: "28.5",
         strainType: "Sativa Dominant",
-        effects: ["euphoric", "creative", "uplifting"]
+        effects: ["euphoric", "creative", "uplifting"] as string[]
       },
       {
         name: "Live Resin Diamond",
@@ -201,7 +204,7 @@ export class DatabaseStorage {
         rating: "4.9",
         thcaContent: "99.2",
         strainType: "Hybrid",
-        effects: ["relaxing", "potent", "flavorful"]
+        effects: ["relaxing", "potent", "flavorful"] as string[]
       },
       {
         name: "THCA Gummies",
@@ -215,7 +218,7 @@ export class DatabaseStorage {
         rating: "4.7",
         thcaContent: "10.0",
         strainType: "N/A",
-        effects: ["long-lasting", "precise", "tasty"]
+        effects: ["long-lasting", "precise", "tasty"] as string[]
       },
       {
         name: "Premium Grinder",
@@ -234,7 +237,7 @@ export class DatabaseStorage {
     ];
 
     for (const product of sampleProducts) {
-      await db.insert(products).values(product);
+      await db.insert(products).values([product]);
     }
   }
 
@@ -365,7 +368,7 @@ export class DatabaseStorage {
   }
 
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
-    const [product] = await db.insert(products).values(insertProduct).returning();
+    const [product] = await db.insert(products).values([insertProduct]).returning();
     return product;
   }
 
@@ -696,7 +699,7 @@ export class DatabaseStorage {
     }
 
     const baseRate = parseFloat(rate.baseRate);
-    const perPoundRate = parseFloat(rate.perPoundRate);
+    const perPoundRate = parseFloat(rate.perPoundRate || '0');
     const freeThreshold = rate.freeShippingThreshold ? parseFloat(rate.freeShippingThreshold) : null;
 
     // Check if qualifies for free shipping
@@ -760,7 +763,7 @@ export class DatabaseStorage {
   async getBlogPosts(status?: string): Promise<BlogPost[]> {
     if (status) {
       return await db.select().from(blogPosts)
-        .where(eq(blogPosts.status, status))
+        .where(eq(blogPosts.status, status as 'draft' | 'published' | 'archived'))
         .orderBy(desc(blogPosts.createdAt));
     }
     return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
@@ -831,34 +834,7 @@ export class DatabaseStorage {
       .orderBy(desc(blogPosts.publishedAt));
   }
 
-  async getPublishedBlogPosts(): Promise<BlogPost[]> {
-    return await db.select().from(blogPosts)
-      .where(eq(blogPosts.status, 'published'))
-      .orderBy(desc(blogPosts.publishedAt));
-  }
 
-  async getBlogCategories(): Promise<string[]> {
-    const categories = await db.selectDistinct({ category: blogPosts.category })
-      .from(blogPosts)
-      .where(eq(blogPosts.status, 'published'));
-    return categories.map(cat => cat.category);
-  }
-
-  async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-    const result = await db.select().from(blogPosts)
-      .where(and(
-        eq(blogPosts.slug, slug),
-        eq(blogPosts.status, 'published')
-      ))
-      .limit(1);
-    return result[0] || null;
-  }
-
-  async incrementBlogPostViews(id: string): Promise<void> {
-    await db.update(blogPosts)
-      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
-      .where(eq(blogPosts.id, id));
-  }
 }
 
 export const storage = new DatabaseStorage();
