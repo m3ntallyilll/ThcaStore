@@ -190,7 +190,7 @@ export class MemStorage implements IStorage {
       rating: insertProduct.rating ?? "0",
       thcaContent: insertProduct.thcaContent ?? null,
       strainType: insertProduct.strainType ?? null,
-      effects: Array.isArray(insertProduct.effects) ? insertProduct.effects : null,
+      effects: insertProduct.effects && Array.isArray(insertProduct.effects) ? insertProduct.effects : null,
       createdAt: new Date() 
     };
     this.products.set(id, product);
@@ -204,7 +204,7 @@ export class MemStorage implements IStorage {
     const updatedProduct = { 
       ...product, 
       ...updates,
-      effects: updates.effects !== undefined ? (Array.isArray(updates.effects) ? updates.effects : null) : product.effects
+      effects: updates.effects !== undefined ? (updates.effects && Array.isArray(updates.effects) ? updates.effects : null) : product.effects
     };
     this.products.set(id, updatedProduct);
     return updatedProduct;
@@ -299,7 +299,7 @@ export class MemStorage implements IStorage {
     const order: Order = { 
       ...insertOrder,
       id,
-      status: insertOrder.status ?? "pending",
+      status: insertOrder.status || "pending",
       shippingAddress: insertOrder.shippingAddress || null,
       createdAt: new Date() 
     };
