@@ -23,24 +23,10 @@ export const useAuth = create<AuthState>()(
       login: async (credentials: LoginRequest) => {
         set({ isLoading: true });
         try {
-          const response = await apiRequest('POST', '/api/auth/login', credentials);
-
-          if (!response.ok) {
-            const errorData = await response.text();
-            let errorMessage = 'Login failed';
-
-            try {
-              const jsonError = JSON.parse(errorData);
-              errorMessage = jsonError.message || errorMessage;
-            } catch {
-              // If response is HTML or not JSON, use generic message
-              errorMessage = 'Server error - please try again';
-            }
-
-            throw new Error(errorMessage);
-          }
-
-          const data = await response.json();
+          const data = await apiRequest('/api/auth/login', {
+            method: 'POST',
+            body: credentials
+          });
 
           set({ 
             user: data.user, 
@@ -59,23 +45,10 @@ export const useAuth = create<AuthState>()(
       register: async (userData: InsertUser) => {
         set({ isLoading: true });
         try {
-          const response = await apiRequest('POST', '/api/auth/register', userData);
-
-          if (!response.ok) {
-            const errorData = await response.text();
-            let errorMessage = 'Registration failed';
-
-            try {
-              const jsonError = JSON.parse(errorData);
-              errorMessage = jsonError.message || errorMessage;
-            } catch {
-              errorMessage = 'Server error - please try again';
-            }
-
-            throw new Error(errorMessage);
-          }
-
-          const data = await response.json();
+          const data = await apiRequest('/api/auth/register', {
+            method: 'POST',
+            body: userData
+          });
 
           set({ 
             user: data.user, 
@@ -100,17 +73,12 @@ export const useAuth = create<AuthState>()(
         if (!token) return;
 
         try {
-          const response = await apiRequest('GET', '/api/auth/me');
-
-          if (response.ok) {
-            const user = await response.json();
-            set({ user, token });
-          } else {
-            // Token is invalid, clear it
-            localStorage.removeItem('auth-token');
-            set({ user: null, token: null });
-          }
+          const user = await apiRequest('/api/auth/me', {
+            method: 'GET'
+          });
+          set({ user, token });
         } catch (error) {
+          // Token is invalid, clear it
           localStorage.removeItem('auth-token');
           set({ user: null, token: null });
         }
