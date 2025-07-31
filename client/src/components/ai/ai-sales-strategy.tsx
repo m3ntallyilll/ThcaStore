@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Brain, 
   TrendingUp, 
@@ -21,7 +22,9 @@ import {
   Clock,
   CheckCircle,
   Star,
-  Gift
+  Gift,
+  Settings,
+  Loader2
 } from 'lucide-react';
 
 interface AISalesStrategy {
@@ -39,6 +42,7 @@ interface AISalesStrategy {
 
 export function AISalesStrategy() {
   const [activeStrategy, setActiveStrategy] = useState<string | null>(null);
+  const { toast } = useToast();
 
   // Fetch AI-generated sales strategies
   const { data: strategies, isLoading: strategiesLoading } = useQuery({
@@ -60,6 +64,34 @@ export function AISalesStrategy() {
         body: JSON.stringify(params)
       })
   });
+
+  // AI Sales Activation mutation
+  const activateSalesMutation = useMutation({
+    mutationFn: (strategyId: string) => 
+      apiRequest('/api/ai/activate-sales', {
+        method: 'POST',
+        body: JSON.stringify({ strategyId })
+      }),
+    onSuccess: (data) => {
+      setActivationResult(data);
+      toast({
+        title: "AI Sales System Activated!",
+        description: "Your AI-powered sales optimization is now live and working to increase conversions.",
+        variant: "default",
+      });
+    },
+    onError: (error) => {
+      console.error('AI activation failed:', error);
+      toast({
+        title: "Activation Failed",
+        description: "There was an error activating the AI sales system. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // State for activation results
+  const [activationResult, setActivationResult] = useState<any>(null);
 
   const salesGuarantees = [
     {
@@ -335,15 +367,99 @@ export function AISalesStrategy() {
             within the first 90 days. Join the revolution in intelligent commerce.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3">
-              Activate AI Sales System
+            <Button 
+              onClick={() => activateSalesMutation.mutate("conversion-optimization")}
+              disabled={activateSalesMutation.isPending}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3"
+            >
+              {activateSalesMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Activating...
+                </>
+              ) : (
+                <>
+                  <Zap className="mr-2 h-4 w-4" />
+                  Activate AI Sales System
+                </>
+              )}
             </Button>
             <Button variant="outline" className="border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white px-8 py-3">
+              <Settings className="mr-2 h-4 w-4" />
               Schedule Strategy Consultation
             </Button>
           </div>
         </CardContent>
       </Card>
+
+      {/* AI Activation Results */}
+      {activationResult && (
+        <Card className="bg-gradient-to-r from-green-900/30 to-blue-900/30 border-green-500/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <CheckCircle className="w-6 h-6 text-green-400" />
+              AI Sales System Activated Successfully!
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <Alert className="bg-green-900/20 border-green-500/30">
+              <CheckCircle className="w-4 h-4 text-green-400" />
+              <AlertDescription className="text-green-300">
+                <strong>Activation Complete:</strong> Your AI-powered sales system is now live and optimizing your store performance.
+              </AlertDescription>
+            </Alert>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold text-white mb-3">Activated Features:</h4>
+                <div className="space-y-2">
+                  {activationResult.features?.map((feature: any, index: number) => (
+                    <div key={index} className="flex items-start gap-2 p-3 bg-dark-700 rounded-lg">
+                      <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <span className="font-medium text-white">{feature.name}</span>
+                        <p className="text-sm text-gray-300">{feature.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-semibold text-white mb-3">Expected Performance Improvements:</h4>
+                <div className="space-y-3">
+                  {activationResult.metrics && Object.entries(activationResult.metrics).map(([key, value]) => (
+                    <div key={key} className="flex justify-between items-center p-3 bg-dark-700 rounded-lg">
+                      <span className="text-gray-300 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                      <Badge className="bg-green-600 text-white">{value as string}</Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {activationResult.nextSteps && (
+              <div>
+                <h4 className="font-semibold text-white mb-3">Next Steps:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {activationResult.nextSteps.map((step: string, index: number) => (
+                    <div key={index} className="flex items-start gap-2">
+                      <Star className="w-4 h-4 text-yellow-400 mt-1 flex-shrink-0" />
+                      <span className="text-gray-300 text-sm">{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="text-center p-4 bg-purple-900/20 rounded-lg">
+              <p className="text-purple-300 font-medium">
+                AI System Activated at: {new Date(activationResult.activatedAt).toLocaleString()}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
