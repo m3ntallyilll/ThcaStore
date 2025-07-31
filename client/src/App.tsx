@@ -11,6 +11,7 @@ import { Footer } from "@/components/layout/footer";
 import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import { AIChat } from "@/components/ai/ai-chat";
+import { AISupport } from "@/components/support/ai-support";
 
 // Pages
 import Home from "@/pages/home";
@@ -63,6 +64,7 @@ function AppContent() {
       <Footer />
       <CartSidebar />
       <AIChat autoOpen={true} />
+      <AISupport />
       <ToastProvider />
     </div>
   );

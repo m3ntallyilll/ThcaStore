@@ -1080,6 +1080,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Customer Support Routes
+  app.post("/api/support/ai-chat", async (req, res) => {
+    try {
+      const { processAdvancedSupportRequest } = await import("./support-ai");
+      const supportResponse = processAdvancedSupportRequest(req.body);
+      
+      // Log support interaction
+      console.log(`[SUPPORT] User: ${req.body.userId || 'Anonymous'} | Category: ${supportResponse.category} | Priority: ${supportResponse.priority}`);
+      
+      res.json(supportResponse);
+    } catch (error: any) {
+      console.error('Support AI error:', error);
+      res.status(500).json({ 
+        response: "I apologize, but I'm experiencing technical difficulties. Please contact our human support team at support@thcastore.com or call (555) 123-THCA for immediate assistance.",
+        needsEscalation: true,
+        priority: 'urgent'
+      });
+    }
+  });
+
+  app.post("/api/support/feedback", async (req, res) => {
+    try {
+      const { messageId, satisfaction, ticketId } = req.body;
+      
+      // Log feedback for improvement
+      console.log(`[SUPPORT FEEDBACK] Message: ${messageId} | Satisfaction: ${satisfaction} | Ticket: ${ticketId}`);
+      
+      // In a real app, this would save to database
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('Support feedback error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/support/tickets", authenticateToken, async (req, res) => {
+    try {
+      // In a real app, this would fetch user's support tickets from database
+      const mockTickets = [
+        {
+          id: 'THCA-123',
+          subject: 'Order tracking inquiry',
+          status: 'resolved',
+          priority: 'medium',
+          createdAt: new Date(),
+          lastUpdate: new Date()
+        }
+      ];
+      res.json(mockTickets);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
