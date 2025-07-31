@@ -1,4 +1,4 @@
-import { storage } from "./database-storage";
+import { storage } from "./storage";
 
 // Seed script to create products matching actual inventory
 // 15 lbs sativa, 10 lbs indica, 5 lbs hybrid + 15K pre-rolls (5K infused)

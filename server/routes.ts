@@ -1418,6 +1418,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Temporary endpoint to seed inventory (remove authentication for testing)
+  app.post("/api/seed-inventory-now", async (req, res) => {
+    try {
+      const seedModule = await import('./seed-inventory');
+      const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
+      await seedInventoryProducts();
+      res.json({ 
+        message: "Inventory products seeded successfully",
+        details: "Added 30 lbs flower (15 sativa, 10 indica, 5 hybrid) + 15K pre-rolls (5K infused)"
+      });
+    } catch (error: any) {
+      console.error('Inventory seeding error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
