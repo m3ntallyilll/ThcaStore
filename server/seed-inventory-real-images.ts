@@ -924,6 +924,94 @@ const products: ProductWithImageData[] = [
     thcaContent: "26.8",
     strainType: "mixed",
     effects: ["varied", "balanced", "versatile", "premium"]
+  },
+
+  // Sour Lemon - Citrus sativa strain
+  {
+    name: "Sour Lemon - Mini Popcorn Buds (7g)",
+    description: "Premium mini popcorn buds of Sour Lemon THCA flower. Bright citrus flavors with energizing sativa effects. Perfect small buds with big flavor.",
+    price: "65.00",
+    category: "flower",
+    imageUrl: realImages.sourDiesel, // Using sour diesel image as placeholder for citrus strain
+    stock: 25,
+    weight: "7",
+    featured: true,
+    rating: "4.7",
+    thcaContent: "23.8",
+    strainType: "sativa",
+    effects: ["energetic", "uplifting", "citrusy", "focused"]
+  },
+  {
+    name: "Sour Lemon - Mini Popcorn Buds (14g)",
+    description: "Half ounce of Sour Lemon mini popcorn buds. Zesty lemon flavors with potent sativa effects in convenient small bud format.",
+    price: "120.00",
+    category: "flower",
+    imageUrl: realImages.sourDiesel,
+    stock: 18,
+    weight: "14",
+    featured: false,
+    rating: "4.7",
+    thcaContent: "23.8",
+    strainType: "sativa",
+    effects: ["energetic", "uplifting", "citrusy", "focused"]
+  },
+  {
+    name: "Sour Lemon - Mini Popcorn Buds (28g)",
+    description: "Full ounce of premium Sour Lemon mini popcorn buds. Consistent citrus flavors and energizing sativa effects in small, dense nuggets.",
+    price: "225.00",
+    category: "flower",
+    imageUrl: realImages.sourDiesel,
+    stock: 12,
+    weight: "28",
+    featured: false,
+    rating: "4.7",
+    thcaContent: "23.8",
+    strainType: "sativa",
+    effects: ["energetic", "uplifting", "citrusy", "focused"]
+  },
+
+  // Additional Sour Diesel Products
+  {
+    name: "Sour Diesel - Premium Smalls (14g)",
+    description: "Premium small buds of legendary Sour Diesel THCA flower. Same great genetics and potency in smaller, budget-friendly format.",
+    price: "145.00",
+    category: "flower",
+    imageUrl: realImages.sourDiesel,
+    stock: 22,
+    weight: "14",
+    featured: false,
+    rating: "4.5",
+    thcaContent: "24.8",
+    strainType: "sativa",
+    effects: ["energetic", "uplifting", "cerebral", "focused"]
+  },
+  {
+    name: "Sour Diesel - Premium Smalls (28g)",
+    description: "Full ounce of Sour Diesel premium small buds. Classic diesel flavors with energizing sativa effects at value pricing.",
+    price: "275.00",
+    category: "flower",
+    imageUrl: realImages.sourDiesel,
+    stock: 15,
+    weight: "28",
+    featured: false,
+    rating: "4.5",
+    thcaContent: "24.8",
+    strainType: "sativa",
+    effects: ["energetic", "uplifting", "cerebral", "focused"]
+  },
+  {
+    name: "Sour Diesel - Shake (28g)",
+    description: "Premium Sour Diesel shake from top-shelf flower. Perfect for rolling your own or making edibles. Great value with full potency.",
+    price: "150.00",
+    category: "flower",
+    imageUrl: realImages.sourDiesel,
+    stock: 30,
+    weight: "28",
+    featured: false,
+    rating: "4.3",
+    thcaContent: "22.5",
+    strainType: "sativa",
+    effects: ["energetic", "uplifting", "cerebral", "focused"]
   }
 ];
 
