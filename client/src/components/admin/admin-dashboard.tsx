@@ -60,6 +60,10 @@ export function AdminDashboard() {
   const [selectedOrder, setSelectedOrder] = useState<OrderWithDetails | null>(null);
   const [orderSearch, setOrderSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   // Fetch admin stats
   const { data: stats } = useQuery<AdminStats>({
@@ -101,15 +105,84 @@ export function AdminDashboard() {
     },
   });
 
+    // Create product mutation
+    const createProductMutation = useMutation({
+      mutationFn: async (productData: Omit<Product, 'id'>) => {
+        const response = await apiRequest('POST', '/api/products', productData);
+        return response.json();
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+        setIsProductDialogOpen(false);
+        toast({
+          title: "Product Created",
+          description: "Product has been created successfully.",
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to create product.",
+          variant: "destructive",
+        });
+      },
+    });
+  
+    // Update product mutation
+    const updateProductMutation = useMutation({
+      mutationFn: async ({ id, productData }: { id: string; productData: Omit<Product, 'id'> }) => {
+        const response = await apiRequest('PATCH', `/api/products/${id}`, productData);
+        return response.json();
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+        setIsProductDialogOpen(false);
+        toast({
+          title: "Product Updated",
+          description: "Product has been updated successfully.",
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to update product.",
+          variant: "destructive",
+        });
+      },
+    });
+  
+    // Delete product mutation
+    const deleteProductMutation = useMutation({
+      mutationFn: async (id: string) => {
+        const response = await apiRequest('DELETE', `/api/products/${id}`);
+        return response.json();
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+        setIsDeleteDialogOpen(false);
+        toast({
+          title: "Product Deleted",
+          description: "Product has been deleted successfully.",
+        });
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to delete product.",
+          variant: "destructive",
+        });
+      },
+    });
+
   // Filter orders
   const filteredOrders = orders.filter(order => {
     const matchesSearch = orderSearch === '' || 
       order.id.toLowerCase().includes(orderSearch.toLowerCase()) ||
       order.shippingName.toLowerCase().includes(orderSearch.toLowerCase()) ||
       order.shippingEmail.toLowerCase().includes(orderSearch.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -193,6 +266,90 @@ export function AdminDashboard() {
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? 'Updating...' : 'Update Order'}
+          </Button>
+        </div>
+      </form>
+    );
+  };
+
+  const ProductForm = ({ product, onSubmit, isLoading }: {
+    product?: Product | null;
+    onSubmit: (productData: Omit<Product, 'id'>) => void;
+    isLoading: boolean;
+  }) => {
+    const [name, setName] = useState(product?.name || '');
+    const [description, setDescription] = useState(product?.description || '');
+    const [price, setPrice] = useState(product?.price || 0);
+    const [stock, setStock] = useState(product?.stock || 0);
+    const [category, setCategory] = useState(product?.category || '');
+    const [imageUrl, setImageUrl] = useState(product?.imageUrl || '');
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      onSubmit({ name, description, price, stock, category, imageUrl });
+    };
+
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <Label htmlFor="name">Product Name</Label>
+          <Input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter product name"
+          />
+        </div>
+        <div>
+          <Label htmlFor="description">Description</Label>
+          <Input
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter product description"
+          />
+        </div>
+        <div>
+          <Label htmlFor="price">Price</Label>
+          <Input
+            id="price"
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(Number(e.target.value))}
+            placeholder="Enter product price"
+          />
+        </div>
+        <div>
+          <Label htmlFor="stock">Stock</Label>
+          <Input
+            id="stock"
+            type="number"
+            value={stock}
+            onChange={(e) => setStock(Number(e.target.value))}
+            placeholder="Enter product stock"
+          />
+        </div>
+        <div>
+          <Label htmlFor="category">Category</Label>
+          <Input
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="Enter product category"
+          />
+        </div>
+        <div>
+          <Label htmlFor="imageUrl">Image URL</Label>
+          <Input
+            id="imageUrl"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+            placeholder="Enter product image URL"
+          />
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </form>
@@ -342,7 +499,13 @@ export function AdminDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>Product Management</CardTitle>
-                  <Button className="bg-gold text-black hover:bg-gold-600">
+                  <Button 
+                    className="bg-gold text-black hover:bg-gold-600"
+                    onClick={() => {
+                      setSelectedProduct(null);
+                      setIsProductDialogOpen(true);
+                    }}
+                  >
                     <Plus className="w-4 h-4 mr-2" />
                     Add Product
                   </Button>
@@ -397,6 +560,10 @@ export function AdminDashboard() {
                                 variant="ghost"
                                 size="icon"
                                 className="text-blue-400 hover:text-blue-300"
+                                onClick={() => {
+                                  setSelectedProduct(product);
+                                  setIsProductDialogOpen(true);
+                                }}
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -404,6 +571,10 @@ export function AdminDashboard() {
                                 variant="ghost"
                                 size="icon"
                                 className="text-red-400 hover:text-red-300"
+                                onClick={() => {
+                                  setProductToDelete(product);
+                                  setIsDeleteDialogOpen(true);
+                                }}
                               >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
@@ -416,6 +587,61 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Product Edit/Create Dialog */}
+            <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>
+                    {selectedProduct ? 'Edit Product' : 'Create New Product'}
+                  </DialogTitle>
+                </DialogHeader>
+                <ProductForm
+                  product={selectedProduct}
+                  onSubmit={(productData) => {
+                    if (selectedProduct) {
+                      updateProductMutation.mutate({ id: selectedProduct.id, productData });
+                    } else {
+                      createProductMutation.mutate(productData);
+                    }
+                  }}
+                  isLoading={createProductMutation.isPending || updateProductMutation.isPending}
+                />
+              </DialogContent>
+            </Dialog>
+
+            {/* Product Delete Confirmation Dialog */}
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete Product</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <p className="text-gray-300">
+                    Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
+                  </p>
+                  <div className="flex justify-end gap-2">
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setIsDeleteDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => {
+                        if (productToDelete) {
+                          deleteProductMutation.mutate(productToDelete.id);
+                        }
+                      }}
+                      disabled={deleteProductMutation.isPending}
+                    >
+                      {deleteProductMutation.isPending ? 'Deleting...' : 'Delete'}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           )}
 
           {/* Order Management Section */}
@@ -549,7 +775,7 @@ export function AdminDashboard() {
                                     />
                                   </DialogContent>
                                 </Dialog>
-                                
+
                                 <div className="text-xs text-gray-500 space-y-1">
                                   <p>Subtotal: ${parseFloat(order.subtotal).toFixed(2)}</p>
                                   <p>Shipping: ${parseFloat(order.shippingCost).toFixed(2)}</p>
