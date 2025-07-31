@@ -341,7 +341,7 @@ export function AdminDashboard() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter product name"
-            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
+            className="bg-[#000000] border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
@@ -351,7 +351,7 @@ export function AdminDashboard() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter product description"
-            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
+            className="bg-[#000000] border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
@@ -362,7 +362,7 @@ export function AdminDashboard() {
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
             placeholder="Enter product price"
-            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
+            className="bg-[#000000] border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
@@ -373,7 +373,7 @@ export function AdminDashboard() {
             value={stock}
             onChange={(e) => setStock(Number(e.target.value))}
             placeholder="Enter product stock"
-            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
+            className="bg-[#000000] border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
@@ -383,7 +383,7 @@ export function AdminDashboard() {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             placeholder="Enter product category"
-            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
+            className="bg-[#000000] border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
@@ -393,7 +393,7 @@ export function AdminDashboard() {
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="Enter product image URL"
-            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
+            className="bg-[#000000] border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div className="flex justify-end gap-2">
