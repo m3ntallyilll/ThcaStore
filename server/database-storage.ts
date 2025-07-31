@@ -405,8 +405,27 @@ export class DatabaseStorage {
   }
 
   // Cart methods
-  async getCartItems(userId: string): Promise<CartItem[]> {
-    return await db.select().from(cartItems).where(eq(cartItems.userId, userId));
+  async getCartItems(userId: string): Promise<(CartItem & { product: Product })[]> {
+    const result = await db.select({
+      id: cartItems.id,
+      userId: cartItems.userId,
+      productId: cartItems.productId,
+      quantity: cartItems.quantity,
+      createdAt: cartItems.createdAt,
+      product: products
+    })
+    .from(cartItems)
+    .innerJoin(products, eq(cartItems.productId, products.id))
+    .where(eq(cartItems.userId, userId));
+
+    return result.map(item => ({
+      id: item.id,
+      userId: item.userId,
+      productId: item.productId,
+      quantity: item.quantity,
+      createdAt: item.createdAt,
+      product: item.product
+    }));
   }
 
   async addToCart(insertCartItem: InsertCartItem): Promise<CartItem> {

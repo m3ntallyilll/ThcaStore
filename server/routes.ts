@@ -9,7 +9,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
 }
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-07-30.basil",
 }) : null;
 import { 
   insertUserSchema, 
@@ -281,7 +281,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           orderId: order.id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          price: cartItem.product.price,
+          price: parseFloat(cartItem.product.price),
         });
       }
       
