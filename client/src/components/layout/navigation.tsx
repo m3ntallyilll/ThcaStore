@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { AuthModal } from '../auth/auth-modal';
-import { HempLeafIcon } from '@/components/ui/hemp-leaf-icon';
+import { SmokeIcon } from '@/components/ui/smoke-icon';
 
 export function Navigation() {
   const [location] = useLocation();
@@ -30,7 +30,7 @@ export function Navigation() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
               <Link href="/" className="text-2xl font-display font-bold text-glow-green-400 glow-effect">
-                <HempLeafIcon className="inline w-6 h-6 mr-2 text-glow-green-400" />
+                <SmokeIcon className="inline w-6 h-6 mr-2 text-glow-green-400" />
                 THCA Store
               </Link>
               <div className="hidden md:flex space-x-6">
