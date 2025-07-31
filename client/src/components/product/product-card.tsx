@@ -49,7 +49,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
       case 'flower':
         return 'bg-cannabis text-white';
       case 'concentrates':
-        return 'bg-gold text-black';
+        return 'bg-glow-green-500 text-black';
       case 'edibles':
         return 'bg-purple-500 text-white';
       case 'accessories':
@@ -95,7 +95,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
       </div>
       
       <div className="p-6">
-        <h3 className="text-xl font-semibold mb-2 group-hover:text-gold transition-colors duration-300">
+        <h3 className="text-xl font-semibold mb-2 group-hover:text-glow-green-400 transition-colors duration-300">
           {product.name}
         </h3>
         <p className="text-gray-400 text-sm mb-3 line-clamp-2">
@@ -103,10 +103,10 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         </p>
         
         <div className="flex items-center justify-between mb-4">
-          <span className="text-2xl font-bold text-gold">
+          <span className="text-2xl font-bold text-glow-green-400 glow-effect">
             ${product.price}
           </span>
-          <div className="flex items-center text-yellow-400">
+          <div className="flex items-center text-glow-green-400">
             <Star className="w-4 h-4 fill-current mr-1" />
             <span className="text-sm">{product.rating}</span>
           </div>
@@ -120,7 +120,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         
         <Button
           onClick={handleAddToCart}
-          className="w-full bg-gradient-to-r from-cannabis to-cannabis-600 hover:from-cannabis-600 hover:to-cannabis text-white py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-cannabis/30 transition-all duration-300"
+          className="w-full button-glow text-black py-3 rounded-xl font-semibold transition-all duration-300"
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
           Add to Cart

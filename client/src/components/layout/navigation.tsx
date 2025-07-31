@@ -74,7 +74,7 @@ export function Navigation() {
               >
                 <ShoppingCart className="w-5 h-5" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-gold text-black rounded-full w-5 h-5 text-xs flex items-center justify-center font-semibold">
+                  <span className="absolute -top-1 -right-1 bg-glow-green-500 text-black rounded-full w-5 h-5 text-xs flex items-center justify-center font-semibold glow-effect">
                     {totalItems}
                   </span>
                 )}
@@ -107,28 +107,28 @@ export function Navigation() {
               <div className="flex flex-col space-y-2">
                 <Link
                   href="/products"
-                  className="block px-3 py-2 hover:text-gold transition-colors"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Products
                 </Link>
                 <Link
                   href="/blog"
-                  className="block px-3 py-2 hover:text-gold transition-colors"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Blog
                 </Link>
                 <a
                   href="#about"
-                  className="block px-3 py-2 hover:text-gold transition-colors"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   About
                 </a>
                 <a
                   href="#contact"
-                  className="block px-3 py-2 hover:text-gold transition-colors"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Contact

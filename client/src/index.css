@@ -13,24 +13,26 @@
   --card-foreground: hsl(20, 14.3%, 4.1%);
   --border: hsl(20, 5.9%, 90%);
   --input: hsl(20, 5.9%, 90%);
-  --primary: hsl(45, 93%, 54%);
-  --primary-foreground: hsl(26, 83%, 14%);
-  --secondary: hsl(60, 4.8%, 95.9%);
-  --secondary-foreground: hsl(24, 9.8%, 10%);
-  --accent: hsl(60, 4.8%, 95.9%);
-  --accent-foreground: hsl(24, 9.8%, 10%);
+  --primary: hsl(120, 100%, 50%);
+  --primary-foreground: hsl(120, 100%, 10%);
+  --secondary: hsl(115, 40%, 20%);
+  --secondary-foreground: hsl(120, 80%, 90%);
+  --accent: hsl(125, 60%, 35%);
+  --accent-foreground: hsl(120, 100%, 95%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(60, 9.1%, 97.8%);
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* THCA Store Theme Colors */
-  --gold-400: hsl(45, 93%, 54%);
-  --gold-500: hsl(45, 85%, 47%);
-  --gold-600: hsl(45, 77%, 40%);
-  --cannabis-400: hsl(118, 35%, 50%);
-  --cannabis-500: hsl(118, 50%, 25%);
-  --cannabis-600: hsl(118, 65%, 15%);
+  /* THCA Store Theme Colors - Stoner Green Glow */
+  --glow-green-300: hsl(120, 100%, 75%);
+  --glow-green-400: hsl(120, 100%, 65%);
+  --glow-green-500: hsl(120, 100%, 50%);
+  --glow-green-600: hsl(120, 80%, 40%);
+  --glow-green-700: hsl(120, 70%, 30%);
+  --cannabis-400: hsl(118, 60%, 55%);
+  --cannabis-500: hsl(118, 70%, 35%);
+  --cannabis-600: hsl(118, 80%, 25%);
   --dark-900: hsl(0, 0%, 4%);
   --dark-800: hsl(0, 0%, 10%);
   --dark-700: hsl(0, 0%, 16%);
@@ -47,8 +49,8 @@
   --card-foreground: hsl(0, 0%, 98%);
   --border: hsl(0, 0%, 16%);
   --input: hsl(0, 0%, 16%);
-  --primary: hsl(45, 93%, 54%);
-  --primary-foreground: hsl(26, 83%, 14%);
+  --primary: hsl(120, 100%, 50%);
+  --primary-foreground: hsl(120, 100%, 10%);
   --secondary: hsl(0, 0%, 10%);
   --secondary-foreground: hsl(0, 0%, 98%);
   --accent: hsl(0, 0%, 10%);
@@ -95,28 +97,46 @@
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
   
-  .text-gold {
-    color: var(--gold-400);
+  .text-glow-green {
+    color: var(--glow-green-400);
+    text-shadow: 0 0 10px var(--glow-green-400);
   }
   
   .text-cannabis {
     color: var(--cannabis-400);
   }
   
-  .bg-gold {
-    background-color: var(--gold-500);
+  .bg-glow-green {
+    background-color: var(--glow-green-500);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
   }
   
   .bg-cannabis {
     background-color: var(--cannabis-500);
   }
   
-  .border-gold {
-    border-color: var(--gold-500);
+  .border-glow-green {
+    border-color: var(--glow-green-500);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
   }
   
   .border-cannabis {
     border-color: var(--cannabis-500);
+  }
+  
+  .glow-effect {
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+  }
+  
+  .button-glow {
+    background: linear-gradient(135deg, var(--glow-green-500), var(--glow-green-600));
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3), 0 0 20px rgba(0, 255, 0, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .button-glow:hover {
+    box-shadow: 0 6px 20px rgba(0, 255, 0, 0.4), 0 0 30px rgba(0, 255, 0, 0.2);
+    transform: translateY(-2px);
   }
 }
 

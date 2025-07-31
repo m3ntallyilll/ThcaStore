@@ -216,10 +216,10 @@ export function AdminDashboard() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-500/20 text-yellow-300';
-      case 'processing': return 'bg-blue-500/20 text-blue-300';
-      case 'shipped': return 'bg-purple-500/20 text-purple-300';
-      case 'delivered': return 'bg-green-500/20 text-green-300';
+      case 'pending': return 'bg-glow-green-500/20 text-glow-green-300';
+      case 'processing': return 'bg-cannabis-500/20 text-cannabis-400';
+      case 'shipped': return 'bg-glow-green-600/20 text-glow-green-400';
+      case 'delivered': return 'bg-glow-green-500/30 text-glow-green-300';
       case 'cancelled': return 'bg-red-500/20 text-red-300';
       default: return 'bg-gray-500/20 text-gray-300';
     }

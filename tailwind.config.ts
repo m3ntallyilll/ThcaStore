@@ -51,6 +51,18 @@ export default {
           "4": "var(--chart-4)",
           "5": "var(--chart-5)",
         },
+        "glow-green": {
+          "300": "var(--glow-green-300)",
+          "400": "var(--glow-green-400)", 
+          "500": "var(--glow-green-500)",
+          "600": "var(--glow-green-600)",
+          "700": "var(--glow-green-700)",
+        },
+        "cannabis": {
+          "400": "var(--cannabis-400)",
+          "500": "var(--cannabis-500)",
+          "600": "var(--cannabis-600)",
+        },
         sidebar: {
           DEFAULT: "var(--sidebar-background)",
           foreground: "var(--sidebar-foreground)",
