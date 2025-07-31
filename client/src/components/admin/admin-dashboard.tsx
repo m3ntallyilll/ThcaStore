@@ -72,7 +72,14 @@ export function AdminDashboard() {
   // Fetch admin stats
   const { data: stats } = useQuery<AdminStats>({
     queryKey: ['/api/admin/stats'],
-    enabled: user?.isAdmin,
+    enabled: !!user?.isAdmin && !!localStorage.getItem('authToken'),
+    retry: (failureCount, error: any) => {
+      // Don't retry auth errors
+      if (error?.message?.includes('401') || error?.message?.includes('403')) {
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   // Fetch products for admin
@@ -84,7 +91,14 @@ export function AdminDashboard() {
   // Fetch orders with full details
   const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ['/api/admin/orders'],
-    enabled: user?.isAdmin,
+    enabled: !!user?.isAdmin && !!localStorage.getItem('authToken'),
+    retry: (failureCount, error: any) => {
+      // Don't retry auth errors
+      if (error?.message?.includes('401') || error?.message?.includes('403')) {
+        return false;
+      }
+      return failureCount < 1;
+    },
   });
 
   // Update order status mutation

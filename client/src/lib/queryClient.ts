@@ -44,7 +44,10 @@ export async function apiRequest(
     await throwIfResNotOk(res);
     return await res.json();
   } catch (error) {
-    console.error('API Request Error:', error);
+    // Only log non-auth errors to reduce console spam
+    if (!(error instanceof Error && (error.message.includes('401') || error.message.includes('403')))) {
+      console.error('API Request Error:', error);
+    }
     if (error instanceof Error && error.message.includes('401')) {
       throw new Error('Authentication required - please log in again');
     }
@@ -130,7 +133,10 @@ export async function apiRequest2(method: string, endpoint: string, data?: any) 
     const response = await fetch(`${API_BASE}${endpoint}`, config);
     return response;
   } catch (error) {
-    console.error('API Request Error:', error);
+    // Only log non-auth errors to reduce console spam
+    if (!(error instanceof Error && (error.message.includes('401') || error.message.includes('403')))) {
+      console.error('API Request Error:', error);
+    }
     throw new Error('Network error - please check your connection');
   }
 }
