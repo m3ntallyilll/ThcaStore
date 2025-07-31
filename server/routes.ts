@@ -1018,6 +1018,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Daily Promotions Routes
+  app.get("/api/promotions/today", async (req, res) => {
+    try {
+      const today = new Date().getDay();
+      const promotions = await storage.getDailyPromotionsByDay(today);
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/promotions/week", async (req, res) => {
+    try {
+      const promotions = await storage.getDailyPromotions();
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/promotions/day/:dayOfWeek", async (req, res) => {
+    try {
+      const dayOfWeek = parseInt(req.params.dayOfWeek);
+      if (isNaN(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
+        return res.status(400).json({ message: "Invalid day of week" });
+      }
+      const promotions = await storage.getDailyPromotionsByDay(dayOfWeek);
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/promotions/use", authenticateToken, async (req, res) => {
+    try {
+      const { promotionId } = req.body;
+      const userId = req.user.id;
+      
+      // Check if promotion exists and is valid for today
+      const promotion = await storage.getDailyPromotion(promotionId);
+      if (!promotion) {
+        return res.status(404).json({ message: "Promotion not found" });
+      }
+
+      const today = new Date().getDay();
+      if (promotion.dayOfWeek !== today) {
+        return res.status(400).json({ message: "Promotion not valid today" });
+      }
+
+      // Record promotion usage
+      const usage = await storage.recordPromotionUsage({
+        promotionId,
+        userId,
+        usedAt: new Date().toISOString()
+      });
+
+      res.json(usage);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

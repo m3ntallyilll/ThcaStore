@@ -117,6 +117,6 @@ export async function seedDailyPromotions() {
 }
 
 // Run if called directly
-if (require.main === module) {
+if (import.meta.url === `file://${process.argv[1]}`) {
   seedDailyPromotions().then(() => process.exit(0));
 }

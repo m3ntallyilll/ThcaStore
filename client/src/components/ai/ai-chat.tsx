@@ -321,17 +321,18 @@ How can I help you today? I can:
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <Card className="h-full glass-dark border-gold/20 shadow-2xl overflow-hidden">
-              {/* Header */}
-              <div className="bg-gradient-to-r from-gold via-gold-600 to-cannabis p-4 text-black">
-                <div className="flex items-center justify-between">
+            <Card className="h-full glass-dark border-gold/20 shadow-2xl overflow-hidden backdrop-blur-lg bg-black/40">
+              {/* Enhanced Header */}
+              <div className="bg-gradient-to-r from-green-500 via-green-400 to-gold p-4 text-black relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" />
+                <div className="flex items-center justify-between relative z-10">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-black/20 rounded-full flex items-center justify-center">
-                      <Sparkles className="w-5 h-5" />
+                    <div className="w-12 h-12 bg-black/30 rounded-full flex items-center justify-center border-2 border-black/20 shadow-lg">
+                      <Sparkles className="w-6 h-6 text-gold animate-pulse" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg">THCA Expert AI</h3>
-                      <p className="text-xs opacity-80">Your Personal Cannabis Guide</p>
+                      <h3 className="font-bold text-xl">🌿 THCA Expert AI</h3>
+                      <p className="text-sm opacity-90 font-medium">Your Personal Cannabis Guide & Daily Deals Assistant</p>
                     </div>
                   </div>
                   <Button
@@ -347,7 +348,7 @@ How can I help you today? I can:
 
               {/* Messages */}
               <CardContent className="flex flex-col h-[450px] p-0">
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
                   {messages.map((msg) => (
                     <motion.div
                       key={msg.id}
@@ -396,7 +397,7 @@ How can I help you today? I can:
                                   variant="outline"
                                   size="sm"
                                   onClick={() => onProductRecommendation?.(productId)}
-                                  className="text-xs border-cannabis/30 hover:bg-cannabis/10"
+                                  className="text-xs border-cannabis/30 hover:bg-cannabis/10 bg-[#000000]"
                                 >
                                   View Product #{productId.slice(-4)}
                                 </Button>
@@ -485,7 +486,7 @@ How can I help you today? I can:
                   </div>
 
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {['Show me deals', 'Best flower strains', 'My reward points', 'Product recommendations'].map((suggestion) => (
+                    {['Today\'s deals', 'Best flower strains', 'My reward points', 'Daily promotions', 'Product recommendations'].map((suggestion) => (
                       <Button
                         key={suggestion}
                         variant="outline"
@@ -494,7 +495,7 @@ How can I help you today? I can:
                           setInputMessage(suggestion);
                           setTimeout(sendMessage, 100);
                         }}
-                        className="text-xs border-white/20 hover:bg-white/5 text-gray-300"
+                        className="text-xs border-white/20 hover:bg-white/5 text-gray-300 bg-[#000000]"
                         disabled={isLoading}
                       >
                         {suggestion}
