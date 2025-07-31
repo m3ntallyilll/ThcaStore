@@ -171,6 +171,34 @@ export function AISalesStrategy() {
     ]
   };
 
+  const activateStrategy = async (strategyId: string) => {
+    try {
+      setIsActivating(true);
+      const response = await apiRequest2('POST', '/api/ai/activate-sales', { strategyId });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          toast({
+            title: "AI Sales Strategy Activated!",
+            description: "Your sales optimization is now live and driving conversions.",
+          });
+          setActivationResult(data);
+        }
+      } else {
+        throw new Error('Failed to activate strategy');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Activation Failed",
+        description: error.message || "Failed to activate sales strategy",
+        variant: "destructive",
+      });
+    } finally {
+      setIsActivating(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header */}
@@ -347,7 +375,7 @@ export function AISalesStrategy() {
               <div className="text-sm text-gray-400">ROI Achieved</div>
             </div>
           </div>
-          
+
           <Alert className="bg-green-900/20 border-green-500/30">
             <CheckCircle className="w-4 h-4 text-green-400" />
             <AlertDescription className="text-green-300">
