@@ -74,6 +74,7 @@ export class MemStorage implements IStorage {
         category: "flower",
         imageUrl: "https://images.unsplash.com/photo-1560718547-8c2234c7d1c4?w=400",
         stock: 23,
+        weight: "0.22",
         featured: true,
         rating: "4.8",
         thcaContent: "28.5",
@@ -89,6 +90,7 @@ export class MemStorage implements IStorage {
         category: "concentrates",
         imageUrl: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
         stock: 12,
+        weight: "0.03",
         featured: true,
         rating: "4.9",
         thcaContent: "99.2",
@@ -104,6 +106,7 @@ export class MemStorage implements IStorage {
         category: "edibles",
         imageUrl: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400",
         stock: 45,
+        weight: "0.006",
         featured: false,
         rating: "4.7",
         thcaContent: "10.0",
@@ -119,6 +122,7 @@ export class MemStorage implements IStorage {
         category: "accessories",
         imageUrl: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400",
         stock: 18,
+        weight: "0.25",
         featured: false,
         rating: "4.6",
         thcaContent: null,
@@ -186,7 +190,7 @@ export class MemStorage implements IStorage {
       rating: insertProduct.rating ?? "0",
       thcaContent: insertProduct.thcaContent ?? null,
       strainType: insertProduct.strainType ?? null,
-      effects: insertProduct.effects ?? null,
+      effects: Array.isArray(insertProduct.effects) ? insertProduct.effects : null,
       createdAt: new Date() 
     };
     this.products.set(id, product);
@@ -200,7 +204,7 @@ export class MemStorage implements IStorage {
     const updatedProduct = { 
       ...product, 
       ...updates,
-      effects: updates.effects !== undefined ? updates.effects : product.effects
+      effects: updates.effects !== undefined ? (Array.isArray(updates.effects) ? updates.effects : null) : product.effects
     };
     this.products.set(id, updatedProduct);
     return updatedProduct;
@@ -295,7 +299,7 @@ export class MemStorage implements IStorage {
     const order: Order = { 
       ...insertOrder,
       id,
-      status: insertOrder.status || "pending",
+      status: insertOrder.status ?? "pending",
       shippingAddress: insertOrder.shippingAddress || null,
       createdAt: new Date() 
     };
