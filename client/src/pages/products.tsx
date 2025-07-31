@@ -135,7 +135,6 @@ export default function Products() {
           </motion.div>
         </div>
       </section>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {/* Search and Filter Bar */}
         <motion.div
@@ -362,7 +361,6 @@ export default function Products() {
           </motion.div>
         )}
       </div>
-
       {/* Product Modal */}
       <ProductModal
         product={selectedProduct}
