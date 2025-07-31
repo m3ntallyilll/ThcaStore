@@ -258,6 +258,7 @@ export class MemStorage implements IStorage {
       ...insertProduct,
       id,
       stock: insertProduct.stock ?? 0,
+      weight: insertProduct.weight ?? null,
       featured: insertProduct.featured ?? false,
       rating: insertProduct.rating ?? "0",
       thcaContent: insertProduct.thcaContent ?? null,
@@ -379,6 +380,10 @@ export class MemStorage implements IStorage {
       ...insertOrder,
       id,
       status: insertOrder.status || "pending",
+      shippingCost: insertOrder.shippingCost || "0.00",
+      shippingMethod: insertOrder.shippingMethod || "standard",
+      trackingNumber: insertOrder.trackingNumber || null,
+      paymentStatus: insertOrder.paymentStatus || "pending",
       shippingAddress: insertOrder.shippingAddress || "",
       createdAt: new Date() 
     };
@@ -481,10 +486,13 @@ export class MemStorage implements IStorage {
     // Initialize AI sales strategy as activated by default
     // This ensures the AI features and inventory remain persistent across restarts
     try {
-      const seedModule = await import('./seed-inventory-updated');
+      // Set up global storage reference for seed functions
+      (global as any).storage = this;
+      
+      const seedModule = await import('./seed-inventory-real-images');
       const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
       await seedInventoryProducts();
-      console.log('✓ AI Sales Strategy activated with full inventory');
+      console.log('✓ AI Sales Strategy activated with real professional images');
     } catch (error) {
       console.log('AI Sales Strategy initialization skipped:', error);
     }

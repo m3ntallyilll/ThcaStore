@@ -838,10 +838,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Seed inventory products when activating AI sales
       try {
-        const seedModule = await import('./seed-inventory');
+        const seedModule = await import('./seed-inventory-real-images');
         const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
         await seedInventoryProducts();
-        console.log('Successfully seeded inventory products');
+        console.log('Successfully seeded inventory products with real images');
       } catch (seedError) {
         console.log('Product seeding skipped (products may already exist):', seedError.message);
       }
@@ -1471,7 +1471,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Temporary endpoint to seed inventory (remove authentication for testing)
   app.post("/api/seed-inventory-now", async (req, res) => {
     try {
-      const seedModule = await import('./seed-inventory');
+      const seedModule = await import('./seed-inventory-real-images');
       const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
       await seedInventoryProducts();
       res.json({ 
@@ -1484,6 +1484,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Set up global storage for seed functions
+  (global as any).storage = storage;
+  
   const httpServer = createServer(app);
   return httpServer;
 }
