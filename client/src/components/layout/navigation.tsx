@@ -44,10 +44,12 @@ export function Navigation() {
                   <span className="text-xs bg-red-600 px-2 py-1 rounded animate-pulse">HOT</span>
                   Daily Deals
                 </Link>
-                <Link href="/ai-sales" className="hover:text-glow-green-400 transition-colors duration-300 flex items-center gap-1">
-                  <span className="text-xs bg-purple-600 px-2 py-1 rounded">AI</span>
-                  Sales Strategy
-                </Link>
+                {user?.isAdmin && (
+                  <Link href="/ai-sales" className="hover:text-glow-green-400 transition-colors duration-300 flex items-center gap-1">
+                    <span className="text-xs bg-purple-600 px-2 py-1 rounded">AI</span>
+                    Sales Strategy
+                  </Link>
+                )}
                 <Link href="/rewards" className="hover:text-glow-green-400 transition-colors duration-300">
                   Rewards
                 </Link>
@@ -131,6 +133,31 @@ export function Navigation() {
                 >
                   Blog
                 </Link>
+                <Link
+                  href="/daily-deals"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors flex items-center gap-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span className="text-xs bg-red-600 px-2 py-1 rounded animate-pulse">HOT</span>
+                  Daily Deals
+                </Link>
+                {user?.isAdmin && (
+                  <Link
+                    href="/ai-sales"
+                    className="block px-3 py-2 hover:text-glow-green-400 transition-colors flex items-center gap-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <span className="text-xs bg-purple-600 px-2 py-1 rounded">AI</span>
+                    Sales Strategy
+                  </Link>
+                )}
+                <Link
+                  href="/rewards"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Rewards
+                </Link>
                 <a
                   href="#about"
                   className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
@@ -138,6 +165,13 @@ export function Navigation() {
                 >
                   About
                 </a>
+                <Link
+                  href="/returns"
+                  className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Returns
+                </Link>
                 <a
                   href="#contact"
                   className="block px-3 py-2 hover:text-glow-green-400 transition-colors"
