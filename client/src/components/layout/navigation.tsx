@@ -25,7 +25,7 @@ export function Navigation() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 glass-dark border-b border-glow-green-500/20">
+      <nav className="fixed top-0 w-full z-50 glass-dark border-b border-glow-green-500/20" style={{ position: 'relative' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">

@@ -70,15 +70,22 @@ export const useAuth = create<AuthState>()(
 
       checkAuth: async () => {
         const token = localStorage.getItem('authToken');
-        if (!token) return;
+        if (!token) {
+            set({ user: null, token: null });
+            return;
+        }
 
         try {
           const user = await apiRequest('/api/auth/me', {
-            method: 'GET'
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
           });
           set({ user, token });
-        } catch (error) {
-          // Token is invalid, clear it
+        } catch (error: any) {
+          // Token is invalid or expired, clear it
           localStorage.removeItem('authToken');
           set({ user: null, token: null });
         }

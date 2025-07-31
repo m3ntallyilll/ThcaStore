@@ -3,7 +3,18 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req: any, res, buf) => {
+    try {
+      JSON.parse(buf.toString());
+    } catch (e) {
+      console.error('JSON Parse Error:', e.message);
+      res.status(400).json({ message: 'Invalid JSON in request body' });
+      return;
+    }
+  }
+}));
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {

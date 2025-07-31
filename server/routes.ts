@@ -653,6 +653,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Sales Activation Route
   app.post("/api/ai/activate-sales", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
+      // Validate request body
+      if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ message: "Invalid request body" });
+      }
+      
       const { strategyId } = req.body;
       
       // AI activation targeting actual inventory: 30 lbs flower + 15K pre-rolls
