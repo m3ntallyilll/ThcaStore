@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
+import { apiRequest } from '@/lib/queryClient';
 
 interface ChatMessage {
   id: string;
@@ -96,23 +97,14 @@ How can I help you today? I can:
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/ai/chat', {
+      const data = await apiRequest('/api/ai/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+        body: {
           message: messageToSend,
           sessionId,
           userId: user?.id
-        })
+        }
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
 
       const aiMessage: ChatMessage = {
         id: `ai_${Date.now()}`,
