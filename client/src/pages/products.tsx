@@ -129,7 +129,7 @@ export default function Products() {
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 from-gold via-white to-cannabis bg-clip-text text-transparent bg-[#4cff4c]">
               Premium Collection
             </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+            <p className="text-xl max-w-3xl mx-auto mb-8 text-[#4cff4c]">
               Expertly crafted THCA products designed to elevate your experience with uncompromising quality and purity
             </p>
           </motion.div>
