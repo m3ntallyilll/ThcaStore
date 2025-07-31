@@ -443,6 +443,9 @@ export class MemStorage implements IStorage {
       { id: '2', method: 'express', name: 'Express Shipping', baseRate: '19.99', estimatedDays: '2-3 days' }
     ];
     sampleRates.forEach(rate => this.shippingRates.set(rate.id, rate));
+
+    // Initialize AI sales strategy as activated by default
+    await this.initializeAISalesStrategy();
   }
 
   private async initializeAdminUser(): Promise<void> {
@@ -467,6 +470,19 @@ export class MemStorage implements IStorage {
 
     this.users.set(adminUser.id, adminUser);
     console.log('✓ Default admin user created: admin@thca-store.com / admin123');
+  }
+
+  private async initializeAISalesStrategy(): Promise<void> {
+    // Initialize AI sales strategy as activated by default
+    // This ensures the AI features and inventory remain persistent across restarts
+    try {
+      const seedModule = await import('./seed-inventory');
+      const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
+      await seedInventoryProducts();
+      console.log('✓ AI Sales Strategy activated with full inventory');
+    } catch (error) {
+      console.log('AI Sales Strategy initialization skipped:', error);
+    }
   }
 
   // Rewards and Loyalty System
