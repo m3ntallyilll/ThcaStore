@@ -443,7 +443,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/referrals", authenticateToken, async (req: any, res) => {
     try {
-      const referralCode = `${req.user.username.toUpperCase().slice(0, 4)}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      // Generate a truly unique referral code with collision detection
+      let referralCode: string;
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      do {
+        // Create a more robust unique code: USER prefix + timestamp + random
+        const userPrefix = req.user.username ? req.user.username.toUpperCase().slice(0, 3) : 'USR';
+        const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+        const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
+        referralCode = `${userPrefix}${timestamp}${randomPart}`;
+        
+        // Check if code already exists
+        const existingReferral = await storage.getReferralByCode(referralCode);
+        if (!existingReferral) {
+          break; // Code is unique, exit loop
+        }
+        
+        attempts++;
+      } while (attempts < maxAttempts);
+      
+      if (attempts >= maxAttempts) {
+        return res.status(500).json({ message: "Unable to generate unique referral code. Please try again." });
+      }
 
       const referral = await storage.createReferral({
         referrerId: req.user.id,
@@ -455,6 +478,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.status(201).json(referral);
     } catch (error: any) {
+      if (error.message?.includes('unique constraint') || error.code === '23505') {
+        return res.status(409).json({ message: "Referral code collision detected. Please try again." });
+      }
       res.status(500).json({ message: error.message });
     }
   });
@@ -466,6 +492,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Referral code not found" });
       }
       res.json(referral);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Validate referral code endpoint
+  app.post("/api/referrals/validate", async (req, res) => {
+    try {
+      const { code } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ message: "Referral code is required" });
+      }
+
+      const referral = await storage.getReferralByCode(code);
+      if (!referral) {
+        return res.status(404).json({ 
+          valid: false, 
+          message: "Invalid referral code" 
+        });
+      }
+
+      if (referral.status !== 'pending') {
+        return res.status(400).json({ 
+          valid: false, 
+          message: "This referral code has already been used" 
+        });
+      }
+
+      res.json({ 
+        valid: true, 
+        referrerReward: referral.referrerReward,
+        refereeReward: referral.refereeReward,
+        message: `Get ${referral.refereeReward} points by signing up with this code!`
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Apply referral code during registration
+  app.post("/api/referrals/apply", authenticateToken, async (req: any, res) => {
+    try {
+      const { referralCode } = req.body;
+      
+      if (!referralCode) {
+        return res.status(400).json({ message: "Referral code is required" });
+      }
+
+      const referral = await storage.getReferralByCode(referralCode);
+      if (!referral) {
+        return res.status(404).json({ message: "Invalid referral code" });
+      }
+
+      if (referral.status !== 'pending') {
+        return res.status(400).json({ message: "This referral code has already been used" });
+      }
+
+      if (referral.referrerId === req.user.id) {
+        return res.status(400).json({ message: "You cannot use your own referral code" });
+      }
+
+      // Update referral with referee info
+      await storage.updateReferral(referral.id, {
+        refereeId: req.user.id,
+        status: 'completed'
+      });
+
+      // Award welcome bonus points to new user
+      await storage.addPointTransaction({
+        userId: req.user.id,
+        points: referral.refereeReward,
+        type: 'referral',
+        description: `Welcome bonus - Joined via referral code ${referralCode}`,
+        multiplier: '1.00'
+      });
+
+      res.json({ 
+        success: true, 
+        pointsEarned: referral.refereeReward,
+        message: `Welcome! You've earned ${referral.refereeReward} points for joining with a referral code.`
+      });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

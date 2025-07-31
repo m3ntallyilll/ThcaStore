@@ -659,6 +659,14 @@ export class DatabaseStorage {
     return await db.select().from(referralProgram).where(eq(referralProgram.referrerId, userId));
   }
 
+  async updateReferral(referralId: string, updates: Partial<InsertReferralProgram>): Promise<ReferralProgram | undefined> {
+    const [referral] = await db.update(referralProgram)
+      .set({ ...updates, completedAt: updates.status === 'completed' ? new Date() : undefined })
+      .where(eq(referralProgram.id, referralId))
+      .returning();
+    return referral || undefined;
+  }
+
   async completeReferral(referralId: string, firstOrderId: string): Promise<void> {
     const [referral] = await db
       .update(referralProgram)
