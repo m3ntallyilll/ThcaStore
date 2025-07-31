@@ -153,8 +153,7 @@ export function AdminDashboard() {
           }
         });
 
-        const response = await apiRequest('PATCH', `/api/products/${id}`, cleanData);
-        return response.json();
+        return await apiRequest(`/api/products/${id}`, { method: 'PATCH', body: cleanData });
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['/api/products'] });
@@ -178,8 +177,7 @@ export function AdminDashboard() {
     // Delete product mutation
     const deleteProductMutation = useMutation({
       mutationFn: async (id: string) => {
-        const response = await apiRequest('DELETE', `/api/products/${id}`);
-        return response.json();
+        return await apiRequest(`/api/products/${id}`, { method: 'DELETE' });
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['/api/products'] });

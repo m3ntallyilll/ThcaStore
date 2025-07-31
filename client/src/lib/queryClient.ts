@@ -36,11 +36,21 @@ export async function apiRequest(
       credentials: "include",
     });
 
+    if (res.status === 401) {
+      // Clear invalid token and redirect to login
+      localStorage.removeItem('authToken');
+      window.location.href = '/';
+      throw new Error('Authentication required');
+    }
+
     await throwIfResNotOk(res);
     return await res.json();
   } catch (error) {
     console.error('API Request Error:', error);
-    throw new Error('Network error - please check your connection');
+    if (error instanceof Error && error.message.includes('401')) {
+      throw new Error('Authentication required - please log in again');
+    }
+    throw error;
   }
 }
 

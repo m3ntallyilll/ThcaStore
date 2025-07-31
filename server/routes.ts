@@ -24,7 +24,7 @@ import {
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+const JWT_SECRET = process.env.JWT_SECRET || "thca-store-secret-key-2025";
 
 // Middleware to verify JWT token
 const authenticateToken = async (req: any, res: any, next: any) => {
