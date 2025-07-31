@@ -44,13 +44,13 @@ export async function apiRequest(
     await throwIfResNotOk(res);
     return await res.json();
   } catch (error) {
-    // Only log non-auth errors to reduce console spam
-    if (!(error instanceof Error && (error.message.includes('401') || error.message.includes('403')))) {
-      console.error('API Request Error:', error);
-    }
-    if (error instanceof Error && error.message.includes('401')) {
+    // Silently handle auth errors to reduce console spam
+    if (error instanceof Error && (error.message.includes('401') || error.message.includes('403'))) {
+      // Only throw auth error, don't log to console
       throw new Error('Authentication required - please log in again');
     }
+    // Only log actual network/server errors
+    console.error('API Request Error:', error);
     throw error;
   }
 }
@@ -134,9 +134,9 @@ export async function apiRequest2(method: string, endpoint: string, data?: any) 
     const response = await fetch(`${API_BASE}${endpoint}`, config);
     return response;
   } catch (error) {
-    // Only log non-auth errors to reduce console spam
+    // Silently handle auth errors, only log actual network issues
     if (!(error instanceof Error && (error.message.includes('401') || error.message.includes('403')))) {
-      console.error('API Request Error:', error);
+      console.error('Network Error:', error);
     }
     throw new Error('Network error - please check your connection');
   }

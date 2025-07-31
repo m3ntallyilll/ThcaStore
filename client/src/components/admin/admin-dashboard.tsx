@@ -69,17 +69,13 @@ export function AdminDashboard() {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [blogFormData, setBlogFormData] = useState<any>(null);
 
-  // Fetch admin stats
+  // Fetch admin stats with optimized polling
   const { data: stats } = useQuery<AdminStats>({
     queryKey: ['/api/admin/stats'],
     enabled: !!user?.isAdmin && !!localStorage.getItem('authToken'),
-    retry: (failureCount, error: any) => {
-      // Don't retry auth errors
-      if (error?.message?.includes('401') || error?.message?.includes('403')) {
-        return false;
-      }
-      return failureCount < 1;
-    },
+    refetchInterval: 30000, // Refetch every 30 seconds instead of default
+    staleTime: 20000, // Consider data fresh for 20 seconds
+    retry: false, // Don't retry on failure to reduce errors
   });
 
   // Fetch products for admin
@@ -88,17 +84,13 @@ export function AdminDashboard() {
     enabled: user?.isAdmin,
   });
 
-  // Fetch orders with full details
+  // Fetch orders with optimized polling
   const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ['/api/admin/orders'],
     enabled: !!user?.isAdmin && !!localStorage.getItem('authToken'),
-    retry: (failureCount, error: any) => {
-      // Don't retry auth errors
-      if (error?.message?.includes('401') || error?.message?.includes('403')) {
-        return false;
-      }
-      return failureCount < 1;
-    },
+    refetchInterval: 45000, // Refetch every 45 seconds
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    retry: false, // Don't retry on failure
   });
 
   // Update order status mutation
