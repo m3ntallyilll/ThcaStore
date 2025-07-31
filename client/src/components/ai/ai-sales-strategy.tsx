@@ -95,40 +95,40 @@ export function AISalesStrategy() {
 
   const salesGuarantees = [
     {
-      title: "AI-Optimized Product Recommendations",
-      description: "Machine learning algorithms analyze customer behavior to suggest the most relevant THCA products, increasing conversion rates by up to 300%",
+      title: "Inventory-Focused AI Strategy",
+      description: "Target your 30 lbs of premium flower (15 sativa, 10 indica, 5 hybrid) with strain-specific marketing and optimal pricing",
       icon: <Brain className="w-5 h-5 text-purple-400" />,
-      guarantee: "Minimum 25% increase in average order value within 30 days"
+      guarantee: "Move 2-3 lbs flower per week with 25% higher margins"
     },
     {
-      title: "Dynamic Pricing Intelligence", 
-      description: "AI adjusts pricing in real-time based on demand, competition, and customer segments to maximize revenue while staying competitive",
+      title: "Pre-Roll Volume Optimization", 
+      description: "Smart promotion of 15,000 pre-rolls with special focus on 5,000 premium infused units for maximum revenue",
       icon: <TrendingUp className="w-5 h-5 text-green-400" />,
-      guarantee: "Revenue optimization with price elasticity protection"
+      guarantee: "800-1200 pre-roll sales weekly with 35% conversion on infused"
     },
     {
-      title: "Behavioral Targeting & Personalization",
-      description: "Advanced customer journey mapping creates personalized experiences that guide users to purchase decisions",
+      title: "Premium Strain Positioning",
+      description: "Leverage top strain names like Blue Dream, OG Kush, and Girl Scout Cookies to command premium pricing",
       icon: <Target className="w-5 h-5 text-blue-400" />,
-      guarantee: "Conversion rate improvement of 15-40% based on user engagement"
+      guarantee: "High-mids quality positioned at premium prices with 40% profit margins"
     },
     {
-      title: "Intelligent Inventory Management",
-      description: "Predictive analytics prevent stockouts of high-demand items while reducing holding costs on slow-moving inventory",
+      title: "Smart Bundle Creation",
+      description: "AI-powered bundling of flower with pre-rolls to increase average order value and move inventory efficiently",
       icon: <ShoppingCart className="w-5 h-5 text-orange-400" />,
-      guarantee: "Stock optimization reducing waste by 20% while maintaining 99% availability"
+      guarantee: "35% increase in average order value through intelligent product pairing"
     }
   ];
 
   const aiTactics = [
-    "Personalized email campaigns based on browsing history and purchase patterns",
-    "Dynamic website content that adapts to individual user preferences",
-    "Predictive analytics for optimal timing of promotional offers", 
-    "AI-powered chatbot for instant customer support and sales assistance",
-    "Automated abandoned cart recovery with personalized incentives",
-    "Cross-sell and upsell recommendations using collaborative filtering",
-    "Social proof optimization showing relevant customer reviews",
-    "Real-time A/B testing of product descriptions and pricing"
+    "Sativa morning promotions targeting energy-seeking customers (Blue Dream, Green Crack)",
+    "Evening indica campaigns for relaxation seekers (OG Kush, Purple Punch)",
+    "Infused pre-roll premium positioning with limited stock urgency messaging",
+    "High-mids flower value positioning against premium competitors", 
+    "Strain-specific education content driving informed purchasing decisions",
+    "Bundle deals pairing flower with matching pre-rolls for convenience",
+    "Bulk discount tiers encouraging larger purchases to move inventory faster",
+    "Seasonal promotions matching strain effects with customer lifestyle needs"
   ];
 
   const legalDisclaimers = [
@@ -438,9 +438,50 @@ export function AISalesStrategy() {
               </div>
             </div>
 
+            {/* Current Inventory Display */}
+            {activationResult.inventoryFocus && (
+              <div>
+                <h4 className="font-semibold text-white mb-3">Current Inventory Focus:</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-dark-700 rounded-lg">
+                    <h5 className="font-medium text-green-400 mb-2">Flower Inventory (30 lbs)</h5>
+                    <div className="space-y-1 text-sm">
+                      <div className="text-gray-300">• Sativa: {activationResult.inventoryFocus.flower.sativa}</div>
+                      <div className="text-gray-300">• Indica: {activationResult.inventoryFocus.flower.indica}</div>
+                      <div className="text-gray-300">• Hybrid: {activationResult.inventoryFocus.flower.hybrid}</div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-dark-700 rounded-lg">
+                    <h5 className="font-medium text-blue-400 mb-2">Pre-Roll Inventory</h5>
+                    <div className="space-y-1 text-sm">
+                      <div className="text-gray-300">• Total: {activationResult.inventoryFocus.preRolls.total}</div>
+                      <div className="text-gray-300">• Infused: {activationResult.inventoryFocus.preRolls.infused}</div>
+                      <div className="text-gray-300">• Regular: {activationResult.inventoryFocus.preRolls.regular}</div>
+                      <div className="text-gray-300">• Strains: {activationResult.inventoryFocus.preRolls.strains}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Sales Targets */}
+            {activationResult.salesTargets && (
+              <div>
+                <h4 className="font-semibold text-white mb-3">AI Sales Targets:</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {Object.entries(activationResult.salesTargets).map(([key, value]) => (
+                    <div key={key} className="p-3 bg-gradient-to-br from-purple-900/30 to-blue-900/30 rounded-lg text-center">
+                      <div className="text-yellow-400 font-bold">{value as string}</div>
+                      <div className="text-xs text-gray-400 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {activationResult.nextSteps && (
               <div>
-                <h4 className="font-semibold text-white mb-3">Next Steps:</h4>
+                <h4 className="font-semibold text-white mb-3">AI Strategy Actions:</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {activationResult.nextSteps.map((step: string, index: number) => (
                     <div key={index} className="flex items-start gap-2">

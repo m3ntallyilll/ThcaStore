@@ -655,76 +655,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { strategyId } = req.body;
       
-      // Simulate AI activation process
+      // AI activation targeting actual inventory: 30 lbs flower + 15K pre-rolls
       const activationResults = {
         success: true,
-        strategyId: strategyId || "conversion-optimization",
+        strategyId: strategyId || "inventory-optimization",
         activatedAt: new Date().toISOString(),
+        inventoryFocus: {
+          flower: {
+            sativa: "15 lbs - Premium strains (Blue Dream, Green Crack, Sour Diesel)",
+            indica: "10 lbs - High-quality relaxation strains (OG Kush, Purple Punch, Granddaddy Purple)",
+            hybrid: "5 lbs - Balanced effects (Girl Scout Cookies, Gelato, Wedding Cake)"
+          },
+          preRolls: {
+            total: "15,000 pre-rolls",
+            infused: "5,000 infused pre-rolls with live resin",
+            regular: "10,000 premium flower pre-rolls",
+            strains: "Northern Lights, Jack Herer, Zkittlez varieties"
+          }
+        },
         features: [
           {
-            name: "Dynamic Pricing Engine",
+            name: "Inventory-Based Pricing Strategy",
             status: "activated",
-            description: "Real-time price optimization based on demand and inventory"
+            description: "Dynamic pricing to move 30 lbs flower and 15K pre-rolls efficiently"
           },
           {
-            name: "Personalized Recommendations",
+            name: "Strain-Specific Recommendations",
             status: "activated", 
-            description: "AI-powered product suggestions for each customer"
+            description: "AI suggests premium strains based on customer preferences and effects"
           },
           {
-            name: "Smart Inventory Management",
+            name: "Bulk Deal Engine",
             status: "activated",
-            description: "Predictive restocking and low-stock alerts"
+            description: "Smart bundling of flower and pre-rolls for higher order values"
           },
           {
-            name: "Conversion Optimization",
+            name: "Infused Product Promotion",
             status: "activated",
-            description: "A/B testing and funnel optimization algorithms"
+            description: "Targeted marketing for 5K premium infused pre-rolls"
           },
           {
-            name: "Customer Segmentation",
+            name: "High-Mids Positioning",
             status: "activated",
-            description: "Automatic customer clustering for targeted marketing"
+            description: "Premium positioning of high-mids quality at competitive prices"
           }
         ],
-        metrics: {
-          expectedRevenueLift: "25-40%",
-          conversionRateIncrease: "15-25%",
-          customerRetentionImprovement: "30%",
-          inventoryEfficiency: "20%"
+        salesTargets: {
+          weeklyFlowerGoal: "2-3 lbs per week",
+          weeklyPreRollGoal: "800-1200 pre-rolls per week",
+          averageOrderIncrease: "35%",
+          infusedConversionRate: "25%"
         },
         nextSteps: [
-          "Monitor performance metrics in real-time dashboard",
-          "Review AI recommendations weekly",
-          "Optimize campaigns based on AI insights",
-          "Adjust pricing strategies as needed"
+          "Promote sativa strains for daytime energy customers",
+          "Market indica for evening relaxation and sleep aid",
+          "Bundle flower with pre-rolls for bulk discounts",
+          "Highlight infused pre-rolls as premium experience"
         ]
       };
 
-      // Create or update daily promotions based on AI strategy
+      // Create inventory-focused promotions to move actual stock
       const aiPromotions = [
         {
-          name: "AI Flash Sale",
-          description: "AI-optimized flash sale on high-conversion products",
+          name: "Sativa Energy Pack",
+          description: "15% off Blue Dream, Green Crack, and Sour Diesel - Perfect for productivity",
           discountType: "percentage",
           discountValue: 15,
           isActive: true,
           conditions: {
-            minOrderValue: 50,
-            maxUses: 100,
-            validUntil: new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+            minOrderValue: 75,
+            maxUses: 200,
+            validUntil: new Date(Date.now() + 72 * 60 * 60 * 1000) // 72 hours
           }
         },
         {
-          name: "Smart Bundle Deal",
-          description: "AI-recommended product bundles for maximum value",
-          discountType: "percentage", 
-          discountValue: 20,
+          name: "Indica Night Bundle",
+          description: "Buy 1/4 OG Kush or Purple Punch, get 5 pre-rolls for $10",
+          discountType: "bundle", 
+          discountValue: 25,
           isActive: true,
           conditions: {
             minItems: 2,
-            maxUses: 50,
+            maxUses: 150,
             validUntil: new Date(Date.now() + 48 * 60 * 60 * 1000) // 48 hours
+          }
+        },
+        {
+          name: "Infused Pre-Roll Premium",
+          description: "20% off all infused pre-rolls - Limited to 5,000 units in stock",
+          discountType: "percentage",
+          discountValue: 20,
+          isActive: true,
+          conditions: {
+            minOrderValue: 60,
+            maxUses: 300,
+            validUntil: new Date(Date.now() + 96 * 60 * 60 * 1000) // 96 hours
+          }
+        },
+        {
+          name: "High-Mids Hybrid Special",
+          description: "Girl Scout Cookies & Gelato combo - Premium quality at mid-tier prices",
+          discountType: "percentage",
+          discountValue: 18,
+          isActive: true,
+          conditions: {
+            minOrderValue: 100,
+            maxUses: 75,
+            validUntil: new Date(Date.now() + 120 * 60 * 60 * 1000) // 5 days
           }
         }
       ];
@@ -747,6 +784,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error) {
           console.log('Promotion creation skipped:', error.message);
         }
+      }
+
+      // Optionally seed inventory products if not already present
+      try {
+        const { seedInventoryProducts } = await import('./seed-inventory');
+        await seedInventoryProducts();
+      } catch (seedError) {
+        console.log('Product seeding skipped (products may already exist)');
       }
 
       res.json(activationResults);
