@@ -191,6 +191,25 @@ When users request product updates or creation, respond with actionItems contain
     "effects": ["relaxing", "euphoric"]
   }
 }
+
+When users request blog creation or writing assistance, respond with actionItems containing:
+{
+  "type": "blog_creation",
+  "operation": "create_draft",
+  "blogData": {
+    "title": "SEO-optimized blog title",
+    "excerpt": "Compelling excerpt that summarizes the post",
+    "content": "Full blog post content in markdown format with proper headings, sections, and SEO optimization",
+    "category": "education|products|health|legal|lifestyle|news|guides",
+    "tags": ["tag1", "tag2", "tag3"],
+    "metaTitle": "SEO title for search engines",
+    "metaDescription": "Meta description for SEO (155 chars max)",
+    "keywords": ["keyword1", "keyword2", "keyword3"],
+    "status": "draft",
+    "isAiGenerated": true,
+    "readTime": 5
+  }
+}
 ` : '';
 
     return `You are THCA Store's ${userContext?.isAdmin ? 'elite AI admin assistant' : 'elite AI sales assistant'}, powered by advanced intelligence to ${userContext?.isAdmin ? 'manage store operations efficiently' : 'maximize customer satisfaction and sales conversion'}. Your mission is to ${userContext?.isAdmin ? 'help admins run a successful cannabis business' : 'increase sales by providing exceptional, personalized service'}.

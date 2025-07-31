@@ -29,6 +29,7 @@ import { apiRequest } from '@/lib/queryClient';
 import type { AdminStats } from '@/lib/types';
 import type { Product } from '@shared/schema';
 import { BlogManagement } from './blog-management';
+import { AIChat } from '@/components/ai/ai-chat';
 
 interface OrderWithDetails {
   id: string;
@@ -66,6 +67,7 @@ export function AdminDashboard() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [blogFormData, setBlogFormData] = useState<any>(null);
 
   // Fetch admin stats
   const { data: stats } = useQuery<AdminStats>({
@@ -857,9 +859,23 @@ export function AdminDashboard() {
             </Card>
           )}
 
-          {activeSection === 'blog' && <BlogManagement />}
+          {activeSection === 'blog' && <BlogManagement blogFormData={blogFormData} />}
         </div>
       </div>
+      
+      {/* AI Chat Assistant for Admins */}
+      <AIChat
+        onProductUpdate={(productData) => {
+          // Refresh products when AI creates/updates them
+          queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+        }}
+        onBlogCreation={(blogData) => {
+          // Set blog form data and switch to blog section
+          setBlogFormData(blogData);
+          setActiveSection('blog');
+        }}
+        autoOpen={false}
+      />
     </div>
   );
 }

@@ -26,10 +26,11 @@ interface AIChatProps {
   onProductRecommendation?: (productId: string) => void;
   onOfferSuggestion?: (offer: any) => void;
   onProductUpdate?: (productData: any) => void;
+  onBlogCreation?: (blogData: any) => void;
   autoOpen?: boolean;
 }
 
-export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUpdate, autoOpen = false }: AIChatProps) {
+export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUpdate, onBlogCreation, autoOpen = false }: AIChatProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
@@ -151,9 +152,9 @@ How can I help you today? I can:
               if (user?.isAdmin) {
                 try {
                   if (action.operation === 'create') {
-                    await apiRequest('POST', '/api/products', action.productData);
+                    await apiRequest('/api/products', { method: 'POST', body: action.productData });
                   } else if (action.operation === 'update') {
-                    await apiRequest('PUT', `/api/products/${action.productId}`, action.productData);
+                    await apiRequest(`/api/products/${action.productId}`, { method: 'PUT', body: action.productData });
                   }
                   
                   // Refresh products data
@@ -177,6 +178,33 @@ How can I help you today? I can:
                     id: `error_${Date.now()}`,
                     message: '',
                     response: `❌ Failed to ${action.operation} product. Please check the details and try again.`,
+                    timestamp: new Date(),
+                    isUser: false
+                  };
+                  setMessages(prev => [...prev, errorMessage]);
+                }
+              }
+              break;
+
+            case 'blog_creation':
+              if (action.operation === 'create_draft' && action.blogData) {
+                try {
+                  // Auto-fill the blog form with AI-generated content
+                  onBlogCreation?.(action.blogData);
+                  
+                  const successMessage: ChatMessage = {
+                    id: `blog_success_${Date.now()}`,
+                    message: '',
+                    response: `✅ I've created a blog draft with the title "${action.blogData.title}" and filled out the form for you! You can review and publish it from the blog management section.`,
+                    timestamp: new Date(),
+                    isUser: false
+                  };
+                  setMessages(prev => [...prev, successMessage]);
+                } catch (error) {
+                  const errorMessage: ChatMessage = {
+                    id: `blog_error_${Date.now()}`,
+                    message: '',
+                    response: `❌ Failed to create blog draft. Please try again or create it manually in the blog management section.`,
                     timestamp: new Date(),
                     isUser: false
                   };

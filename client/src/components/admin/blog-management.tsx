@@ -41,6 +41,8 @@ interface BlogFormData {
   keywords: string[];
   featuredImage: string;
   status: 'draft' | 'published' | 'archived';
+  isAiGenerated?: boolean;
+  readTime?: number;
 }
 
 const initialFormData: BlogFormData = {
@@ -66,12 +68,43 @@ const blogCategories = [
   'guides'
 ];
 
-export function BlogManagement() {
+interface BlogManagementProps {
+  blogFormData?: any;
+}
+
+export function BlogManagement({ blogFormData }: BlogManagementProps) {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isAIDialogOpen, setIsAIDialogOpen] = useState(false);
   const [formData, setFormData] = useState<BlogFormData>(initialFormData);
+  
+  const { toast } = useToast();
+
+  // Auto-fill form when AI provides blog data
+  useEffect(() => {
+    if (blogFormData) {
+      setFormData({
+        title: blogFormData.title || '',
+        excerpt: blogFormData.excerpt || '',
+        content: blogFormData.content || '',
+        category: blogFormData.category || 'education',
+        tags: Array.isArray(blogFormData.tags) ? blogFormData.tags : blogFormData.tags?.split(', ') || [],
+        metaTitle: blogFormData.metaTitle || '',
+        metaDescription: blogFormData.metaDescription || '',
+        keywords: Array.isArray(blogFormData.keywords) ? blogFormData.keywords : blogFormData.keywords?.split(', ') || [],
+        featuredImage: '',
+        status: (blogFormData.status as 'draft' | 'published' | 'archived') || 'draft',
+        isAiGenerated: blogFormData.isAiGenerated || false,
+        readTime: blogFormData.readTime || 5
+      });
+      setIsCreateDialogOpen(true);
+      toast({
+        title: 'AI Blog Draft Created!',
+        description: 'Your AI-generated blog post has been loaded into the form. Review and publish when ready.',
+      });
+    }
+  }, [blogFormData, toast]);
   const [aiGenerationData, setAiGenerationData] = useState({
     topic: '',
     category: 'education',
@@ -83,7 +116,6 @@ export function BlogManagement() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Fetch blog posts
