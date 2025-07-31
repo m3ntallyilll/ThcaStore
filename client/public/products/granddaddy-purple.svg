@@ -1,0 +1,63 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gdpGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#673ab7;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#512da8;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#311b92;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a0e4e;stop-opacity:1" />
+    </radialGradient>
+    <filter id="deepPurple" x="0%" y="0%" width="100%" height="100%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.7"/>
+      <feColorMatrix type="saturate" values="1.6"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="400" fill="#f8f9fa"/>
+  
+  <!-- Main bud structure - very dense and dark -->
+  <circle cx="200" cy="210" r="110" fill="url(#gdpGradient)"/>
+  <circle cx="170" cy="190" r="80" fill="url(#gdpGradient)" opacity="0.8"/>
+  <circle cx="230" cy="230" r="85" fill="url(#gdpGradient)" opacity="0.9"/>
+  <circle cx="180" cy="260" r="65" fill="url(#gdpGradient)" opacity="0.7"/>
+  <circle cx="220" cy="170" r="60" fill="url(#gdpGradient)" opacity="0.6"/>
+  
+  <!-- Rich orange pistils -->
+  <g stroke="#ff8f00" stroke-width="2.5" fill="none" opacity="0.85">
+    <path d="M120 170 Q160 150 200 180" />
+    <path d="M130 200 Q170 180 210 210" />
+    <path d="M110 230 Q150 210 190 240" />
+    <path d="M140 260 Q180 240 220 270" />
+    <path d="M160 290 Q200 270 240 300" />
+    <path d="M280 190 Q240 170 200 200" />
+    <path d="M290 230 Q250 210 210 240" />
+    <path d="M100 200 Q140 180 180 210" />
+  </g>
+  
+  <!-- Heavy crystalline coverage -->
+  <g filter="url(#deepPurple)" opacity="0.9">
+    <circle cx="150" cy="160" r="3.5" fill="#ffffff"/>
+    <circle cx="170" cy="150" r="3" fill="#ffffff"/>
+    <circle cx="190" cy="140" r="3.5" fill="#ffffff"/>
+    <circle cx="210" cy="160" r="3" fill="#ffffff"/>
+    <circle cx="230" cy="150" r="3.5" fill="#ffffff"/>
+    <circle cx="250" cy="170" r="3" fill="#ffffff"/>
+    <circle cx="140" cy="190" r="3.5" fill="#ffffff"/>
+    <circle cx="180" cy="180" r="3" fill="#ffffff"/>
+    <circle cx="220" cy="190" r="3.5" fill="#ffffff"/>
+    <circle cx="260" cy="200" r="3" fill="#ffffff"/>
+    <circle cx="160" cy="220" r="3.5" fill="#ffffff"/>
+    <circle cx="200" cy="210" r="3" fill="#ffffff"/>
+    <circle cx="240" cy="220" r="3.5" fill="#ffffff"/>
+    <circle cx="130" cy="240" r="3" fill="#ffffff"/>
+    <circle cx="170" cy="250" r="3.5" fill="#ffffff"/>
+    <circle cx="210" cy="260" r="3" fill="#ffffff"/>
+    <circle cx="250" cy="250" r="3.5" fill="#ffffff"/>
+    <circle cx="180" cy="290" r="3" fill="#ffffff"/>
+    <circle cx="220" cy="300" r="3.5" fill="#ffffff"/>
+  </g>
+  
+  <!-- Granddaddy Purple label -->
+  <text x="200" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#1a0e4e">Granddaddy Purple</text>
+  <text x="200" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#512da8">Classic Indica</text>
+</svg>

@@ -1,0 +1,66 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gelatoGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#4caf50;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#388e3c;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#2e7d32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1b5e20;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="purpleSwirls" cx="40%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#e1bee7;stop-opacity:0.4" />
+      <stop offset="50%" style="stop-color:#ab47bc;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#6a1b9a;stop-opacity:0.8" />
+    </radialGradient>
+    <filter id="gelatoGlow" x="0%" y="0%" width="100%" height="100%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="0.6"/>
+      <feColorMatrix type="saturate" values="1.4"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="400" fill="#f8f9fa"/>
+  
+  <!-- Main bud structure with colorful swirls -->
+  <ellipse cx="200" cy="200" rx="90" ry="110" fill="url(#gelatoGradient)"/>
+  <ellipse cx="185" cy="185" rx="65" ry="80" fill="url(#purpleSwirls)"/>
+  <ellipse cx="215" cy="215" rx="70" ry="90" fill="url(#gelatoGradient)" opacity="0.9"/>
+  <ellipse cx="195" cy="235" rx="55" ry="70" fill="url(#purpleSwirls)" opacity="0.6"/>
+  <ellipse cx="205" cy="165" rx="50" ry="65" fill="url(#gelatoGradient)" opacity="0.8"/>
+  
+  <!-- Golden orange pistils -->
+  <g stroke="#ffb74d" stroke-width="2.3" fill="none" opacity="0.9">
+    <path d="M135 165 Q175 145 215 175" />
+    <path d="M145 195 Q185 175 225 205" />
+    <path d="M125 225 Q165 205 205 235" />
+    <path d="M155 255 Q195 235 235 265" />
+    <path d="M175 285 Q215 265 255 295" />
+    <path d="M265 185 Q225 165 185 195" />
+    <path d="M275 225 Q235 205 195 235" />
+    <path d="M115 195 Q155 175 195 205" />
+  </g>
+  
+  <!-- Premium trichome coverage -->
+  <g filter="url(#gelatoGlow)" opacity="0.85">
+    <circle cx="165" cy="165" r="2.7" fill="#ffffff"/>
+    <circle cx="185" cy="155" r="3" fill="#ffffff"/>
+    <circle cx="205" cy="145" r="2.7" fill="#ffffff"/>
+    <circle cx="225" cy="165" r="3" fill="#ffffff"/>
+    <circle cx="245" cy="155" r="2.7" fill="#ffffff"/>
+    <circle cx="155" cy="195" r="3" fill="#ffffff"/>
+    <circle cx="195" cy="185" r="2.7" fill="#ffffff"/>
+    <circle cx="235" cy="195" r="3" fill="#ffffff"/>
+    <circle cx="175" cy="225" r="2.7" fill="#ffffff"/>
+    <circle cx="215" cy="215" r="3" fill="#ffffff"/>
+    <circle cx="255" cy="225" r="2.7" fill="#ffffff"/>
+    <circle cx="145" cy="235" r="3" fill="#ffffff"/>
+    <circle cx="185" cy="255" r="2.7" fill="#ffffff"/>
+    <circle cx="225" cy="245" r="3" fill="#ffffff"/>
+    <circle cx="165" cy="285" r="2.7" fill="#ffffff"/>
+    <circle cx="205" cy="295" r="3" fill="#ffffff"/>
+    <circle cx="245" cy="285" r="2.7" fill="#ffffff"/>
+  </g>
+  
+  <!-- Gelato label -->
+  <text x="200" y="360" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1b5e20">Gelato</text>
+  <text x="200" y="380" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#388e3c">Premium Hybrid</text>
+</svg>

@@ -10,7 +10,7 @@ const inventoryProducts = [
     description: "Legendary sativa-dominant hybrid with uplifting cerebral effects and sweet berry aroma. Perfect for creativity and productivity. High-mids quality at competitive prices.",
     price: "45.00",
     category: "flower",
-    imageUrl: "/products/blue-dream.jpg",
+    imageUrl: "/products/blue-dream.svg",
     stock: 80, // 5 lbs = 80 eighths
     weight: "0.22",
     featured: true,

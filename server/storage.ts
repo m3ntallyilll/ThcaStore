@@ -28,6 +28,7 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product | undefined>;
   deleteProduct(id: string): Promise<boolean>;
+  clearProducts(): Promise<void>;
 
   // Cart methods
   getCartItems(userId: string): Promise<(CartItem & { product: Product })[]>;
@@ -285,6 +286,10 @@ export class MemStorage implements IStorage {
     return this.products.delete(id);
   }
 
+  async clearProducts(): Promise<void> {
+    this.products.clear();
+  }
+
   // Cart methods
   async getCartItems(userId: string): Promise<(CartItem & { product: Product })[]> {
     const userCartItems = Array.from(this.cartItems.values()).filter(item => item.userId === userId);
@@ -476,7 +481,7 @@ export class MemStorage implements IStorage {
     // Initialize AI sales strategy as activated by default
     // This ensures the AI features and inventory remain persistent across restarts
     try {
-      const seedModule = await import('./seed-inventory');
+      const seedModule = await import('./seed-inventory-updated');
       const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
       await seedInventoryProducts();
       console.log('✓ AI Sales Strategy activated with full inventory');
