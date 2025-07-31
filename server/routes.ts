@@ -159,7 +159,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/products/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+  app.patch("/api/products/:id", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const productData = insertProductSchema.partial().parse(req.body);
       const product = await storage.updateProduct(req.params.id, productData);
@@ -178,7 +178,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!deleted) {
         return res.status(404).json({ message: "Product not found" });
       }
-      res.status(204).send();
+      res.json({ success: true });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
