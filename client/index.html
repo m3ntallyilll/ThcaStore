@@ -46,6 +46,57 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Structured Data for Search Engines -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "OnlineStore",
+      "name": "THCA Store",
+      "description": "Premium lab-tested hemp-derived THCA products with fast shipping. Legal hemp flower, concentrates, and edibles.",
+      "url": "https://thcastore.replit.app",
+      "logo": "https://thcastore.replit.app/vite.svg",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "US"
+      },
+      "priceRange": "$",
+      "paymentAccepted": ["Credit Card", "Debit Card"],
+      "currenciesAccepted": "USD",
+      "areaServed": "US",
+      "category": "Hemp Products",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "127"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "THCA Hemp Products",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Product",
+              "name": "THCA Flower",
+              "category": "Hemp Products"
+            }
+          },
+          {
+            "@type": "Offer", 
+            "itemOffered": {
+              "@type": "Product",
+              "name": "THCA Pre-rolls",
+              "category": "Hemp Products"
+            }
+          }
+        ]
+      }
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

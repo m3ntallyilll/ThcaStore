@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Allow search engines to index all public pages
+Allow: /products
+Allow: /blog
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /returns
+
+# Disallow admin and sensitive areas
+Disallow: /admin
+Disallow: /checkout
+Disallow: /cart
+Disallow: /api
+
+# Sitemap location
+Sitemap: https://thcastore.replit.app/sitemap.xml
+
+# Crawl delay for responsible crawling
+Crawl-delay: 1
+
+# Hemp/Cannabis specific guidelines
+# This site sells legal hemp-derived THCA products (< 0.3% Delta-9 THC)
+# Age restriction: 21+ only
+# Geographic restrictions apply in some states

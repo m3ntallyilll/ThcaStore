@@ -1,0 +1,19 @@
+{
+  "name": "THCA Store - Premium Hemp Products",
+  "short_name": "THCA Store",
+  "description": "Premium lab-tested hemp-derived THCA products with fast shipping. Legal hemp flower, concentrates, and edibles. 21+ only.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#22c55e",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["shopping", "health", "lifestyle"],
+  "lang": "en-US",
+  "orientation": "portrait-primary"
+}
