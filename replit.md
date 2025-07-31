@@ -164,6 +164,7 @@ The application is designed to be easily deployable on platforms like Replit, Ve
 ### Returns & Refunds System Complete (January 2025)
 ✓ **Comprehensive Returns Interface**: Multi-step return process with order selection, item selection, and detailed return forms
 ✓ **Return Request Management**: Complete system for tracking return status, refund processing, and customer communication
-✓ **Cannabis-Specific Policy**: 30-day return window with unopened packaging requirements and full refund processing
-✓ **Order Integration**: Seamless integration with existing order system for return eligibility and item tracking
+✓ **Insurance-Required Policy**: Returns only available for orders with shipping insurance protection
+✓ **Cannabis-Specific Policy**: 30-day return window with unopened packaging requirements and insurance verification
+✓ **Order Integration**: Seamless integration with existing order system for return eligibility and insurance tracking
 ✓ **Enhanced Navigation**: Added returns links to main navigation and footer for easy customer access

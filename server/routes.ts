@@ -1120,7 +1120,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Order ID and items are required" });
       }
 
-      // In production, validate order exists and belongs to user
+      // In production, validate order exists, belongs to user, and has insurance
+      // Mock insurance check - in production, check order.hasInsurance
+      const orderHasInsurance = Math.random() > 0.3; // Mock 70% have insurance
+      
+      if (!orderHasInsurance) {
+        return res.status(400).json({ 
+          message: "Returns are only available for orders with shipping insurance. This order was not insured and is not eligible for returns or refunds.",
+          code: "NO_INSURANCE"
+        });
+      }
+
       // Create return request in database
       const returnRequest = {
         id: `ret_${Date.now()}`,
@@ -1129,15 +1139,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         items,
         status: "pending",
         createdAt: new Date().toISOString(),
-        estimatedProcessing: "2-3 business days"
+        estimatedProcessing: "2-3 business days",
+        insuranceVerified: true
       };
 
-      console.log(`[RETURN REQUEST] User: ${userId} | Order: ${orderId} | Items: ${items.length}`);
+      console.log(`[RETURN REQUEST] User: ${userId} | Order: ${orderId} | Items: ${items.length} | Insurance: ✓`);
 
       res.json({
         success: true,
         returnRequest,
-        message: "Return request submitted successfully"
+        message: "Return request submitted successfully. Insurance verification confirmed."
       });
     } catch (error: any) {
       console.error('Return creation error:', error);

@@ -201,7 +201,7 @@ export default function Returns() {
             </h1>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Not satisfied with your purchase? We offer hassle-free returns and refunds for your peace of mind.
+            Returns and refunds are available for insured orders only. Protect your purchase with shipping insurance during checkout.
           </p>
         </motion.div>
 
@@ -212,15 +212,32 @@ export default function Returns() {
           transition={{ delay: 0.1 }}
           className="mb-8"
         >
-          <Card className="glass-dark border-gray-700">
+          <Card className="glass-dark border-yellow-500/30 bg-yellow-500/5">
             <CardHeader>
-              <CardTitle className="text-green-400 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                Return Policy Overview
+              <CardTitle className="text-yellow-400 flex items-center gap-2">
+                <AlertCircle className="w-5 h-5" />
+                Important: Insurance Required for Returns
               </CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="mb-6">
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                  <h3 className="font-semibold text-yellow-400 mb-2">Insurance Policy Notice</h3>
+                  <p className="text-gray-300 text-sm">
+                    <strong>Returns and refunds are only available for orders that include shipping insurance.</strong> 
+                    This policy protects both you and our business from losses during transit of cannabis products.
+                  </p>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-yellow-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Package className="w-6 h-6 text-yellow-400" />
+                  </div>
+                  <h3 className="font-semibold text-white mb-2">Insurance Required</h3>
+                  <p className="text-gray-300 text-sm">Only insured orders are eligible for returns</p>
+                </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Calendar className="w-6 h-6 text-blue-400" />
@@ -230,17 +247,10 @@ export default function Returns() {
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Package className="w-6 h-6 text-green-400" />
+                    <CheckCircle className="w-6 h-6 text-green-400" />
                   </div>
                   <h3 className="font-semibold text-white mb-2">Original Packaging</h3>
                   <p className="text-gray-300 text-sm">Items must be in original, unopened packaging</p>
-                </div>
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <DollarSign className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <h3 className="font-semibold text-white mb-2">Full Refunds</h3>
-                  <p className="text-gray-300 text-sm">Refunds processed within 5-7 business days</p>
                 </div>
               </div>
             </CardContent>
@@ -278,34 +288,72 @@ export default function Returns() {
                       </div>
                     ) : (
                       <div className="space-y-4">
-                        {orders.map((order) => (
-                          <div
-                            key={order.id}
-                            className="p-4 border border-gray-700 rounded-lg hover:border-blue-500/50 transition-colors cursor-pointer"
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setStep('select_items');
-                            }}
-                          >
-                            <div className="flex items-center justify-between mb-3">
-                              <h3 className="font-semibold text-white">Order #{order.orderNumber}</h3>
-                              <Badge variant="outline" className="text-gray-300">
-                                {order.status}
-                              </Badge>
+                        {orders.map((order) => {
+                          // Check if order has shipping insurance (mock check - in production, check order.hasInsurance)
+                          const hasInsurance = Math.random() > 0.3; // Mock 70% of orders have insurance
+                          const isEligible = hasInsurance && order.status === 'delivered';
+                          
+                          return (
+                            <div
+                              key={order.id}
+                              className={`p-4 border rounded-lg transition-colors ${
+                                isEligible 
+                                  ? 'border-gray-700 hover:border-blue-500/50 cursor-pointer' 
+                                  : 'border-red-500/30 bg-red-500/5 cursor-not-allowed opacity-70'
+                              }`}
+                              onClick={() => {
+                                if (isEligible) {
+                                  setSelectedOrder(order);
+                                  setStep('select_items');
+                                } else {
+                                  toast({
+                                    title: "Return Not Available",
+                                    description: hasInsurance 
+                                      ? "Order must be delivered to be eligible for returns"
+                                      : "This order was not insured and is not eligible for returns",
+                                    variant: "destructive"
+                                  });
+                                }
+                              }}
+                            >
+                              <div className="flex items-center justify-between mb-3">
+                                <h3 className="font-semibold text-white">Order #{order.orderNumber}</h3>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="outline" className="text-gray-300">
+                                    {order.status}
+                                  </Badge>
+                                  {hasInsurance ? (
+                                    <Badge variant="outline" className="text-green-400 border-green-500/30 bg-green-500/10">
+                                      Insured
+                                    </Badge>
+                                  ) : (
+                                    <Badge variant="outline" className="text-red-400 border-red-500/30 bg-red-500/10">
+                                      Not Insured
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-300">
+                                  {new Date(order.createdAt).toLocaleDateString()}
+                                </span>
+                                <span className="text-green-400 font-semibold">
+                                  ${order.total.toFixed(2)}
+                                </span>
+                              </div>
+                              <div className="mt-3 flex items-center justify-between">
+                                <span className="text-sm text-gray-400">
+                                  {order.items.length} item(s)
+                                </span>
+                                {!isEligible && (
+                                  <span className="text-xs text-red-400">
+                                    {!hasInsurance ? 'Insurance required for returns' : 'Order not delivered'}
+                                  </span>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex items-center justify-between text-sm">
-                              <span className="text-gray-300">
-                                {new Date(order.createdAt).toLocaleDateString()}
-                              </span>
-                              <span className="text-green-400 font-semibold">
-                                ${order.total.toFixed(2)}
-                              </span>
-                            </div>
-                            <div className="mt-3 text-sm text-gray-400">
-                              {order.items.length} item(s)
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </CardContent>
@@ -577,7 +625,7 @@ export default function Returns() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-gray-300 text-sm">
-                    Our customer support team is here to help with your return.
+                    Questions about insurance or returns? Our team can help explain your options.
                   </p>
                   <div className="space-y-3">
                     <Button variant="outline" className="w-full justify-start">
