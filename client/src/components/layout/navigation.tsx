@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { Leaf, User, ShoppingCart, Settings, Menu, X } from 'lucide-react';
+import { User, ShoppingCart, Settings, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { AuthModal } from '../auth/auth-modal';
+import { HempLeafIcon } from '@/components/ui/hemp-leaf-icon';
 
 export function Navigation() {
   const [location] = useLocation();
@@ -24,28 +25,28 @@ export function Navigation() {
 
   return (
     <>
-      <nav className="fixed top-0 w-full z-50 glass-dark border-b border-gold/20">
+      <nav className="fixed top-0 w-full z-50 glass-dark border-b border-glow-green-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <Link href="/" className="text-2xl font-display font-bold text-gold">
-                <Leaf className="inline w-6 h-6 mr-2" />
+              <Link href="/" className="text-2xl font-display font-bold text-glow-green-400 glow-effect">
+                <HempLeafIcon className="inline w-6 h-6 mr-2 text-glow-green-400" />
                 THCA Store
               </Link>
               <div className="hidden md:flex space-x-6">
-                <Link href="/products" className="hover:text-gold transition-colors duration-300">
+                <Link href="/products" className="hover:text-glow-green-400 transition-colors duration-300">
                   Products
                 </Link>
-                <Link href="/blog" className="hover:text-gold transition-colors duration-300">
+                <Link href="/blog" className="hover:text-glow-green-400 transition-colors duration-300">
                   Blog
                 </Link>
-                <Link href="/rewards" className="hover:text-gold transition-colors duration-300">
+                <Link href="/rewards" className="hover:text-glow-green-400 transition-colors duration-300">
                   Rewards
                 </Link>
-                <a href="#about" className="hover:text-gold transition-colors duration-300">
+                <a href="#about" className="hover:text-glow-green-400 transition-colors duration-300">
                   About
                 </a>
-                <a href="#contact" className="hover:text-gold transition-colors duration-300">
+                <a href="#contact" className="hover:text-glow-green-400 transition-colors duration-300">
                   Contact
                 </a>
               </div>
@@ -60,7 +61,7 @@ export function Navigation() {
                 <Button
                   variant="ghost"
                   onClick={() => openAuthModal('login')}
-                  className="hover:text-gold transition-colors duration-300"
+                  className="hover:text-glow-green-400 transition-colors duration-300"
                 >
                   <User className="w-4 h-4 mr-2" />
                   Login
@@ -70,7 +71,7 @@ export function Navigation() {
               <Button
                 variant="ghost"
                 onClick={toggleCart}
-                className="relative hover:text-gold transition-colors duration-300"
+                className="relative hover:text-glow-green-400 transition-colors duration-300"
               >
                 <ShoppingCart className="w-5 h-5" />
                 {totalItems > 0 && (
