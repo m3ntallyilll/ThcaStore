@@ -3,7 +3,32 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useLocation } from "wouter";
+// Analytics tracking hook
+const useAnalytics = () => {
+  const [location] = useLocation();
+  const prevLocationRef = useRef<string>(location);
+  
+  // Track page views using Google Analytics
+  const trackPageView = (url: string) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
+    
+    const measurementId = "G-J8CL11FFW2";
+    if (!measurementId) return;
+    
+    window.gtag('config', measurementId, {
+      page_path: url
+    });
+  };
+  
+  useEffect(() => {
+    if (location !== prevLocationRef.current) {
+      trackPageView(location);
+      prevLocationRef.current = location;
+    }
+  }, [location]);
+};
 
 // Layout Components
 import { Navigation } from "@/components/layout/navigation";
@@ -32,6 +57,29 @@ import NotFound from "@/pages/not-found";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 
+function Router() {
+  // Track page views when routes change
+  useAnalytics();
+  
+  return (
+    <Switch>
+      <Route path="/" component={Home} />
+      <Route path="/products" component={Products} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/rewards" component={Rewards} />
+      <Route path="/blog/:id" component={BlogPost} />
+      <Route path="/blog" component={Blog} />
+      <Route path="/ai-sales" component={AISalesPage} />
+      <Route path="/daily-deals" component={DailyDealsPage} />
+      <Route path="/returns" component={Returns} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/admin" component={Admin} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
 function AppContent() {
   const { checkAuth, user } = useAuth();
   const isAuthenticated = !!user;
@@ -51,21 +99,7 @@ function AppContent() {
     <div className="min-h-screen bg-dark-900 text-white">
       <Navigation />
       <main>
-        <Switch>
-          <Route path="/" component={Home} />
-          <Route path="/products" component={Products} />
-          <Route path="/checkout" component={Checkout} />
-          <Route path="/rewards" component={Rewards} />
-          <Route path="/blog/:id" component={BlogPost} />
-          <Route path="/blog" component={Blog} />
-          <Route path="/ai-sales" component={AISalesPage} />
-          <Route path="/daily-deals" component={DailyDealsPage} />
-          <Route path="/returns" component={Returns} />
-          <Route path="/privacy-policy" component={PrivacyPolicy} />
-          <Route path="/terms-of-service" component={TermsOfService} />
-          <Route path="/admin" component={Admin} />
-          <Route component={NotFound} />
-        </Switch>
+        <Router />
       </main>
       <Footer />
       <CartSidebar />
@@ -77,6 +111,11 @@ function AppContent() {
 }
 
 function App() {
+  // Google Analytics is now loaded directly in index.html
+  useEffect(() => {
+    console.log('✓ Google Analytics loaded with ID: G-J8CL11FFW2');
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
