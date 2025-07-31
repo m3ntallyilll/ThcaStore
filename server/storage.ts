@@ -11,6 +11,7 @@ import {
   type InsertOrderItem
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
 
 export interface IStorage {
   // User methods
@@ -425,6 +426,9 @@ export class MemStorage implements IStorage {
 
   // Initialization
   async initialize(): Promise<void> {
+    // Initialize default admin user
+    await this.initializeAdminUser();
+
     // Initialize sample reward tiers
     const sampleTiers = [
       { id: '1', name: 'Bronze', minPoints: 0, multiplier: '1.00', benefits: ['Basic rewards'], color: '#CD7F32' },
@@ -439,6 +443,30 @@ export class MemStorage implements IStorage {
       { id: '2', method: 'express', name: 'Express Shipping', baseRate: '19.99', estimatedDays: '2-3 days' }
     ];
     sampleRates.forEach(rate => this.shippingRates.set(rate.id, rate));
+  }
+
+  private async initializeAdminUser(): Promise<void> {
+    // Check if admin already exists
+    const existingAdmin = await this.getUserByEmail('admin@thca-store.com');
+    if (existingAdmin) return;
+
+    // Hash password for admin user
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+
+    // Create admin user
+    const adminUser: User = {
+      id: randomUUID(),
+      username: 'admin',
+      email: 'admin@thca-store.com',
+      password: hashedPassword,
+      firstName: 'Admin',
+      lastName: 'User',
+      isAdmin: true,
+      createdAt: new Date()
+    };
+
+    this.users.set(adminUser.id, adminUser);
+    console.log('✓ Default admin user created: admin@thca-store.com / admin123');
   }
 
   // Rewards and Loyalty System
