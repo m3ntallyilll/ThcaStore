@@ -49,8 +49,10 @@ export async function apiRequest(
       // Only throw auth error, don't log to console
       throw new Error('Authentication required - please log in again');
     }
-    // Only log actual network/server errors
-    console.error('API Request Error:', error);
+    // Only log actual network/server errors, but not empty error objects
+    if (error && typeof error === 'object' && Object.keys(error).length > 0) {
+      console.error('API Request Error:', error);
+    }
     throw error;
   }
 }
@@ -87,11 +89,11 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: 30000, // 30 seconds instead of Infinity
+      staleTime: 60000, // 1 minute instead of 30 seconds
       refetchIntervalInBackground: false,
       retry: (failureCount, error: any) => {
         // Don't retry auth errors or client errors
-        if (error?.message?.includes('401') || error?.message?.includes('403')) {
+        if (error?.message?.includes('401') || error?.message?.includes('403') || error?.message?.includes('Authentication')) {
           return false;
         }
         return failureCount < 1; // Max 1 retry for other errors
@@ -100,7 +102,7 @@ export const queryClient = new QueryClient({
     mutations: {
       retry: (failureCount, error: any) => {
         // Don't retry auth errors
-        if (error?.message?.includes('401') || error?.message?.includes('403')) {
+        if (error?.message?.includes('401') || error?.message?.includes('403') || error?.message?.includes('Authentication')) {
           return false;
         }
         return failureCount < 1; // Max 1 retry for mutations

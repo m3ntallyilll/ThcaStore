@@ -72,9 +72,9 @@ export function AdminDashboard() {
   // Fetch admin stats with optimized polling
   const { data: stats } = useQuery<AdminStats>({
     queryKey: ['/api/admin/stats'],
-    enabled: !!user?.isAdmin && !!localStorage.getItem('authToken'),
-    refetchInterval: 30000, // Refetch every 30 seconds instead of default
-    staleTime: 20000, // Consider data fresh for 20 seconds
+    enabled: !!user?.isAdmin && !!localStorage.getItem('authToken') && activeSection === 'orders',
+    refetchInterval: false, // Disable automatic refetching to reduce API calls
+    staleTime: 60000, // Consider data fresh for 1 minute
     retry: false, // Don't retry on failure to reduce errors
   });
 
@@ -87,9 +87,9 @@ export function AdminDashboard() {
   // Fetch orders with optimized polling
   const { data: orders = [], isLoading: ordersLoading } = useQuery<OrderWithDetails[]>({
     queryKey: ['/api/admin/orders'],
-    enabled: !!user?.isAdmin && !!localStorage.getItem('authToken'),
-    refetchInterval: 45000, // Refetch every 45 seconds
-    staleTime: 30000, // Consider data fresh for 30 seconds
+    enabled: !!user?.isAdmin && !!localStorage.getItem('authToken') && activeSection === 'orders',
+    refetchInterval: false, // Disable automatic refetching
+    staleTime: 60000, // Consider data fresh for 1 minute
     retry: false, // Don't retry on failure
   });
 
