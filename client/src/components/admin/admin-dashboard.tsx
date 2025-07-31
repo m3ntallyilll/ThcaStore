@@ -238,33 +238,34 @@ export function AdminDashboard() {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="status">Order Status</Label>
+          <Label htmlFor="status" className="text-white font-semibold">Order Status</Label>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-dark-800 border-gray-600 text-white">
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="processing">Processing</SelectItem>
-              <SelectItem value="shipped">Shipped</SelectItem>
-              <SelectItem value="delivered">Delivered</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
+            <SelectContent className="bg-dark-800 border-gray-600">
+              <SelectItem value="pending" className="text-white hover:bg-dark-700">Pending</SelectItem>
+              <SelectItem value="processing" className="text-white hover:bg-dark-700">Processing</SelectItem>
+              <SelectItem value="shipped" className="text-white hover:bg-dark-700">Shipped</SelectItem>
+              <SelectItem value="delivered" className="text-white hover:bg-dark-700">Delivered</SelectItem>
+              <SelectItem value="cancelled" className="text-white hover:bg-dark-700">Cancelled</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         <div>
-          <Label htmlFor="tracking">Tracking Number (Optional)</Label>
+          <Label htmlFor="tracking" className="text-white font-semibold">Tracking Number (Optional)</Label>
           <Input
             id="tracking"
             value={trackingNumber}
             onChange={(e) => setTrackingNumber(e.target.value)}
             placeholder="Enter tracking number"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
 
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="bg-gold text-black hover:bg-gold-600 font-semibold">
             {isLoading ? 'Updating...' : 'Update Order'}
           </Button>
         </div>
@@ -292,63 +293,69 @@ export function AdminDashboard() {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <Label htmlFor="name">Product Name</Label>
+          <Label htmlFor="name" className="text-white font-semibold">Product Name</Label>
           <Input
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Enter product name"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
-          <Label htmlFor="description">Description</Label>
+          <Label htmlFor="description" className="text-white font-semibold">Description</Label>
           <Input
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter product description"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
-          <Label htmlFor="price">Price</Label>
+          <Label htmlFor="price" className="text-white font-semibold">Price</Label>
           <Input
             id="price"
             type="number"
             value={price}
             onChange={(e) => setPrice(Number(e.target.value))}
             placeholder="Enter product price"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
-          <Label htmlFor="stock">Stock</Label>
+          <Label htmlFor="stock" className="text-white font-semibold">Stock</Label>
           <Input
             id="stock"
             type="number"
             value={stock}
             onChange={(e) => setStock(Number(e.target.value))}
             placeholder="Enter product stock"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
-          <Label htmlFor="category">Category</Label>
+          <Label htmlFor="category" className="text-white font-semibold">Category</Label>
           <Input
             id="category"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             placeholder="Enter product category"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div>
-          <Label htmlFor="imageUrl">Image URL</Label>
+          <Label htmlFor="imageUrl" className="text-white font-semibold">Image URL</Label>
           <Input
             id="imageUrl"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="Enter product image URL"
+            className="bg-dark-800 border-gray-600 text-white placeholder:text-gray-400 focus:border-gold"
           />
         </div>
         <div className="flex justify-end gap-2">
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isLoading} className="bg-gold text-black hover:bg-gold-600 font-semibold">
             {isLoading ? 'Saving...' : 'Save'}
           </Button>
         </div>
