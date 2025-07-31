@@ -34,7 +34,19 @@ import type {
   DailyPromotion,
   InsertDailyPromotion,
   PromotionUsage,
-  InsertPromotionUsage
+  InsertPromotionUsage,
+  Achievement,
+  InsertAchievement,
+  UserAchievement,
+  InsertUserAchievement,
+  DailyChallenge,
+  InsertDailyChallenge,
+  UserChallenge,
+  InsertUserChallenge,
+  LoyaltyStreak,
+  InsertLoyaltyStreak,
+  LoyaltyLeaderboard,
+  InsertLoyaltyLeaderboard
 } from '@shared/schema';
 import { 
   users, 
@@ -55,7 +67,13 @@ import {
   aiUserProfiles,
   aiContextMemory,
   dailyPromotions,
-  promotionUsage
+  promotionUsage,
+  achievements,
+  userAchievements,
+  dailyChallenges,
+  userChallenges,
+  loyaltyStreaks,
+  loyaltyLeaderboard
 } from '@shared/schema';
 
 export class DatabaseStorage {
@@ -67,6 +85,8 @@ export class DatabaseStorage {
     await this.initializeProhibitedStates();
     await this.initializeSampleProducts();
     await this.initializeSpecialOffers();
+    await this.initializeAchievements();
+    await this.initializeDailyChallenges();
   }
 
   private async initializeRewardTiers(): Promise<void> {
@@ -1113,6 +1133,402 @@ export class DatabaseStorage {
     }
 
     return Math.round(discount * 100) / 100; // Round to 2 decimal places
+  }
+
+  async addPromotionUsage(usage: InsertPromotionUsage): Promise<PromotionUsage> {
+    const [result] = await db.insert(promotionUsage).values(usage).returning();
+    return result;
+  }
+
+  // Gamification System Methods
+
+  // Initialize default achievements
+  private async initializeAchievements(): Promise<void> {
+    const existingAchievements = await db.select().from(achievements).limit(1);
+    if (existingAchievements.length > 0) return;
+
+    const defaultAchievements: InsertAchievement[] = [
+      // Purchase Milestones
+      {
+        name: 'First Purchase',
+        description: 'Complete your first order',
+        category: 'purchase',
+        icon: 'ShoppingBag',
+        condition: { type: 'order_count', value: 1, comparison: 'gte' },
+        rewardPoints: 100,
+        badgeColor: '#22c55e',
+        difficulty: 'easy'
+      },
+      {
+        name: 'Big Spender',
+        description: 'Spend $500 or more in a single order',
+        category: 'purchase',
+        icon: 'DollarSign',
+        condition: { type: 'spend_amount', value: 500, comparison: 'gte' },
+        rewardPoints: 500,
+        badgeColor: '#f59e0b',
+        difficulty: 'hard'
+      },
+      {
+        name: 'Loyal Customer',
+        description: 'Place 10 orders',
+        category: 'milestone',
+        icon: 'Heart',
+        condition: { type: 'order_count', value: 10, comparison: 'gte' },
+        rewardPoints: 750,
+        badgeColor: '#ef4444',
+        difficulty: 'normal'
+      },
+      {
+        name: 'High Roller',
+        description: 'Spend $2,000 total',
+        category: 'milestone',
+        icon: 'TrendingUp',
+        condition: { type: 'spend_amount', value: 2000, comparison: 'gte' },
+        rewardPoints: 1000,
+        badgeColor: '#8b5cf6',
+        difficulty: 'hard'
+      },
+      // Social Achievements
+      {
+        name: 'Social Butterfly',
+        description: 'Refer 3 friends who make purchases',
+        category: 'social',
+        icon: 'Users',
+        condition: { type: 'referral_count', value: 3, comparison: 'gte' },
+        rewardPoints: 300,
+        badgeColor: '#06b6d4',
+        difficulty: 'normal'
+      },
+      // Streak Achievements
+      {
+        name: 'Week Warrior',
+        description: 'Login for 7 consecutive days',
+        category: 'streak',
+        icon: 'Calendar',
+        condition: { type: 'streak_days', value: 7, comparison: 'gte', metadata: { streakType: 'daily_login' } },
+        rewardPoints: 200,
+        badgeColor: '#10b981',
+        difficulty: 'normal'
+      },
+      {
+        name: 'Monthly Master',
+        description: 'Make a purchase every week for a month',
+        category: 'streak',
+        icon: 'Award',
+        condition: { type: 'streak_days', value: 30, comparison: 'gte', metadata: { streakType: 'weekly_purchase' } },
+        rewardPoints: 800,
+        badgeColor: '#f97316',
+        difficulty: 'hard'
+      },
+      // Product Category Achievements
+      {
+        name: 'Flower Power',
+        description: 'Purchase from all flower categories',
+        category: 'milestone',
+        icon: 'Flower',
+        condition: { type: 'product_categories', value: 3, comparison: 'gte', metadata: { categories: ['flower'] } },
+        rewardPoints: 400,
+        badgeColor: '#84cc16',
+        difficulty: 'normal'
+      },
+      // Legendary Achievements
+      {
+        name: 'THCA Legend',
+        description: 'Reach Diamond tier and maintain for 6 months',
+        category: 'milestone',
+        icon: 'Crown',
+        condition: { type: 'order_count', value: 50, comparison: 'gte' },
+        rewardPoints: 2500,
+        badgeColor: '#b9f2ff',
+        difficulty: 'legendary',
+        isHidden: true
+      }
+    ];
+
+    await db.insert(achievements).values(defaultAchievements);
+  }
+
+  // Initialize daily challenges
+  private async initializeDailyChallenges(): Promise<void> {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    const existingChallenges = await db.select().from(dailyChallenges)
+      .where(eq(dailyChallenges.validFrom, todayStr))
+      .limit(1);
+    
+    if (existingChallenges.length > 0) return;
+
+    const todayChallenges: InsertDailyChallenge[] = [
+      {
+        title: 'Daily Shopper',
+        description: 'Make any purchase today',
+        category: 'purchase',
+        targetType: 'spend_amount',
+        targetValue: 1,
+        rewardPoints: 50,
+        bonusMultiplier: '1.20',
+        validFrom: todayStr,
+        validUntil: todayStr,
+        difficulty: 'easy'
+      },
+      {
+        title: 'Big Purchase Day',
+        description: 'Spend $100 or more today',
+        category: 'purchase',
+        targetType: 'spend_amount',
+        targetValue: 100,
+        rewardPoints: 150,
+        bonusMultiplier: '1.50',
+        validFrom: todayStr,
+        validUntil: todayStr,
+        difficulty: 'normal'
+      },
+      {
+        title: 'Product Explorer',
+        description: 'Add 3 different products to your cart',
+        category: 'engagement',
+        targetType: 'product_count',
+        targetValue: 3,
+        rewardPoints: 75,
+        bonusMultiplier: '1.25',
+        validFrom: todayStr,
+        validUntil: todayStr,
+        difficulty: 'easy'
+      }
+    ];
+
+    await db.insert(dailyChallenges).values(todayChallenges);
+  }
+
+  // Achievement Methods
+  async getAchievements(): Promise<Achievement[]> {
+    return await db.select().from(achievements).orderBy(achievements.difficulty, achievements.rewardPoints);
+  }
+
+  async getUserAchievements(userId: string): Promise<UserAchievement[]> {
+    return await db.select().from(userAchievements)
+      .where(eq(userAchievements.userId, userId))
+      .orderBy(desc(userAchievements.createdAt));
+  }
+
+  async createUserAchievement(userAchievement: InsertUserAchievement): Promise<UserAchievement> {
+    const [result] = await db.insert(userAchievements).values(userAchievement).returning();
+    return result;
+  }
+
+  async updateUserAchievementProgress(userId: string, achievementId: string, progress: number): Promise<UserAchievement | undefined> {
+    const [achievement] = await db.select().from(achievements).where(eq(achievements.id, achievementId));
+    if (!achievement) return undefined;
+
+    const isCompleted = progress >= (achievement.condition.value || 1);
+    const updateData: Partial<InsertUserAchievement> = {
+      progress,
+      isCompleted,
+      completedAt: isCompleted ? new Date() : undefined
+    };
+
+    const [result] = await db.update(userAchievements)
+      .set(updateData)
+      .where(and(eq(userAchievements.userId, userId), eq(userAchievements.achievementId, achievementId)))
+      .returning();
+
+    // Award points if completed
+    if (isCompleted && result && !result.notified) {
+      await this.addPointTransaction({
+        userId,
+        points: achievement.rewardPoints,
+        type: 'bonus',
+        description: `Achievement unlocked: ${achievement.name}`,
+        multiplier: '1.00'
+      });
+
+      // Mark as notified
+      await db.update(userAchievements)
+        .set({ notified: true })
+        .where(eq(userAchievements.id, result.id));
+    }
+
+    return result;
+  }
+
+  // Daily Challenges
+  async getDailyChallenges(date?: string): Promise<DailyChallenge[]> {
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    return await db.select().from(dailyChallenges)
+      .where(and(
+        eq(dailyChallenges.isActive, true),
+        eq(dailyChallenges.validFrom, targetDate)
+      ))
+      .orderBy(dailyChallenges.difficulty, dailyChallenges.rewardPoints);
+  }
+
+  async getUserChallenges(userId: string): Promise<UserChallenge[]> {
+    return await db.select().from(userChallenges)
+      .where(eq(userChallenges.userId, userId))
+      .orderBy(desc(userChallenges.createdAt));
+  }
+
+  async createUserChallenge(userChallenge: InsertUserChallenge): Promise<UserChallenge> {
+    const [result] = await db.insert(userChallenges).values(userChallenge).returning();
+    return result;
+  }
+
+  async updateUserChallengeProgress(userId: string, challengeId: string, progress: number): Promise<UserChallenge | undefined> {
+    const [challenge] = await db.select().from(dailyChallenges).where(eq(dailyChallenges.id, challengeId));
+    if (!challenge) return undefined;
+
+    const isCompleted = progress >= challenge.targetValue;
+    const updateData: Partial<InsertUserChallenge> = {
+      progress,
+      isCompleted,
+      completedAt: isCompleted ? new Date() : undefined
+    };
+
+    const [result] = await db.update(userChallenges)
+      .set(updateData)
+      .where(and(eq(userChallenges.userId, userId), eq(userChallenges.challengeId, challengeId)))
+      .returning();
+
+    return result;
+  }
+
+  async claimChallengeReward(userId: string, challengeId: string): Promise<boolean> {
+    const [userChallenge] = await db.select().from(userChallenges)
+      .where(and(
+        eq(userChallenges.userId, userId),
+        eq(userChallenges.challengeId, challengeId),
+        eq(userChallenges.isCompleted, true),
+        eq(userChallenges.rewardClaimed, false)
+      ));
+
+    if (!userChallenge) return false;
+
+    const [challenge] = await db.select().from(dailyChallenges).where(eq(dailyChallenges.id, challengeId));
+    if (!challenge) return false;
+
+    // Award points
+    await this.addPointTransaction({
+      userId,
+      points: challenge.rewardPoints,
+      type: 'bonus',
+      description: `Challenge completed: ${challenge.title}`,
+      multiplier: challenge.bonusMultiplier
+    });
+
+    // Mark reward as claimed
+    await db.update(userChallenges)
+      .set({ rewardClaimed: true })
+      .where(eq(userChallenges.id, userChallenge.id));
+
+    return true;
+  }
+
+  // Streak Management
+  async getUserStreaks(userId: string): Promise<LoyaltyStreak[]> {
+    return await db.select().from(loyaltyStreaks)
+      .where(eq(loyaltyStreaks.userId, userId));
+  }
+
+  async updateStreak(userId: string, streakType: string, activityDate: Date): Promise<LoyaltyStreak> {
+    const [existingStreak] = await db.select().from(loyaltyStreaks)
+      .where(and(eq(loyaltyStreaks.userId, userId), eq(loyaltyStreaks.streakType, streakType)));
+
+    const today = activityDate.toISOString().split('T')[0];
+    
+    if (!existingStreak) {
+      // Create new streak
+      const [newStreak] = await db.insert(loyaltyStreaks).values({
+        userId,
+        streakType,
+        currentStreak: 1,
+        longestStreak: 1,
+        lastActivityDate: today,
+        streakMultiplier: '1.10'
+      }).returning();
+      return newStreak;
+    }
+
+    const lastActivity = new Date(existingStreak.lastActivityDate || '');
+    const daysDiff = Math.floor((activityDate.getTime() - lastActivity.getTime()) / (1000 * 60 * 60 * 24));
+    
+    let newCurrentStreak: number;
+    if (daysDiff === 1) {
+      // Consecutive day
+      newCurrentStreak = existingStreak.currentStreak + 1;
+    } else if (daysDiff === 0) {
+      // Same day, no change
+      return existingStreak;
+    } else {
+      // Streak broken, restart
+      newCurrentStreak = 1;
+    }
+
+    const newLongestStreak = Math.max(existingStreak.longestStreak, newCurrentStreak);
+    const newMultiplier = Math.min(1.0 + (newCurrentStreak * 0.05), 2.0).toFixed(2);
+
+    const [updatedStreak] = await db.update(loyaltyStreaks)
+      .set({
+        currentStreak: newCurrentStreak,
+        longestStreak: newLongestStreak,
+        lastActivityDate: today,
+        streakMultiplier: newMultiplier,
+        updatedAt: new Date()
+      })
+      .where(eq(loyaltyStreaks.id, existingStreak.id))
+      .returning();
+
+    return updatedStreak;
+  }
+
+  // Leaderboard
+  async getLeaderboard(period: 'weekly' | 'monthly' | 'all_time', limit: number = 10): Promise<LoyaltyLeaderboard[]> {
+    return await db.select().from(loyaltyLeaderboard)
+      .where(eq(loyaltyLeaderboard.period, period))
+      .orderBy(loyaltyLeaderboard.rank)
+      .limit(limit);
+  }
+
+  async updateLeaderboard(userId: string, period: 'weekly' | 'monthly' | 'all_time'): Promise<void> {
+    const userReward = await this.getUserRewards(userId);
+    if (!userReward) return;
+
+    const userAchievements = await this.getUserAchievements(userId);
+    const completedCount = userAchievements.filter(ua => ua.isCompleted).length;
+    
+    const userStreaks = await this.getUserStreaks(userId);
+    const longestStreak = Math.max(...userStreaks.map(s => s.longestStreak), 0);
+
+    // Calculate rank
+    const allUsers = await db.select().from(userRewards);
+    const sortedByPoints = allUsers.sort((a, b) => b.totalPoints - a.totalPoints);
+    const rank = sortedByPoints.findIndex(u => u.userId === userId) + 1;
+
+    // Upsert leaderboard entry
+    const [existing] = await db.select().from(loyaltyLeaderboard)
+      .where(and(eq(loyaltyLeaderboard.userId, userId), eq(loyaltyLeaderboard.period, period)));
+
+    if (existing) {
+      await db.update(loyaltyLeaderboard)
+        .set({
+          rank,
+          points: userReward.totalPoints,
+          achievementCount: completedCount,
+          longestStreak,
+          updatedAt: new Date()
+        })
+        .where(eq(loyaltyLeaderboard.id, existing.id));
+    } else {
+      await db.insert(loyaltyLeaderboard).values({
+        userId,
+        period,
+        rank,
+        points: userReward.totalPoints,
+        achievementCount: completedCount,
+        longestStreak
+      });
+    }
   }
 
 

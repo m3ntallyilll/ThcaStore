@@ -1484,6 +1484,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Seed gamification data
+  app.post("/api/seed-gamification", async (req, res) => {
+    try {
+      const seedModule = await import('./seed-gamification');
+      const seedGamificationData = seedModule.default || seedModule.seedGamificationData;
+      await seedGamificationData();
+      res.json({ 
+        message: "Gamification data seeded successfully",
+        details: "Added achievements, daily challenges, and gamification features"
+      });
+    } catch (error: any) {
+      console.error('Gamification seeding error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Gamification API Routes
+
+  // Achievements
+  app.get("/api/gamification/achievements", authenticateToken, async (req, res) => {
+    try {
+      const achievements = await storage.getAchievements();
+      res.json(achievements);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/gamification/user-achievements", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const userAchievements = await storage.getUserAchievements(userId);
+      res.json(userAchievements);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/gamification/achievements/:achievementId/progress", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { achievementId } = req.params;
+      const { progress } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const result = await storage.updateUserAchievementProgress(userId, achievementId, progress);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Daily Challenges
+  app.get("/api/gamification/challenges/today", authenticateToken, async (req, res) => {
+    try {
+      const challenges = await storage.getDailyChallenges();
+      res.json(challenges);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/gamification/user-challenges", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const userChallenges = await storage.getUserChallenges(userId);
+      res.json(userChallenges);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/gamification/challenges/:challengeId/progress", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { challengeId } = req.params;
+      const { progress } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const result = await storage.updateUserChallengeProgress(userId, challengeId, progress);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/gamification/challenges/:challengeId/claim", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { challengeId } = req.params;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const success = await storage.claimChallengeReward(userId, challengeId);
+      if (success) {
+        res.json({ success: true, message: "Reward claimed successfully" });
+      } else {
+        res.status(400).json({ success: false, message: "Challenge not completed or reward already claimed" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Streaks
+  app.get("/api/gamification/streaks", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const streaks = await storage.getUserStreaks(userId);
+      res.json(streaks);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/gamification/streaks", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { streakType, activityDate } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const date = activityDate ? new Date(activityDate) : new Date();
+      const streak = await storage.updateStreak(userId, streakType, date);
+      res.json(streak);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Leaderboard
+  app.get("/api/gamification/leaderboard", authenticateToken, async (req, res) => {
+    try {
+      const { period = 'all_time', limit = 10 } = req.query;
+      const leaderboard = await storage.getLeaderboard(period as any, parseInt(limit as string));
+      res.json(leaderboard);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/gamification/leaderboard/update", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { period = 'all_time' } = req.body;
+
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      await storage.updateLeaderboard(userId, period as any);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Set up global storage for seed functions
   (global as any).storage = storage;
   

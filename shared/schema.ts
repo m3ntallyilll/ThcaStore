@@ -416,6 +416,117 @@ export const promotionUsageRelations = relations(promotionUsage, ({ one }) => ({
   order: one(orders, { fields: [promotionUsage.orderId], references: [orders.id] }),
 }));
 
+// Gamified Loyalty System Enhancements
+export const achievements = pgTable('achievements', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  name: text('name').notNull(),
+  description: text('description').notNull(),
+  category: text('category').notNull(), // purchase, social, milestone, streak, challenge
+  icon: text('icon').notNull(),
+  condition: jsonb('condition').$type<{
+    type: 'order_count' | 'spend_amount' | 'referral_count' | 'streak_days' | 'product_categories' | 'review_count';
+    value: number;
+    comparison?: 'gte' | 'lte' | 'eq';
+    metadata?: any;
+  }>().notNull(),
+  rewardPoints: integer('reward_points').notNull().default(0),
+  badgeColor: text('badge_color').notNull().default('#gold'),
+  isHidden: boolean('is_hidden').default(false),
+  difficulty: text('difficulty').notNull().default('normal'), // easy, normal, hard, legendary
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const userAchievements = pgTable('user_achievements', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  achievementId: varchar('achievement_id').references(() => achievements.id).notNull(),
+  progress: integer('progress').notNull().default(0),
+  maxProgress: integer('max_progress').notNull().default(1),
+  isCompleted: boolean('is_completed').default(false),
+  completedAt: timestamp('completed_at'),
+  notified: boolean('notified').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const dailyChallenges = pgTable('daily_challenges', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  category: text('category').notNull(), // purchase, engagement, social
+  targetType: text('target_type').notNull(), // spend_amount, product_count, category_purchase, social_share
+  targetValue: integer('target_value').notNull(),
+  rewardPoints: integer('reward_points').notNull(),
+  bonusMultiplier: decimal('bonus_multiplier', { precision: 3, scale: 2 }).default('1.00'),
+  validFrom: date('valid_from').notNull(),
+  validUntil: date('valid_until').notNull(),
+  isActive: boolean('is_active').default(true),
+  difficulty: text('difficulty').notNull().default('normal'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const userChallenges = pgTable('user_challenges', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  challengeId: varchar('challenge_id').references(() => dailyChallenges.id).notNull(),
+  progress: integer('progress').notNull().default(0),
+  isCompleted: boolean('is_completed').default(false),
+  completedAt: timestamp('completed_at'),
+  rewardClaimed: boolean('reward_claimed').default(false),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const loyaltyStreaks = pgTable('loyalty_streaks', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  streakType: text('streak_type').notNull(), // daily_login, weekly_purchase, monthly_review
+  currentStreak: integer('current_streak').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  lastActivityDate: date('last_activity_date'),
+  streakMultiplier: decimal('streak_multiplier', { precision: 3, scale: 2 }).default('1.00'),
+  bonusPointsEarned: integer('bonus_points_earned').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const loyaltyLeaderboard = pgTable('loyalty_leaderboard', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  period: text('period').notNull(), // weekly, monthly, all_time
+  rank: integer('rank').notNull(),
+  points: integer('points').notNull(),
+  achievementCount: integer('achievement_count').notNull().default(0),
+  longestStreak: integer('longest_streak').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Gamification Relations
+export const achievementsRelations = relations(achievements, ({ many }) => ({
+  userAchievements: many(userAchievements),
+}));
+
+export const userAchievementsRelations = relations(userAchievements, ({ one }) => ({
+  user: one(users, { fields: [userAchievements.userId], references: [users.id] }),
+  achievement: one(achievements, { fields: [userAchievements.achievementId], references: [achievements.id] }),
+}));
+
+export const dailyChallengesRelations = relations(dailyChallenges, ({ many }) => ({
+  userChallenges: many(userChallenges),
+}));
+
+export const userChallengesRelations = relations(userChallenges, ({ one }) => ({
+  user: one(users, { fields: [userChallenges.userId], references: [users.id] }),
+  challenge: one(dailyChallenges, { fields: [userChallenges.challengeId], references: [dailyChallenges.id] }),
+}));
+
+export const loyaltyStreaksRelations = relations(loyaltyStreaks, ({ one }) => ({
+  user: one(users, { fields: [loyaltyStreaks.userId], references: [users.id] }),
+}));
+
+export const loyaltyLeaderboardRelations = relations(loyaltyLeaderboard, ({ one }) => ({
+  user: one(users, { fields: [loyaltyLeaderboard.userId], references: [users.id] }),
+}));
+
 // Insert and Select Schemas
 export const insertRewardTierSchema = createInsertSchema(rewardTiers);
 export const insertUserRewardSchema = createInsertSchema(userRewards);
@@ -433,6 +544,14 @@ export const insertAiUserProfileSchema = createInsertSchema(aiUserProfiles);
 export const insertAiContextMemorySchema = createInsertSchema(aiContextMemory);
 export const insertDailyPromotionSchema = createInsertSchema(dailyPromotions);
 export const insertPromotionUsageSchema = createInsertSchema(promotionUsage);
+
+// Gamification Insert Schemas
+export const insertAchievementSchema = createInsertSchema(achievements);
+export const insertUserAchievementSchema = createInsertSchema(userAchievements);
+export const insertDailyChallengeSchema = createInsertSchema(dailyChallenges);
+export const insertUserChallengeSchema = createInsertSchema(userChallenges);
+export const insertLoyaltyStreakSchema = createInsertSchema(loyaltyStreaks);
+export const insertLoyaltyLeaderboardSchema = createInsertSchema(loyaltyLeaderboard);
 
 // Types
 export type InsertRewardTier = z.infer<typeof insertRewardTierSchema>;
@@ -469,6 +588,20 @@ export type InsertDailyPromotion = z.infer<typeof insertDailyPromotionSchema>;
 export type DailyPromotion = typeof dailyPromotions.$inferSelect;
 export type InsertPromotionUsage = z.infer<typeof insertPromotionUsageSchema>;
 export type PromotionUsage = typeof promotionUsage.$inferSelect;
+
+// Gamification Types
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+export type DailyChallenge = typeof dailyChallenges.$inferSelect;
+export type InsertDailyChallenge = z.infer<typeof insertDailyChallengeSchema>;
+export type UserChallenge = typeof userChallenges.$inferSelect;
+export type InsertUserChallenge = z.infer<typeof insertUserChallengeSchema>;
+export type LoyaltyStreak = typeof loyaltyStreaks.$inferSelect;
+export type InsertLoyaltyStreak = z.infer<typeof insertLoyaltyStreakSchema>;
+export type LoyaltyLeaderboard = typeof loyaltyLeaderboard.$inferSelect;
+export type InsertLoyaltyLeaderboard = z.infer<typeof insertLoyaltyLeaderboardSchema>;
 
 // Auth user type for frontend
 export interface AuthUser {

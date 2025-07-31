@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Crown, Sparkles } from 'lucide-react';
-import { RewardsDashboard } from '@/components/rewards/rewards-dashboard';
+import { GamifiedRewardsDashboard } from '@/components/rewards/gamified-rewards-dashboard';
 
 export default function RewardsPage() {
   return (
@@ -26,7 +26,7 @@ export default function RewardsPage() {
         </motion.div>
 
         {/* Dashboard */}
-        <RewardsDashboard />
+        <GamifiedRewardsDashboard />
       </div>
     </div>
   );
