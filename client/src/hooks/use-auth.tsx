@@ -77,17 +77,18 @@ export const useAuth = create<AuthState>()(
 
         try {
           const user = await apiRequest('/api/auth/me', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
+            method: 'GET'
           });
           set({ user, token });
         } catch (error: any) {
-          // Token is invalid or expired, clear it
-          localStorage.removeItem('authToken');
-          set({ user: null, token: null });
+          // Only clear token if it's actually invalid
+          if (error.message.includes('401') || error.message.includes('expired') || error.message.includes('invalid')) {
+            localStorage.removeItem('authToken');
+            set({ user: null, token: null });
+          } else {
+            // For other errors, just log but don't clear auth state
+            console.warn('Auth check failed (non-auth error):', error.message);
+          }
         }
       },
     }),

@@ -38,16 +38,35 @@ const authenticateToken = async (req: any, res: any, next: any) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    const user = await storage.getUser(decoded.userId);
-    if (!user) {
-      return res.status(401).json({ message: 'User not found' });
+    
+    // Try to get user, but handle missing users gracefully
+    let user;
+    try {
+      user = await storage.getUser(decoded.userId);
+    } catch (userError) {
+      console.error('User lookup error:', userError);
+      return res.status(401).json({ message: 'User account not found' });
     }
+    
+    if (!user) {
+      return res.status(401).json({ message: 'User account no longer exists' });
+    }
+    
     // Ensure the user object has all necessary properties
-    req.user = { ...user, isAdmin: user.isAdmin || false };
+    req.user = { 
+      ...user, 
+      isAdmin: user.isAdmin || false,
+      id: user.id || decoded.userId 
+    };
     next();
   } catch (error) {
     console.error('Token verification error:', error);
-    return res.status(403).json({ message: 'Invalid or expired token' });
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token expired - please log in again' });
+    } else if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: 'Invalid token - please log in again' });
+    }
+    return res.status(403).json({ message: 'Authentication failed' });
   }
 };
 
@@ -321,9 +340,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Simple rate limiting for admin stats
+  const statsRequestCache = new Map();
+  
   // Admin stats route
   app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
+      const userId = req.user.id;
+      const now = Date.now();
+      const lastRequest = statsRequestCache.get(userId);
+      
+      // Rate limit: 1 request per 5 seconds per user
+      if (lastRequest && (now - lastRequest) < 5000) {
+        return res.status(429).json({ message: 'Too many requests, please wait' });
+      }
+      
+      statsRequestCache.set(userId, now);
+      
       const products = await storage.getProducts();
       const orders = await storage.getOrders();
       // For now, we'll calculate from orders since we don't have direct user count method
@@ -653,9 +686,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Sales Activation Route
   app.post("/api/ai/activate-sales", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      // Validate request body
-      if (!req.body || typeof req.body !== 'object') {
-        return res.status(400).json({ message: "Invalid request body" });
+      // Validate request body and handle JSON parsing errors
+      if (!req.body) {
+        return res.status(400).json({ message: "Request body is required" });
+      }
+      
+      if (typeof req.body === 'string') {
+        try {
+          req.body = JSON.parse(req.body);
+        } catch (parseError) {
+          return res.status(400).json({ message: "Invalid JSON in request body" });
+        }
+      }
+      
+      if (typeof req.body !== 'object') {
+        return res.status(400).json({ message: "Invalid request body format" });
       }
       
       const { strategyId } = req.body;

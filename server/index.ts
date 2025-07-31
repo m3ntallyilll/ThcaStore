@@ -4,17 +4,17 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(express.json({ 
-  limit: '10mb',
-  verify: (req: any, res, buf) => {
-    try {
-      JSON.parse(buf.toString());
-    } catch (e) {
-      console.error('JSON Parse Error:', e.message);
-      res.status(400).json({ message: 'Invalid JSON in request body' });
-      return;
-    }
-  }
+  limit: '10mb'
 }));
+
+// Add JSON error handling middleware
+app.use((err: any, req: any, res: any, next: any) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('JSON Parse Error:', err.message);
+    return res.status(400).json({ message: 'Invalid JSON in request body' });
+  }
+  next(err);
+});
 app.use(express.urlencoded({ extended: false }));
 
 app.use((req, res, next) => {
