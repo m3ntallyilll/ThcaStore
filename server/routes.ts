@@ -63,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/register", async (req, res) => {
     try {
       const userData = insertUserSchema.parse(req.body);
-      
+
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(userData.email);
       if (existingUser) {
@@ -72,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Hash password
       const hashedPassword = await bcrypt.hash(userData.password, 10);
-      
+
       const user = await storage.createUser({
         ...userData,
         password: hashedPassword,
@@ -93,7 +93,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/login", async (req, res) => {
     try {
       const { email, password } = loginSchema.parse(req.body);
-      
+
       const user = await storage.getUserByEmail(email);
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
@@ -123,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products", async (req, res) => {
     try {
       const { category, featured } = req.query;
-      
+
       let products;
       if (category && category !== 'all') {
         products = await storage.getProducts();
@@ -133,7 +133,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         products = await storage.getProducts();
       }
-      
+
       res.json(products);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -203,7 +203,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId: req.user.id,
       });
-      
+
       const cartItem = await storage.addToCart(cartItemData);
       res.status(201).json(cartItem);
     } catch (error: any) {
@@ -259,7 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const { status, trackingNumber } = req.body;
-      
+
       const order = await storage.updateOrderStatus(orderId, status, trackingNumber);
       res.json(order);
     } catch (error: any) {
@@ -273,9 +273,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId: req.user.id,
       });
-      
+
       const order = await storage.createOrder(orderData);
-      
+
       // Create order items from cart
       const cartItems = await storage.getCartItems(req.user.id);
       for (const cartItem of cartItems) {
@@ -286,10 +286,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           price: parseFloat(cartItem.product.price),
         });
       }
-      
+
       // Clear cart after creating order
       await storage.clearCart(req.user.id);
-      
+
       res.status(201).json(order);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -317,12 +317,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // For now, we'll calculate from orders since we don't have direct user count method
       const uniqueUserIds = new Set(orders.map(order => order.userId));
       const users = Array.from(uniqueUserIds);
-      
+
       const totalProducts = products.length;
       const totalOrders = orders.length;
       const totalRevenue = orders.reduce((sum, order) => sum + parseFloat(order.total), 0);
       const activeUsers = users.length;
-      
+
       res.json({
         totalProducts,
         totalOrders,
@@ -343,7 +343,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userRewards = await storage.getUserRewards(req.user.id);
       const tiers = await storage.getRewardTiers();
       const transactions = await storage.getPointTransactions(req.user.id);
-      
+
       res.json({
         userRewards,
         tiers,
@@ -366,7 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/rewards/redeem", authenticateToken, async (req: any, res) => {
     try {
       const { points, description } = req.body;
-      
+
       const userRewards = await storage.getUserRewards(req.user.id);
       if (!userRewards || userRewards.totalPoints < points) {
         return res.status(400).json({ message: "Insufficient points" });
@@ -399,7 +399,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/referrals", authenticateToken, async (req: any, res) => {
     try {
       const referralCode = `${req.user.username.toUpperCase().slice(0, 4)}${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
-      
+
       const referral = await storage.createReferral({
         referrerId: req.user.id,
         referralCode,
@@ -459,7 +459,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai/chat", async (req, res) => {
     try {
       const { message, sessionId, userId, userContext } = req.body;
-      
+
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ 
           message: "Please provide a message",
@@ -468,7 +468,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           sentiment: "neutral"
         });
       }
-      
+
       // Get user context if authenticated
       let contextData = {};
       if (userId) {
@@ -532,7 +532,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { status, category } = req.query;
       let posts;
-      
+
       if (category) {
         posts = await storage.getBlogsByCategory(category as string);
       } else if (status) {
@@ -540,7 +540,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         posts = await storage.getPublishedBlogPosts();
       }
-      
+
       res.json(posts);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -553,12 +553,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!post) {
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       // Increment view count for published posts
       if (post.status === 'published') {
         await storage.incrementBlogViewCount(post.id);
       }
-      
+
       res.json(post);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -571,12 +571,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!post) {
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       // Increment view count for published posts
       if (post.status === 'published') {
         await storage.incrementBlogViewCount(post.id);
       }
-      
+
       res.json(post);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -597,7 +597,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/blog/posts", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const { title, content, excerpt, category, tags, status, metaTitle, metaDescription, keywords, featuredImage } = req.body;
-      
+
       // Generate slug from title
       const slug = title.toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
@@ -633,7 +633,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/admin/blog/posts/:id", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const { title, content, excerpt, category, tags, status, metaTitle, metaDescription, keywords, featuredImage } = req.body;
-      
+
       const updates: any = {
         title,
         content,
@@ -660,7 +660,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!post) {
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       res.json(post);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -673,7 +673,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!success) {
         return res.status(404).json({ message: "Blog post not found" });
       }
-      
+
       res.json({ message: "Blog post deleted successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -685,7 +685,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { blogAIService } = await import('./blog-ai-service');
       const { topic, category, keywords, tone, length, targetAudience, includeCallToAction } = req.body;
-      
+
       if (!topic || !category) {
         return res.status(400).json({ message: "Topic and category are required" });
       }
@@ -712,10 +712,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { blogAIService } = await import('./blog-ai-service');
       const { improvements } = req.body;
-      
+
       const improvedPost = await blogAIService.improveBlogPost(req.params.id, improvements);
       const savedPost = await storage.updateBlogPost(req.params.id, improvedPost);
-      
+
       res.json(savedPost);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -726,12 +726,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { blogAIService } = await import('./blog-ai-service');
       const { category, count } = req.query;
-      
+
       const ideas = await blogAIService.generateBlogIdeas(
         category as string || 'education',
         parseInt(count as string) || 10
       );
-      
+
       res.json({ ideas });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -753,7 +753,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!q) {
         return res.status(400).json({ message: "Search query is required" });
       }
-      
+
       const posts = await storage.searchBlogPosts(q as string);
       res.json(posts);
     } catch (error: any) {
@@ -812,14 +812,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { state } = req.body;
       const isProhibited = await storage.isStateProhibited(state);
-      
+
       if (isProhibited) {
         const prohibitedState = await storage.getProhibitedState(state);
         return res.status(400).json({ 
           message: `We cannot ship to ${prohibitedState?.stateName || state}. ${prohibitedState?.reason || 'This state restricts THCA products.'}`
         });
       }
-      
+
       res.json({ valid: true });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -840,7 +840,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const { status, trackingNumber } = req.body;
-      
+
       const updatedOrder = await storage.updateOrderStatus(orderId, status, trackingNumber);
       res.json(updatedOrder);
     } catch (error: any) {

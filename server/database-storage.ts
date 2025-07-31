@@ -830,6 +830,35 @@ export class DatabaseStorage {
       )
       .orderBy(desc(blogPosts.publishedAt));
   }
+
+  async getPublishedBlogPosts(): Promise<BlogPost[]> {
+    return await db.select().from(blogPosts)
+      .where(eq(blogPosts.status, 'published'))
+      .orderBy(desc(blogPosts.publishedAt));
+  }
+
+  async getBlogCategories(): Promise<string[]> {
+    const categories = await db.selectDistinct({ category: blogPosts.category })
+      .from(blogPosts)
+      .where(eq(blogPosts.status, 'published'));
+    return categories.map(cat => cat.category);
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+    const result = await db.select().from(blogPosts)
+      .where(and(
+        eq(blogPosts.slug, slug),
+        eq(blogPosts.status, 'published')
+      ))
+      .limit(1);
+    return result[0] || null;
+  }
+
+  async incrementBlogPostViews(id: string): Promise<void> {
+    await db.update(blogPosts)
+      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+      .where(eq(blogPosts.id, id));
+  }
 }
 
 export const storage = new DatabaseStorage();

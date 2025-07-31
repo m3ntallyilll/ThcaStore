@@ -16,9 +16,7 @@ export async function apiRequest(
 ): Promise<any> {
   const { method = 'GET', body } = options;
   const token = localStorage.getItem('authToken');
-  const headers: any = {
-    credentials: "include",
-  };
+  const headers: any = {};
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;

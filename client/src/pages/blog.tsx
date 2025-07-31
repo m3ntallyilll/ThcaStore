@@ -24,15 +24,15 @@ export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   // Fetch published blog posts
-  const { data: posts = [], isLoading } = useQuery({
+  const { data: posts = [], isLoading, error } = useQuery({
     queryKey: ['/api/blog/posts'],
-    queryFn: () => apiRequest('/api/blog/posts')
+    queryFn: () => apiRequest('/api/blog/posts').catch(() => [])
   });
 
   // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ['/api/blog/categories'],
-    queryFn: () => apiRequest('/api/blog/categories')
+    queryFn: () => apiRequest('/api/blog/categories').catch(() => [])
   });
 
   // Filter posts based on search and category

@@ -145,7 +145,7 @@ export function AdminDashboard() {
           rating: productData.rating?.toString() || null,
           effects: Array.isArray(productData.effects) ? productData.effects : []
         };
-        
+
         // Remove undefined values
         Object.keys(cleanData).forEach(key => {
           if (cleanData[key as keyof typeof cleanData] === undefined) {
@@ -849,7 +849,7 @@ export function AdminDashboard() {
           {activeSection === 'analytics' && (
             <Card className="glass">
               <CardHeader>
-                <CardTitle>Analytics Dashboard</CardTitle>
+                <CardTitle>Analytics Dashboard</CardTitle<previous_generation>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-400">Analytics dashboard coming soon...</p>
@@ -860,7 +860,7 @@ export function AdminDashboard() {
           {activeSection === 'blog' && <BlogManagement blogFormData={blogFormData} />}
         </div>
       </div>
-      
+
       {/* AI Chat Assistant for Admins */}
       <AIChat
         onProductUpdate={(productData) => {
