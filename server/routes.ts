@@ -41,10 +41,12 @@ const authenticateToken = async (req: any, res: any, next: any) => {
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
-    req.user = user;
+    // Ensure the user object has all necessary properties
+    req.user = { ...user, isAdmin: user.isAdmin || false };
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid token' });
+    console.error('Token verification error:', error);
+    return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
 
@@ -77,7 +79,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Generate JWT token
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '30d' });
 
       res.json({
         user: { ...user, password: undefined },
@@ -102,7 +104,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
+      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '30d' });
 
       res.json({
         user: { ...user, password: undefined },

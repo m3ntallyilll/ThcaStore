@@ -36,11 +36,11 @@ export async function apiRequest(
       credentials: "include",
     });
 
-    if (res.status === 401) {
+    if (res.status === 401 || res.status === 403) {
       // Clear invalid token and redirect to login
       localStorage.removeItem('authToken');
-      window.location.href = '/';
-      throw new Error('Authentication required');
+      // Don't redirect immediately - let the component handle it
+      throw new Error('Authentication expired - please log in again');
     }
 
     await throwIfResNotOk(res);
