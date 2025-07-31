@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
-import { apiRequest } from '@/lib/queryClient';
 
 interface ChatMessage {
   id: string;
