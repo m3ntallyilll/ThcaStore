@@ -90,7 +90,10 @@ export function AdminDashboard() {
   // Update order status mutation
   const updateOrderMutation = useMutation({
     mutationFn: async ({ orderId, status, trackingNumber }: { orderId: string; status: string; trackingNumber?: string }) => {
-      const response = await apiRequest('PATCH', `/api/admin/orders/${orderId}`, { status, trackingNumber });
+      const response = await apiRequest(`/api/admin/orders/${orderId}`, {
+        method: 'PATCH',
+        body: { status, trackingNumber }
+      });
       return response.json();
     },
     onSuccess: () => {
@@ -112,7 +115,10 @@ export function AdminDashboard() {
     // Create product mutation
     const createProductMutation = useMutation({
       mutationFn: async (productData: Omit<Product, 'id'>) => {
-        const response = await apiRequest('POST', '/api/products', productData);
+        const response = await apiRequest('/api/products', {
+          method: 'POST',
+          body: productData
+        });
         return response.json();
       },
       onSuccess: () => {
@@ -309,7 +315,21 @@ export function AdminDashboard() {
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
-      onSubmit({ name, description, price, stock, category, imageUrl });
+      onSubmit({ 
+        name, 
+        description, 
+        price: price.toString(), 
+        stock, 
+        category, 
+        imageUrl,
+        createdAt: null,
+        weight: null,
+        featured: null,
+        rating: null,
+        thcaContent: null,
+        strainType: null,
+        effects: null
+      });
     };
 
     return (
@@ -849,7 +869,7 @@ export function AdminDashboard() {
           {activeSection === 'analytics' && (
             <Card className="glass">
               <CardHeader>
-                <CardTitle>Analytics Dashboard</CardTitle<previous_generation>
+                <CardTitle>Analytics Dashboard</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-400">Analytics dashboard coming soon...</p>
