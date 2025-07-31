@@ -25,7 +25,8 @@ export class AIAssistant {
   async generateResponse(
     message: string, 
     context: AIAssistantContext,
-    sessionId: string
+    sessionId: string,
+    userContext?: { username: string; email: string; isAdmin: boolean; }
   ): Promise<{
     response: string;
     intent: string;
@@ -45,7 +46,7 @@ export class AIAssistant {
       const products = await this.getProducts();
 
       // Create system prompt with context
-      const systemPrompt = this.buildSystemPrompt(context, activeOffers, products);
+      const systemPrompt = this.buildSystemPrompt(context, activeOffers, products, userContext);
 
       // Use Groq with message prefilling for structured response
       const completion = await groq.chat.completions.create({
@@ -140,9 +141,10 @@ export class AIAssistant {
   private buildSystemPrompt(
     context: AIAssistantContext, 
     activeOffers: any[], 
-    products: any[]
+    products: any[],
+    userContext?: { username: string; email: string; isAdmin: boolean; }
   ): string {
-    const userContext = context.userId ? `
+    const userProfile = context.userId ? `
 User Profile:
 - Reward Points: ${context.userRewards?.totalPoints || 0}
 - Tier: ${context.userTier?.name || 'Bronze'} (${context.userTier?.multiplier || 1}x points)
@@ -161,13 +163,44 @@ Available Products:
 ${products.slice(0, 10).map(p => `- ${p.name}: $${p.price} (${p.category}) - ${p.description.substring(0, 100)}...`).join('\n')}
 `;
 
-    return `You are THCA Store's elite AI sales assistant, powered by advanced intelligence to maximize customer satisfaction and sales conversion. Your mission is to increase sales by providing exceptional, personalized service.
+    const adminCapabilities = userContext?.isAdmin ? `
 
-${userContext}
+ADMIN CAPABILITIES - You can manage products and store operations:
+- Create new products with all details (name, description, price, category, stock, etc.)
+- Update existing products (price, stock, description, features, etc.)
+- Analyze sales data and suggest improvements
+- Manage inventory and stock levels
+- Handle administrative queries about orders and customers
+
+When users request product updates or creation, respond with actionItems containing:
+{
+  "type": "product_update",
+  "operation": "create" or "update", 
+  "productId": "existing_id_for_updates",
+  "productData": {
+    "name": "Product Name",
+    "description": "Detailed description",
+    "price": "99.99",
+    "category": "flower|concentrates|edibles|accessories",
+    "imageUrl": "image_url",
+    "stock": 50,
+    "weight": "1.0",
+    "featured": false,
+    "thcaContent": "25.0",
+    "strainType": "hybrid|indica|sativa",
+    "effects": ["relaxing", "euphoric"]
+  }
+}
+` : '';
+
+    return `You are THCA Store's ${userContext?.isAdmin ? 'elite AI admin assistant' : 'elite AI sales assistant'}, powered by advanced intelligence to ${userContext?.isAdmin ? 'manage store operations efficiently' : 'maximize customer satisfaction and sales conversion'}. Your mission is to ${userContext?.isAdmin ? 'help admins run a successful cannabis business' : 'increase sales by providing exceptional, personalized service'}.
+
+${userProfile}
 ${offersContext}
 ${productsContext}
+${adminCapabilities}
 
-PERSONALITY: Enthusiastic, knowledgeable cannabis expert who's genuinely excited about THCA products. You're persuasive but never pushy, always focusing on benefits and value.
+PERSONALITY: ${userContext?.isAdmin ? 'Professional, efficient store manager with deep cannabis expertise. You understand business operations and can handle complex administrative tasks with precision.' : 'Enthusiastic, knowledgeable cannabis expert who\'s genuinely excited about THCA products. You\'re persuasive but never pushy, always focusing on benefits and value.'}
 
 SALES STRATEGY:
 1. Identify customer needs through smart questioning
@@ -179,12 +212,12 @@ SALES STRATEGY:
 
 RESPONSE FORMAT - Always respond with valid JSON:
 {
-  "response": "Your conversational response to the customer",
-  "intent": "product_recommendation|support|complaint|price_inquiry|rewards_inquiry|referral_question|general",
+  "response": "Your conversational response to the ${userContext?.isAdmin ? 'admin' : 'customer'}",
+  "intent": "product_recommendation|support|complaint|price_inquiry|rewards_inquiry|referral_question|admin_product_management|admin_analytics|general",
   "sentiment": "positive|neutral|negative",
   "recommendedProducts": ["product_id_1", "product_id_2"],
   "suggestedOffers": [{"name": "offer_name", "description": "offer_desc", "value": "X%"}],
-  "actionItems": [{"type": "add_to_cart|apply_discount|show_rewards|generate_referral", "data": {}}]
+  "actionItems": [{"type": "add_to_cart|apply_discount|show_rewards|generate_referral|product_update", "data": {}}]
 }
 
 CONVERSATION RULES:

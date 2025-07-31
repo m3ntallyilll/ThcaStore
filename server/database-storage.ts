@@ -229,11 +229,13 @@ export class DatabaseStorage {
         rating: "4.6",
         thcaContent: null,
         strainType: null,
-        effects: []
+        effects: null
       }
     ];
 
-    await db.insert(products).values(sampleProducts);
+    for (const product of sampleProducts) {
+      await db.insert(products).values(product);
+    }
   }
 
   private async initializeSpecialOffers(): Promise<void> {
@@ -476,8 +478,13 @@ export class DatabaseStorage {
     return order;
   }
 
-  async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
-    const [order] = await db.update(orders).set({ status }).where(eq(orders.id, id)).returning();
+  async updateOrderStatus(id: string, status: string, trackingNumber?: string): Promise<Order | undefined> {
+    const updateData: any = { status };
+    if (trackingNumber !== undefined) {
+      updateData.trackingNumber = trackingNumber;
+    }
+    
+    const [order] = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();
     return order || undefined;
   }
 
@@ -723,19 +730,7 @@ export class DatabaseStorage {
     }).from(orders).orderBy(desc(orders.createdAt));
   }
 
-  async updateOrderStatus(orderId: string, status: string, trackingNumber?: string) {
-    const updateData: any = { status };
-    if (trackingNumber) {
-      updateData.trackingNumber = trackingNumber;
-    }
 
-    const [order] = await db.update(orders)
-      .set(updateData)
-      .where(eq(orders.id, orderId))
-      .returning();
-    
-    return order;
-  }
 
   async updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined> {
     const [offer] = await db.update(specialOffers).set(updates).where(eq(specialOffers.id, id)).returning();

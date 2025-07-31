@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp } from 'lucide-react';
+import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp, Settings, Package, Edit3 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { apiRequest } from '@/lib/queryClient';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ChatMessage {
   id: string;
@@ -24,11 +25,13 @@ interface ChatMessage {
 interface AIChatProps {
   onProductRecommendation?: (productId: string) => void;
   onOfferSuggestion?: (offer: any) => void;
+  onProductUpdate?: (productData: any) => void;
   autoOpen?: boolean;
 }
 
-export function AIChat({ onProductRecommendation, onOfferSuggestion, autoOpen = false }: AIChatProps) {
+export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUpdate, autoOpen = false }: AIChatProps) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -59,18 +62,24 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, autoOpen = 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       // Send welcome message
+      const adminFeatures = user?.isAdmin ? `
+• 🛠️ Manage products (add, edit, update inventory)
+• 📊 Get sales insights and analytics
+• 🚛 Track orders and shipping
+• 💼 Handle administrative tasks` : '';
+
       const welcomeMessage: ChatMessage = {
         id: 'welcome',
         message: '',
-        response: `🌟 Welcome to THCA Store! I'm your personal cannabis expert assistant. I'm here to help you find the perfect THCA products, discover amazing deals, and maximize your rewards!
+        response: `🌟 Welcome to THCA Store! I'm your ${user?.isAdmin ? 'AI admin assistant' : 'personal cannabis expert assistant'}. ${user?.isAdmin ? "I'm here to help you manage the store and optimize operations!" : "I'm here to help you find the perfect THCA products, discover amazing deals, and maximize your rewards!"}
 
-${user ? `Great to see you again, ${user.username}! I can see your rewards status and purchase history to give you personalized recommendations.` : 'Sign in to unlock personalized recommendations and track your rewards!'}
+${user ? `Great to see you again, ${user.username}! ${user.isAdmin ? 'I have access to all admin functions and can help manage your store.' : 'I can see your rewards status and purchase history to give you personalized recommendations.'}` : 'Sign in to unlock personalized recommendations and track your rewards!'}
 
 How can I help you today? I can:
 • 🔍 Recommend products based on your preferences
 • 💰 Find the best deals and special offers  
 • 🏆 Help you maximize your reward points
-• ❓ Answer questions about THCA and our products`,
+• ❓ Answer questions about THCA and our products${adminFeatures}`,
         intent: 'welcome',
         sentiment: 'positive',
         timestamp: new Date(),
@@ -101,7 +110,12 @@ How can I help you today? I can:
         body: {
           message: messageToSend,
           sessionId,
-          userId: user?.id
+          userId: user?.id,
+          userContext: user ? {
+            username: user.username,
+            email: user.email,
+            isAdmin: user.isAdmin
+          } : null
         }
       });
 
@@ -122,7 +136,7 @@ How can I help you today? I can:
 
       // Handle action items
       if (data.actionItems) {
-        data.actionItems.forEach((action: any) => {
+        data.actionItems.forEach(async (action: any) => {
           switch (action.type) {
             case 'show_rewards':
               // Could trigger a rewards modal or navigation
@@ -132,6 +146,43 @@ How can I help you today? I can:
               break;
             case 'apply_discount':
               // Could apply discount codes
+              break;
+            case 'product_update':
+              if (user?.isAdmin) {
+                try {
+                  if (action.operation === 'create') {
+                    await apiRequest('POST', '/api/products', action.productData);
+                  } else if (action.operation === 'update') {
+                    await apiRequest('PUT', `/api/products/${action.productId}`, action.productData);
+                  }
+                  
+                  // Refresh products data
+                  queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+                  
+                  // Show success message
+                  const successMessage: ChatMessage = {
+                    id: `success_${Date.now()}`,
+                    message: '',
+                    response: `✅ Product ${action.operation === 'create' ? 'created' : 'updated'} successfully! The changes are now live in your store.`,
+                    timestamp: new Date(),
+                    isUser: false
+                  };
+                  setMessages(prev => [...prev, successMessage]);
+                  
+                  if (onProductUpdate) {
+                    onProductUpdate(action.productData);
+                  }
+                } catch (error) {
+                  const errorMessage: ChatMessage = {
+                    id: `error_${Date.now()}`,
+                    message: '',
+                    response: `❌ Failed to ${action.operation} product. Please check the details and try again.`,
+                    timestamp: new Date(),
+                    isUser: false
+                  };
+                  setMessages(prev => [...prev, errorMessage]);
+                }
+              }
               break;
           }
         });

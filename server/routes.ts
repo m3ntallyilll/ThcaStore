@@ -246,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/orders", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const orders = await storage.getOrders();
+      const orders = await storage.getAllOrdersWithDetails();
       res.json(orders);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -456,7 +456,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Assistant routes
   app.post("/api/ai/chat", async (req, res) => {
     try {
-      const { message, sessionId, userId } = req.body;
+      const { message, sessionId, userId, userContext } = req.body;
       
       if (!message || typeof message !== 'string') {
         return res.status(400).json({ 
@@ -468,12 +468,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Get user context if authenticated
-      let userContext = {};
+      let contextData = {};
       if (userId) {
         try {
           const userRewards = await storage.getUserRewards(userId);
           const recentOrders = await storage.getUserOrders(userId);
-          userContext = {
+          contextData = {
             userId,
             userRewards,
             recentPurchases: recentOrders.slice(0, 5),
@@ -483,14 +483,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         } catch (contextError) {
           console.warn('Failed to load user context:', contextError);
-          userContext = { userId };
+          contextData = { userId };
         }
       }
 
       const response = await aiAssistant.generateResponse(
         message,
-        userContext,
-        sessionId || `session_${Date.now()}`
+        contextData,
+        sessionId || `session_${Date.now()}`,
+        req.body.userContext
       );
 
       res.json(response);
