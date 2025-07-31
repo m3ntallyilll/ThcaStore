@@ -18,6 +18,7 @@ import Products from "@/pages/products";
 import Checkout from './pages/checkout';
 import Admin from "@/pages/admin";
 import Rewards from "@/pages/rewards";
+import Blog from "@/pages/blog";
 import NotFound from "@/pages/not-found";
 
 // Hooks
@@ -47,6 +48,7 @@ function AppContent() {
           <Route path="/products" component={Products} />
           <Route path="/checkout" component={Checkout} />
           <Route path="/rewards" component={Rewards} />
+          <Route path="/blog" component={Blog} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>

@@ -241,6 +241,29 @@ export const prohibitedStates = pgTable('prohibited_states', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// Blog Posts - SEO optimized content management
+export const blogPosts = pgTable('blog_posts', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
+  content: text('content').notNull(),
+  excerpt: text('excerpt'),
+  metaTitle: text('meta_title'),
+  metaDescription: text('meta_description'),
+  keywords: text('keywords').array(),
+  featuredImage: text('featured_image'),
+  authorId: varchar('author_id').notNull().references(() => users.id),
+  category: text('category').notNull(),
+  tags: text('tags').array(),
+  status: text('status', { enum: ['draft', 'published', 'archived'] }).notNull().default('draft'),
+  isAiGenerated: boolean('is_ai_generated').default(false).notNull(),
+  readTime: integer('read_time'), // estimated read time in minutes
+  viewCount: integer('view_count').default(0).notNull(),
+  publishedAt: timestamp('published_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull()
+});
+
 // Relations
 export const rewardTiersRelations = relations(rewardTiers, ({ many }) => ({
   userRewards: many(userRewards),
@@ -268,6 +291,10 @@ export const aiInteractionsRelations = relations(aiInteractions, ({ one }) => ({
   user: one(users, { fields: [aiInteractions.userId], references: [users.id] }),
 }));
 
+export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
+  author: one(users, { fields: [blogPosts.authorId], references: [users.id] }),
+}));
+
 // Insert and Select Schemas
 export const insertRewardTierSchema = createInsertSchema(rewardTiers);
 export const insertUserRewardSchema = createInsertSchema(userRewards);
@@ -278,6 +305,7 @@ export const insertAiInteractionSchema = createInsertSchema(aiInteractions);
 export const insertSalesMetricSchema = createInsertSchema(salesMetrics);
 export const insertShippingRateSchema = createInsertSchema(shippingRates);
 export const insertProhibitedStateSchema = createInsertSchema(prohibitedStates);
+export const insertBlogPostSchema = createInsertSchema(blogPosts);
 
 // Types
 export type InsertRewardTier = z.infer<typeof insertRewardTierSchema>;
@@ -298,6 +326,8 @@ export type InsertShippingRate = z.infer<typeof insertShippingRateSchema>;
 export type ShippingRate = typeof shippingRates.$inferSelect;
 export type InsertProhibitedState = z.infer<typeof insertProhibitedStateSchema>;
 export type ProhibitedState = typeof prohibitedStates.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
 
 // Auth user type for frontend
 export interface AuthUser {

@@ -8,6 +8,7 @@ import {
   Edit, 
   Trash2, 
   Plus,
+  FileText,
   Truck,
   MapPin,
   Clock,
@@ -27,6 +28,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { AdminStats } from '@/lib/types';
 import type { Product } from '@shared/schema';
+import { BlogManagement } from './blog-management';
 
 interface OrderWithDetails {
   id: string;
@@ -444,6 +446,16 @@ export function AdminDashboard() {
                   Analytics
                 </Button>
               </li>
+              <li>
+                <Button
+                  variant={activeSection === 'blog' ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => setActiveSection('blog')}
+                >
+                  <FileText className="w-4 h-4 mr-3" />
+                  Blog
+                </Button>
+              </li>
             </ul>
           </nav>
         </div>
@@ -456,6 +468,7 @@ export function AdminDashboard() {
               {activeSection === 'orders' && 'Order Management'}
               {activeSection === 'users' && 'User Management'}
               {activeSection === 'analytics' && 'Analytics'}
+              {activeSection === 'blog' && 'Blog Management'}
             </h1>
           </div>
 
@@ -843,6 +856,8 @@ export function AdminDashboard() {
               </CardContent>
             </Card>
           )}
+
+          {activeSection === 'blog' && <BlogManagement />}
         </div>
       </div>
     </div>

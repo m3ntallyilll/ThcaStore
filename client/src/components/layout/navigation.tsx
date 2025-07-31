@@ -36,6 +36,9 @@ export function Navigation() {
                 <Link href="/products" className="hover:text-gold transition-colors duration-300">
                   Products
                 </Link>
+                <Link href="/blog" className="hover:text-gold transition-colors duration-300">
+                  Blog
+                </Link>
                 <Link href="/rewards" className="hover:text-gold transition-colors duration-300">
                   Rewards
                 </Link>
@@ -108,6 +111,13 @@ export function Navigation() {
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Products
+                </Link>
+                <Link
+                  href="/blog"
+                  className="block px-3 py-2 hover:text-gold transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Blog
                 </Link>
                 <a
                   href="#about"

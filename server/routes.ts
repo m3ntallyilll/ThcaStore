@@ -525,6 +525,240 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Blog Management Routes
+  app.get("/api/blog/posts", async (req, res) => {
+    try {
+      const { status, category } = req.query;
+      let posts;
+      
+      if (category) {
+        posts = await storage.getBlogsByCategory(category as string);
+      } else if (status) {
+        posts = await storage.getBlogPosts(status as string);
+      } else {
+        posts = await storage.getPublishedBlogPosts();
+      }
+      
+      res.json(posts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/posts/:id", async (req, res) => {
+    try {
+      const post = await storage.getBlogPost(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      // Increment view count for published posts
+      if (post.status === 'published') {
+        await storage.incrementBlogViewCount(post.id);
+      }
+      
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/posts/slug/:slug", async (req, res) => {
+    try {
+      const post = await storage.getBlogPostBySlug(req.params.slug);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      // Increment view count for published posts
+      if (post.status === 'published') {
+        await storage.incrementBlogViewCount(post.id);
+      }
+      
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin Blog Routes
+  app.get("/api/admin/blog/posts", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { status } = req.query;
+      const posts = await storage.getBlogPosts(status as string);
+      res.json(posts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/blog/posts", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { title, content, excerpt, category, tags, status, metaTitle, metaDescription, keywords, featuredImage } = req.body;
+      
+      // Generate slug from title
+      const slug = title.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim();
+
+      const postData = {
+        title,
+        slug,
+        content,
+        excerpt,
+        category,
+        tags: tags || [],
+        status: status || 'draft',
+        metaTitle,
+        metaDescription,
+        keywords: keywords || [],
+        featuredImage,
+        authorId: req.user.id,
+        isAiGenerated: false,
+        readTime: Math.ceil(content.split(/\s+/).length / 200),
+        publishedAt: status === 'published' ? new Date() : null
+      };
+
+      const post = await storage.createBlogPost(postData);
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/blog/posts/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { title, content, excerpt, category, tags, status, metaTitle, metaDescription, keywords, featuredImage } = req.body;
+      
+      const updates: any = {
+        title,
+        content,
+        excerpt,
+        category,
+        tags: tags || [],
+        status,
+        metaTitle,
+        metaDescription,
+        keywords: keywords || [],
+        featuredImage,
+        readTime: Math.ceil(content.split(/\s+/).length / 200)
+      };
+
+      // Update published date if status changes to published
+      if (status === 'published') {
+        const currentPost = await storage.getBlogPost(req.params.id);
+        if (currentPost && currentPost.status !== 'published') {
+          updates.publishedAt = new Date();
+        }
+      }
+
+      const post = await storage.updateBlogPost(req.params.id, updates);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/blog/posts/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const success = await storage.deleteBlogPost(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+      
+      res.json({ message: "Blog post deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // AI Blog Generation Routes
+  app.post("/api/admin/blog/ai/generate", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { blogAIService } = await import('./blog-ai-service');
+      const { topic, category, keywords, tone, length, targetAudience, includeCallToAction } = req.body;
+      
+      if (!topic || !category) {
+        return res.status(400).json({ message: "Topic and category are required" });
+      }
+
+      const blogPost = await blogAIService.generateBlogPost({
+        topic,
+        category,
+        keywords,
+        tone,
+        length,
+        targetAudience,
+        includeCallToAction
+      }, req.user.id);
+
+      const savedPost = await storage.createBlogPost(blogPost);
+      res.json(savedPost);
+    } catch (error: any) {
+      console.error('AI Blog Generation Error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/blog/ai/improve/:id", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { blogAIService } = await import('./blog-ai-service');
+      const { improvements } = req.body;
+      
+      const improvedPost = await blogAIService.improveBlogPost(req.params.id, improvements);
+      const savedPost = await storage.updateBlogPost(req.params.id, improvedPost);
+      
+      res.json(savedPost);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/blog/ai/ideas", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { blogAIService } = await import('./blog-ai-service');
+      const { category, count } = req.query;
+      
+      const ideas = await blogAIService.generateBlogIdeas(
+        category as string || 'education',
+        parseInt(count as string) || 10
+      );
+      
+      res.json({ ideas });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/categories", async (req, res) => {
+    try {
+      const categories = await storage.getBlogCategories();
+      res.json(categories);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/search", async (req, res) => {
+    try {
+      const { q } = req.query;
+      if (!q) {
+        return res.status(400).json({ message: "Search query is required" });
+      }
+      
+      const posts = await storage.searchBlogPosts(q as string);
+      res.json(posts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Stripe Payment Routes
   app.post("/api/create-payment-intent", async (req, res) => {
     if (!stripe) {

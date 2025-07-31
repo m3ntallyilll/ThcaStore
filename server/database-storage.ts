@@ -736,6 +736,81 @@ export class DatabaseStorage {
     const [offer] = await db.update(specialOffers).set(updates).where(eq(specialOffers.id, id)).returning();
     return offer || undefined;
   }
+
+  // Blog Management Methods
+  async getBlogPosts(status?: string): Promise<BlogPost[]> {
+    if (status) {
+      return await db.select().from(blogPosts)
+        .where(eq(blogPosts.status, status))
+        .orderBy(desc(blogPosts.createdAt));
+    }
+    return await db.select().from(blogPosts).orderBy(desc(blogPosts.createdAt));
+  }
+
+  async getPublishedBlogPosts(): Promise<BlogPost[]> {
+    return await db.select().from(blogPosts)
+      .where(eq(blogPosts.status, 'published'))
+      .orderBy(desc(blogPosts.publishedAt));
+  }
+
+  async getBlogPost(id: string): Promise<BlogPost | undefined> {
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
+    return post || undefined;
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+    return post || undefined;
+  }
+
+  async createBlogPost(insertPost: InsertBlogPost): Promise<BlogPost> {
+    const [post] = await db.insert(blogPosts).values(insertPost).returning();
+    return post;
+  }
+
+  async updateBlogPost(id: string, updates: Partial<InsertBlogPost>): Promise<BlogPost | undefined> {
+    const updateData: any = { ...updates, updatedAt: new Date() };
+    const [post] = await db.update(blogPosts).set(updateData).where(eq(blogPosts.id, id)).returning();
+    return post || undefined;
+  }
+
+  async deleteBlogPost(id: string): Promise<boolean> {
+    const result = await db.delete(blogPosts).where(eq(blogPosts.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async incrementBlogViewCount(id: string): Promise<void> {
+    await db.update(blogPosts)
+      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+      .where(eq(blogPosts.id, id));
+  }
+
+  async getBlogCategories(): Promise<string[]> {
+    const result = await db.selectDistinct({ category: blogPosts.category }).from(blogPosts);
+    return result.map(r => r.category);
+  }
+
+  async getBlogsByCategory(category: string): Promise<BlogPost[]> {
+    return await db.select().from(blogPosts)
+      .where(and(eq(blogPosts.category, category), eq(blogPosts.status, 'published')))
+      .orderBy(desc(blogPosts.publishedAt));
+  }
+
+  async searchBlogPosts(query: string): Promise<BlogPost[]> {
+    const searchTerm = `%${query.toLowerCase()}%`;
+    return await db.select().from(blogPosts)
+      .where(
+        and(
+          eq(blogPosts.status, 'published'),
+          or(
+            sql`LOWER(${blogPosts.title}) LIKE ${searchTerm}`,
+            sql`LOWER(${blogPosts.content}) LIKE ${searchTerm}`,
+            sql`LOWER(${blogPosts.excerpt}) LIKE ${searchTerm}`
+          )
+        )
+      )
+      .orderBy(desc(blogPosts.publishedAt));
+  }
 }
 
 export const storage = new DatabaseStorage();
