@@ -53,9 +53,10 @@ export class BlogAIService {
         authorId,
         category: request.category,
         tags: request.keywords || [],
-        status: 'draft',
+        status: 'published',
         isAiGenerated: true,
         readTime,
+        publishedAt: new Date(),
         featuredImage: await this.suggestFeaturedImage(content.title, request.category),
       };
 
