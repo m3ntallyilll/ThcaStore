@@ -21,6 +21,7 @@ import {
   insertReferralProgramSchema,
   insertSpecialOfferSchema 
 } from "@shared/schema";
+import { isStateProhibited, getStateRestriction, getAvailableStates } from "@shared/prohibited-states";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -273,6 +274,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         userId: req.user.id,
       });
+
+      // Validate shipping state
+      if (isStateProhibited(orderData.shippingState)) {
+        const restriction = getStateRestriction(orderData.shippingState);
+        return res.status(400).json({
+          message: `We cannot ship hemp THCA products to ${restriction?.name || orderData.shippingState}. ${restriction?.reason || 'This state prohibits hemp-derived THCA products.'}`,
+          prohibited: true,
+          stateName: restriction?.name,
+          reason: restriction?.reason
+        });
+      }
 
       const order = await storage.createOrder(orderData);
 
@@ -978,19 +990,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // State restriction validation
+  app.get("/api/shipping/states", async (req, res) => {
+    try {
+      const availableStates = getAvailableStates();
+      res.json(availableStates);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.post("/api/shipping/validate-state", async (req, res) => {
     try {
       const { state } = req.body;
-      const isProhibited = await storage.isStateProhibited(state);
+      
+      if (!state) {
+        return res.status(400).json({ message: "State code is required" });
+      }
 
-      if (isProhibited) {
-        const prohibitedState = await storage.getProhibitedState(state);
+      if (isStateProhibited(state)) {
+        const restriction = getStateRestriction(state);
         return res.status(400).json({ 
-          message: `We cannot ship to ${prohibitedState?.stateName || state}. ${prohibitedState?.reason || 'This state restricts THCA products.'}`
+          prohibited: true,
+          message: `We cannot ship hemp THCA products to ${restriction?.name || state}. ${restriction?.reason || 'This state prohibits hemp-derived THCA products.'}`,
+          stateName: restriction?.name,
+          reason: restriction?.reason
         });
       }
 
-      res.json({ valid: true });
+      res.json({ prohibited: false, valid: true });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

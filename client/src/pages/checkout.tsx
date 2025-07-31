@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
-import { Loader2, Package, Truck, Shield } from 'lucide-react';
+import { Loader2, Package, Truck, Shield, AlertTriangle } from 'lucide-react';
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
@@ -50,6 +50,8 @@ const CheckoutForm = ({
 
   const [isLoading, setIsLoading] = useState(false);
   const [selectedShipping, setSelectedShipping] = useState<string>('standard');
+  const [availableStates, setAvailableStates] = useState<Array<{code: string, name: string}>>([]);
+  const [stateError, setStateError] = useState<string>('');
   const [shippingAddress, setShippingAddress] = useState({
     name: '',
     email: '',
@@ -61,6 +63,48 @@ const CheckoutForm = ({
     zip: '',
     country: 'US'
   });
+
+  // Load available states on component mount
+  useEffect(() => {
+    const loadStates = async () => {
+      try {
+        const response = await apiRequest('GET', '/api/shipping/states');
+        if (response.ok) {
+          const data = await response.json();
+          setAvailableStates(data);
+        }
+      } catch (error) {
+        console.error('Failed to load available states:', error);
+      }
+    };
+    loadStates();
+  }, []);
+
+  // Validate state when changed
+  const handleStateChange = async (stateCode: string) => {
+    setShippingAddress(prev => ({ ...prev, state: stateCode }));
+    setStateError('');
+    
+    try {
+      const response = await apiRequest('POST', '/api/shipping/validate-state', {
+        state: stateCode
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        if (error.prohibited) {
+          setStateError(error.message);
+          toast({
+            title: "Shipping Restricted",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('State validation error:', error);
+    }
+  };
 
   // Calculate shipping cost
   const calculateShipping = async (method: string) => {
@@ -223,13 +267,27 @@ const CheckoutForm = ({
               </div>
               <div>
                 <Label htmlFor="state">State</Label>
-                <Input
-                  id="state"
-                  value={shippingAddress.state}
-                  onChange={(e) => setShippingAddress(prev => ({ ...prev, state: e.target.value }))}
-                  placeholder="e.g., CA"
-                  required
-                />
+                <Select 
+                  value={shippingAddress.state} 
+                  onValueChange={handleStateChange}
+                >
+                  <SelectTrigger className={stateError ? 'border-red-500' : ''}>
+                    <SelectValue placeholder="Select state" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableStates.map((state) => (
+                      <SelectItem key={state.code} value={state.code}>
+                        {state.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {stateError && (
+                  <div className="flex items-center gap-2 mt-2 text-red-500 text-sm">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>Hemp THCA products cannot be shipped to this state</span>
+                  </div>
+                )}
               </div>
               <div>
                 <Label htmlFor="zip">ZIP Code</Label>
@@ -288,7 +346,7 @@ const CheckoutForm = ({
             <PaymentElement />
             <Button 
               type="submit" 
-              disabled={!stripe || isLoading}
+              disabled={!stripe || isLoading || !!stateError || !shippingAddress.state}
               className="w-full"
             >
               {isLoading ? (
@@ -296,6 +354,10 @@ const CheckoutForm = ({
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
                 </>
+              ) : stateError ? (
+                'Cannot ship to selected state'
+              ) : !shippingAddress.state ? (
+                'Select a state to continue'
               ) : (
                 'Complete Order'
               )}
