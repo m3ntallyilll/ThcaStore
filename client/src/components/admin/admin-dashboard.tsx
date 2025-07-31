@@ -127,7 +127,7 @@ export function AdminDashboard() {
         });
       },
     });
-  
+
     // Update product mutation
     const updateProductMutation = useMutation({
       mutationFn: async ({ id, productData }: { id: string; productData: Omit<Product, 'id'> }) => {
@@ -150,7 +150,7 @@ export function AdminDashboard() {
         });
       },
     });
-  
+
     // Delete product mutation
     const deleteProductMutation = useMutation({
       mutationFn: async (id: string) => {
@@ -495,153 +495,155 @@ export function AdminDashboard() {
 
           {/* Products Table */}
           {activeSection === 'products' && (
-            <Card className="glass">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Product Management</CardTitle>
-                  <Button 
-                    className="bg-gold text-black hover:bg-gold-600"
-                    onClick={() => {
-                      setSelectedProduct(null);
-                      setIsProductDialogOpen(true);
-                    }}
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Product
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-white/5">
-                      <tr>
-                        <th className="text-left p-4 font-semibold">Product</th>
-                        <th className="text-left p-4 font-semibold">Category</th>
-                        <th className="text-left p-4 font-semibold">Price</th>
-                        <th className="text-left p-4 font-semibold">Stock</th>
-                        <th className="text-left p-4 font-semibold">Status</th>
-                        <th className="text-left p-4 font-semibold">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-700">
-                      {products.map((product) => (
-                        <tr key={product.id} className="hover:bg-white/5 transition-colors">
-                          <td className="p-4">
-                            <div className="flex items-center space-x-3">
-                              <img
-                                src={product.imageUrl}
-                                alt={product.name}
-                                className="w-10 h-10 rounded-lg object-cover"
-                              />
-                              <div>
-                                <p className="font-semibold">{product.name}</p>
-                                <p className="text-sm text-gray-400">ID: #{product.id.slice(0, 8)}</p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-4 text-gray-400 capitalize">{product.category}</td>
-                          <td className="p-4 font-semibold">${product.price}</td>
-                          <td className="p-4">{product.stock} units</td>
-                          <td className="p-4">
-                            <Badge
-                              className={
-                                product.stock > 0
-                                  ? 'bg-green-500/20 text-green-400'
-                                  : 'bg-red-500/20 text-red-400'
-                              }
-                            >
-                              {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
-                            </Badge>
-                          </td>
-                          <td className="p-4">
-                            <div className="flex space-x-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-blue-400 hover:text-blue-300"
-                                onClick={() => {
-                                  setSelectedProduct(product);
-                                  setIsProductDialogOpen(true);
-                                }}
-                              >
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="text-red-400 hover:text-red-300"
-                                onClick={() => {
-                                  setProductToDelete(product);
-                                  setIsDeleteDialogOpen(true);
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Product Edit/Create Dialog */}
-            <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>
-                    {selectedProduct ? 'Edit Product' : 'Create New Product'}
-                  </DialogTitle>
-                </DialogHeader>
-                <ProductForm
-                  product={selectedProduct}
-                  onSubmit={(productData) => {
-                    if (selectedProduct) {
-                      updateProductMutation.mutate({ id: selectedProduct.id, productData });
-                    } else {
-                      createProductMutation.mutate(productData);
-                    }
-                  }}
-                  isLoading={createProductMutation.isPending || updateProductMutation.isPending}
-                />
-              </DialogContent>
-            </Dialog>
-
-            {/* Product Delete Confirmation Dialog */}
-            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Delete Product</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <p className="text-gray-300">
-                    Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
-                  </p>
-                  <div className="flex justify-end gap-2">
+            <div className="space-y-6">
+              <Card className="glass">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Product Management</CardTitle>
                     <Button 
-                      variant="outline" 
-                      onClick={() => setIsDeleteDialogOpen(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      variant="destructive" 
+                      className="bg-gold text-black hover:bg-gold-600"
                       onClick={() => {
-                        if (productToDelete) {
-                          deleteProductMutation.mutate(productToDelete.id);
-                        }
+                        setSelectedProduct(null);
+                        setIsProductDialogOpen(true);
                       }}
-                      disabled={deleteProductMutation.isPending}
                     >
-                      {deleteProductMutation.isPending ? 'Deleting...' : 'Delete'}
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Product
                     </Button>
                   </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-white/5">
+                        <tr>
+                          <th className="text-left p-4 font-semibold">Product</th>
+                          <th className="text-left p-4 font-semibold">Category</th>
+                          <th className="text-left p-4 font-semibold">Price</th>
+                          <th className="text-left p-4 font-semibold">Stock</th>
+                          <th className="text-left p-4 font-semibold">Status</th>
+                          <th className="text-left p-4 font-semibold">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-700">
+                        {products.map((product) => (
+                          <tr key={product.id} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4">
+                              <div className="flex items-center space-x-3">
+                                <img
+                                  src={product.imageUrl}
+                                  alt={product.name}
+                                  className="w-10 h-10 rounded-lg object-cover"
+                                />
+                                <div>
+                                  <p className="font-semibold">{product.name}</p>
+                                  <p className="text-sm text-gray-400">ID: #{product.id.slice(0, 8)}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4 text-gray-400 capitalize">{product.category}</td>
+                            <td className="p-4 font-semibold">${product.price}</td>
+                            <td className="p-4">{product.stock} units</td>
+                            <td className="p-4">
+                              <Badge
+                                className={
+                                  product.stock > 0
+                                    ? 'bg-green-500/20 text-green-400'
+                                    : 'bg-red-500/20 text-red-400'
+                                }
+                              >
+                                {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                              </Badge>
+                            </td>
+                            <td className="p-4">
+                              <div className="flex space-x-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-blue-400 hover:text-blue-300"
+                                  onClick={() => {
+                                    setSelectedProduct(product);
+                                    setIsProductDialogOpen(true);
+                                  }}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-red-400 hover:text-red-300"
+                                  onClick={() => {
+                                    setProductToDelete(product);
+                                    setIsDeleteDialogOpen(true);
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Product Edit/Create Dialog */}
+              <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>
+                      {selectedProduct ? 'Edit Product' : 'Create New Product'}
+                    </DialogTitle>
+                  </DialogHeader>
+                  <ProductForm
+                    product={selectedProduct}
+                    onSubmit={(productData) => {
+                      if (selectedProduct) {
+                        updateProductMutation.mutate({ id: selectedProduct.id, productData });
+                      } else {
+                        createProductMutation.mutate(productData);
+                      }
+                    }}
+                    isLoading={createProductMutation.isPending || updateProductMutation.isPending}
+                  />
+                </DialogContent>
+              </Dialog>
+
+              {/* Product Delete Confirmation Dialog */}
+              <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Delete Product</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <p className="text-gray-300">
+                      Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
+                    </p>
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsDeleteDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => {
+                          if (productToDelete) {
+                            deleteProductMutation.mutate(productToDelete.id);
+                          }
+                        }}
+                        disabled={deleteProductMutation.isPending}
+                      >
+                        {deleteProductMutation.isPending ? 'Deleting...' : 'Delete'}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           )}
 
           {/* Order Management Section */}
