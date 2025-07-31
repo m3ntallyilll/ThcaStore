@@ -26,7 +26,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 
 function AppContent() {
-  const { checkAuth, isAuthenticated } = useAuth();
+  const { checkAuth, user } = useAuth();
+  const isAuthenticated = !!user;
   const { fetchCart } = useCart();
 
   useEffect(() => {
