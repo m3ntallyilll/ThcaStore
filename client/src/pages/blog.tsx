@@ -155,7 +155,7 @@ export default function Blog() {
               <h2 className="text-2xl font-bold text-white">Featured Article</h2>
             </div>
             
-            <Link href={`/blog/${featuredPost.slug || featuredPost.id}`}>
+            <Link href={`/blog/${featuredPost.id}`}>
               <Card className="bg-dark-800 border-dark-700 overflow-hidden hover:bg-dark-750 transition-colors cursor-pointer">
               {featuredPost.featuredImage && (
                 <div className="aspect-video bg-gradient-to-r from-purple-900/20 to-pink-900/20">
@@ -215,7 +215,7 @@ export default function Blog() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {regularPosts.map((post: BlogPost) => (
-                <Link key={post.id} href={`/blog/${post.slug || post.id}`}>
+                <Link key={post.id} href={`/blog/${post.id}`}>
                   <Card className="bg-dark-800 border-dark-700 hover:bg-dark-750 transition-colors cursor-pointer">
                   {post.featuredImage && (
                     <div className="aspect-video bg-gradient-to-r from-purple-900/10 to-pink-900/10">

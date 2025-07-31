@@ -20,6 +20,7 @@ import Admin from "@/pages/admin";
 import Rewards from "@/pages/rewards";
 import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
+import AISalesPage from "@/pages/ai-sales";
 import NotFound from "@/pages/not-found";
 
 // Hooks
@@ -52,6 +53,7 @@ function AppContent() {
           <Route path="/rewards" component={Rewards} />
           <Route path="/blog/:id" component={BlogPost} />
           <Route path="/blog" component={Blog} />
+          <Route path="/ai-sales" component={AISalesPage} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>

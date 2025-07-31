@@ -40,6 +40,10 @@ export function Navigation() {
                 <Link href="/blog" className="hover:text-glow-green-400 transition-colors duration-300">
                   Blog
                 </Link>
+                <Link href="/ai-sales" className="hover:text-glow-green-400 transition-colors duration-300 flex items-center gap-1">
+                  <span className="text-xs bg-purple-600 px-2 py-1 rounded">AI</span>
+                  Sales Strategy
+                </Link>
                 <Link href="/rewards" className="hover:text-glow-green-400 transition-colors duration-300">
                   Rewards
                 </Link>

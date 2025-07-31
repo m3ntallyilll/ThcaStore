@@ -602,6 +602,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Sales Strategy Routes
+  app.get("/api/ai/sales-strategies", async (req, res) => {
+    try {
+      const strategies = [
+        {
+          id: "conversion-optimization",
+          strategy: "AI-Powered Conversion Optimization",
+          conversionPrediction: 94.2,
+          revenueProjection: 127000,
+          confidence: 89.5,
+          targetAudience: ["First-time buyers", "Medical patients", "Cannabis enthusiasts"],
+          tactics: [
+            "Personalized product recommendations based on browsing behavior",
+            "Dynamic pricing optimization for maximum revenue",
+            "Abandoned cart recovery with AI-generated incentives",
+            "Smart inventory management to prevent stockouts"
+          ],
+          disclaimers: [
+            "Results based on statistical models and may vary",
+            "THCA products not evaluated by FDA",
+            "Must be 21+ to purchase"
+          ],
+          shippingStrategy: "Free shipping over $75 with express options",
+          guarantees: [
+            "25% conversion rate increase within 30 days",
+            "300% ROI on AI investment within 90 days",
+            "Revenue optimization with downside protection"
+          ]
+        }
+      ];
+      res.json(strategies);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/ai/generate-sales-strategy", async (req, res) => {
+    try {
+      const { targetRevenue, timeframe } = req.body;
+      
+      // Simulate AI strategy generation
+      const strategy = {
+        id: `strategy-${Date.now()}`,
+        strategy: `Custom AI Strategy for $${targetRevenue} in ${timeframe}`,
+        conversionPrediction: Math.random() * 30 + 70, // 70-100%
+        revenueProjection: targetRevenue,
+        confidence: Math.random() * 20 + 80, // 80-100%
+        targetAudience: ["Custom segment analysis"],
+        tactics: [
+          "AI-optimized product bundling",
+          "Predictive customer lifetime value modeling",
+          "Dynamic email campaign optimization",
+          "Real-time pricing elasticity analysis"
+        ],
+        guarantees: [`Target revenue of $${targetRevenue} within ${timeframe}`]
+      };
+
+      res.json(strategy);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin Blog Routes
   app.get("/api/admin/blog/posts", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
