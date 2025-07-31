@@ -12,7 +12,8 @@ export function Navigation() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
   const { toggleCart, getTotalItems } = useCart();
   const totalItems = getTotalItems();
 
