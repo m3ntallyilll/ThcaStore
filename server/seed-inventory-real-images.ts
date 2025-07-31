@@ -746,6 +746,184 @@ const products: ProductWithImageData[] = [
     thcaContent: "25.5",
     strainType: "hybrid",
     effects: ["balanced", "euphoric", "relaxed", "creative"]
+  },
+
+  // Custom Weight Pre-Rolls - 1.1g Options
+  {
+    name: "Premium Pre-Roll - Blue Dream (1.1g)",
+    description: "1.1 gram Blue Dream THCA pre-roll with energizing sativa effects. Perfect size for individual sessions.",
+    price: "14.00",
+    category: "pre-rolls",
+    imageUrl: realImages.sativaPreRoll,
+    stock: 75,
+    weight: "1.1",
+    featured: false,
+    rating: "4.6",
+    thcaContent: "24.3",
+    strainType: "sativa",
+    effects: ["energetic", "focused", "uplifting", "creative"]
+  },
+  {
+    name: "Premium Pre-Roll - OG Kush (1.1g)",
+    description: "1.1 gram OG Kush THCA pre-roll with relaxing indica effects. Perfect evening size joint.",
+    price: "14.50",
+    category: "pre-rolls",
+    imageUrl: realImages.indicaPreRoll,
+    stock: 80,
+    weight: "1.1",
+    featured: false,
+    rating: "4.7",
+    thcaContent: "26.8",
+    strainType: "indica",
+    effects: ["relaxed", "sleepy", "stress-relief", "euphoric"]
+  },
+
+  // Custom Weight Pre-Rolls - 1.25g Options
+  {
+    name: "Premium Pre-Roll - Green Crack (1.25g)",
+    description: "1.25 gram Green Crack THCA pre-roll with powerful sativa energy. Extended session size for active users.",
+    price: "16.00",
+    category: "pre-rolls",
+    imageUrl: realImages.sativaPreRoll,
+    stock: 65,
+    weight: "1.25",
+    featured: true,
+    rating: "4.8",
+    thcaContent: "25.7",
+    strainType: "sativa",
+    effects: ["energetic", "focused", "uplifting", "cerebral"]
+  },
+  {
+    name: "Premium Pre-Roll - Purple Punch (1.25g)",
+    description: "1.25 gram Purple Punch THCA pre-roll with sweet grape flavors. Perfect nighttime relaxation size.",
+    price: "16.50",
+    category: "pre-rolls",
+    imageUrl: realImages.indicaPreRoll,
+    stock: 70,
+    weight: "1.25",
+    featured: false,
+    rating: "4.8",
+    thcaContent: "27.4",
+    strainType: "indica",
+    effects: ["relaxed", "sleepy", "euphoric", "happy"]
+  },
+  {
+    name: "Premium Pre-Roll - Girl Scout Cookies (1.25g)",
+    description: "1.25 gram Girl Scout Cookies THCA pre-roll with balanced hybrid effects. Versatile size for any time.",
+    price: "16.25",
+    category: "pre-rolls",
+    imageUrl: realImages.hybridPreRoll,
+    stock: 60,
+    weight: "1.25",
+    featured: false,
+    rating: "4.7",
+    thcaContent: "26.2",
+    strainType: "hybrid",
+    effects: ["balanced", "euphoric", "creative", "relaxed"]
+  },
+
+  // Custom Weight Pre-Rolls - 1.44g Options
+  {
+    name: "Premium Pre-Roll - Sour Diesel (1.44g)",
+    description: "1.44 gram Sour Diesel THCA pre-roll with diesel fuel aroma. Extended sativa experience for productivity.",
+    price: "18.00",
+    category: "pre-rolls",
+    imageUrl: realImages.sativaPreRoll,
+    stock: 55,
+    weight: "1.44",
+    featured: false,
+    rating: "4.6",
+    thcaContent: "24.9",
+    strainType: "sativa",
+    effects: ["energetic", "cerebral", "focused", "uplifting"]
+  },
+  {
+    name: "Premium Pre-Roll - Granddaddy Purple (1.44g)",
+    description: "1.44 gram Granddaddy Purple THCA pre-roll with deep grape flavors. Long-lasting indica relaxation.",
+    price: "18.50",
+    category: "pre-rolls",
+    imageUrl: realImages.indicaPreRoll,
+    stock: 50,
+    weight: "1.44",
+    featured: false,
+    rating: "4.7",
+    thcaContent: "26.5",
+    strainType: "indica",
+    effects: ["relaxed", "sleepy", "stress-relief", "pain-relief"]
+  },
+  {
+    name: "Premium Pre-Roll - Gelato (1.44g)",
+    description: "1.44 gram Gelato THCA pre-roll with sweet dessert flavors. Extended hybrid effects for versatile use.",
+    price: "18.75",
+    category: "pre-rolls",
+    imageUrl: realImages.hybridPreRoll,
+    stock: 45,
+    weight: "1.44",
+    featured: false,
+    rating: "4.8",
+    thcaContent: "28.6",
+    strainType: "hybrid",
+    effects: ["euphoric", "creative", "relaxed", "uplifting"]
+  },
+
+  // Custom Weight Pre-Rolls - 1.5g Options
+  {
+    name: "King Size Pre-Roll - Blue Dream (1.5g)",
+    description: "1.5 gram Blue Dream THCA king size pre-roll. Premium sativa experience with extended duration.",
+    price: "20.00",
+    category: "pre-rolls",
+    imageUrl: realImages.sativaPreRoll,
+    stock: 40,
+    weight: "1.5",
+    featured: true,
+    rating: "4.9",
+    thcaContent: "24.8",
+    strainType: "sativa",
+    effects: ["energetic", "creative", "uplifting", "focused"]
+  },
+  {
+    name: "King Size Pre-Roll - OG Kush (1.5g)",
+    description: "1.5 gram OG Kush THCA king size pre-roll. Premium indica experience with deep relaxation.",
+    price: "20.50",
+    category: "pre-rolls",
+    imageUrl: realImages.indicaPreRoll,
+    stock: 35,
+    weight: "1.5",
+    featured: false,
+    rating: "4.8",
+    thcaContent: "27.2",
+    strainType: "indica",
+    effects: ["relaxed", "euphoric", "sleepy", "stress-relief"]
+  },
+  {
+    name: "King Size Pre-Roll - Wedding Cake (1.5g)",
+    description: "1.5 gram Wedding Cake THCA king size pre-roll. Premium hybrid with sweet vanilla flavors and balanced effects.",
+    price: "21.00",
+    category: "pre-rolls",
+    imageUrl: realImages.hybridPreRoll,
+    stock: 30,
+    weight: "1.5",
+    featured: false,
+    rating: "4.9",
+    thcaContent: "29.3",
+    strainType: "hybrid",
+    effects: ["euphoric", "relaxed", "creative", "happy"]
+  },
+
+  // Multi-Packs of Custom Weights
+  {
+    name: "Mixed Weight Pre-Roll Pack (5-Pack)",
+    description: "Variety pack with one each: 1.1g, 1.25g, 1.44g, and two 1.5g pre-rolls. Perfect for trying different sizes.",
+    price: "85.00",
+    category: "pre-rolls",
+    imageUrl: realImages.hybridPreRoll,
+    stock: 25,
+    weight: "6.69",
+    featured: true,
+    rating: "4.8",
+    thcaContent: "26.8",
+    strainType: "mixed",
+    effects: ["varied", "balanced", "versatile", "premium"]
   }
 ];
 
