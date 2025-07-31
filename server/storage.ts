@@ -36,13 +36,66 @@ export interface IStorage {
   clearCart(userId: string): Promise<void>;
 
   // Order methods
-  getOrders(userId: string): Promise<Order[]>;
+  getOrders(userId?: string): Promise<Order[]>;
   getAllOrders(): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]>;
+  getAllOrdersWithDetails(): Promise<any[]>;
+  getUserOrders(userId: string): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   getOrderItems(orderId: string): Promise<(OrderItem & { product: Product })[]>;
   updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
+
+  // Cart methods extensions
+  removeCartItem(id: string): Promise<boolean>;
+
+  // Initialization
+  initialize(): Promise<void>;
+
+  // Rewards and Loyalty System
+  getUserRewards(userId: string): Promise<any>;
+  getRewardTiers(): Promise<any[]>;
+  getPointTransactions(userId: string): Promise<any[]>;
+  addPointTransaction(transaction: any): Promise<any>;
+
+  // Referral System
+  getUserReferrals(userId: string): Promise<any[]>;
+  createReferral(referral: any): Promise<any>;
+  getReferralByCode(code: string): Promise<any>;
+
+  // Special Offers
+  getActiveOffers(): Promise<any[]>;
+  getSpecialOffers(): Promise<any[]>;
+  createSpecialOffer(offer: any): Promise<any>;
+
+  // Blog System
+  getBlogPosts(): Promise<any[]>;
+  getPublishedBlogPosts(): Promise<any[]>;
+  getBlogsByCategory(category: string): Promise<any[]>;
+  getBlogPost(id: string): Promise<any>;
+  getBlogPostBySlug(slug: string): Promise<any>;
+  createBlogPost(post: any): Promise<any>;
+  updateBlogPost(id: string, updates: any): Promise<any>;
+  deleteBlogPost(id: string): Promise<boolean>;
+  incrementBlogViewCount(id: string): Promise<void>;
+  getBlogCategories(): Promise<string[]>;
+  searchBlogPosts(query: string): Promise<any[]>;
+
+  // Shipping
+  getShippingRates(): Promise<any[]>;
+  calculateShippingCost(weight: number, method: string): Promise<number>;
+
+  // Daily Promotions
+  getTodaysPromotions(): Promise<any[]>;
+  getDailyPromotions(): Promise<any[]>;
+  getPromotionByDay(day: string): Promise<any>;
+  getDailyPromotionsByDay(day: string): Promise<any[]>;
+  getDailyPromotion(id: string): Promise<any>;
+  createDailyPromotion(promotion: any): Promise<any>;
+  updateDailyPromotion(id: string, updates: any): Promise<any>;
+  deleteDailyPromotion(id: string): Promise<boolean>;
+  calculatePromotionDiscount(promotionId: string, amount: number): Promise<number>;
+  recordPromotionUsage(promotionId: string, userId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -51,6 +104,14 @@ export class MemStorage implements IStorage {
   private cartItems: Map<string, CartItem>;
   private orders: Map<string, Order>;
   private orderItems: Map<string, OrderItem>;
+  private userRewards: Map<string, any>;
+  private rewardTiers: Map<string, any>;
+  private pointTransactions: Map<string, any>;
+  private referrals: Map<string, any>;
+  private specialOffers: Map<string, any>;
+  private blogPosts: Map<string, any>;
+  private shippingRates: Map<string, any>;
+  private dailyPromotions: Map<string, any>;
 
   constructor() {
     this.users = new Map();
@@ -58,6 +119,14 @@ export class MemStorage implements IStorage {
     this.cartItems = new Map();
     this.orders = new Map();
     this.orderItems = new Map();
+    this.userRewards = new Map();
+    this.rewardTiers = new Map();
+    this.pointTransactions = new Map();
+    this.referrals = new Map();
+    this.specialOffers = new Map();
+    this.blogPosts = new Map();
+    this.shippingRates = new Map();
+    this.dailyPromotions = new Map();
     
     // Initialize with sample data
     this.initializeSampleData();
@@ -186,11 +255,12 @@ export class MemStorage implements IStorage {
     const product: Product = { 
       ...insertProduct,
       id,
+      stock: insertProduct.stock ?? 0,
       featured: insertProduct.featured ?? false,
       rating: insertProduct.rating ?? "0",
       thcaContent: insertProduct.thcaContent ?? null,
       strainType: insertProduct.strainType ?? null,
-      effects: insertProduct.effects && Array.isArray(insertProduct.effects) ? insertProduct.effects : null,
+      effects: insertProduct.effects && Array.isArray(insertProduct.effects) ? insertProduct.effects as string[] : null,
       createdAt: new Date() 
     };
     this.products.set(id, product);
@@ -204,7 +274,7 @@ export class MemStorage implements IStorage {
     const updatedProduct = { 
       ...product, 
       ...updates,
-      effects: updates.effects !== undefined ? (updates.effects && Array.isArray(updates.effects) ? updates.effects : null) : product.effects
+      effects: updates.effects !== undefined ? (updates.effects && Array.isArray(updates.effects) ? updates.effects as string[] : null) : product.effects
     };
     this.products.set(id, updatedProduct);
     return updatedProduct;
@@ -268,9 +338,12 @@ export class MemStorage implements IStorage {
     userCartItems.forEach(([id]) => this.cartItems.delete(id));
   }
 
-  // Order methods
-  async getOrders(userId: string): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(order => order.userId === userId);
+  // Order methods  
+  async getOrders(userId?: string): Promise<Order[]> {
+    if (userId) {
+      return Array.from(this.orders.values()).filter(order => order.userId === userId);
+    }
+    return Array.from(this.orders.values());
   }
 
   async getAllOrders(): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]> {
@@ -300,7 +373,7 @@ export class MemStorage implements IStorage {
       ...insertOrder,
       id,
       status: insertOrder.status || "pending",
-      shippingAddress: insertOrder.shippingAddress || null,
+      shippingAddress: insertOrder.shippingAddress || "",
       createdAt: new Date() 
     };
     this.orders.set(id, order);
@@ -331,6 +404,221 @@ export class MemStorage implements IStorage {
     order.status = status;
     this.orders.set(id, order);
     return order;
+  }
+
+  // Additional order methods
+  async getAllOrdersWithDetails(): Promise<any[]> {
+    return Array.from(this.orders.values()).map(order => {
+      const user = this.users.get(order.userId);
+      return { ...order, user };
+    });
+  }
+
+  async getUserOrders(userId: string): Promise<Order[]> {
+    return this.getOrders(userId);
+  }
+
+  // Cart method extensions
+  async removeCartItem(id: string): Promise<boolean> {
+    return this.removeFromCart(id);
+  }
+
+  // Initialization
+  async initialize(): Promise<void> {
+    // Initialize sample reward tiers
+    const sampleTiers = [
+      { id: '1', name: 'Bronze', minPoints: 0, multiplier: '1.00', benefits: ['Basic rewards'], color: '#CD7F32' },
+      { id: '2', name: 'Silver', minPoints: 1000, multiplier: '1.25', benefits: ['Enhanced rewards'], color: '#C0C0C0' },
+      { id: '3', name: 'Gold', minPoints: 5000, multiplier: '1.50', benefits: ['Premium rewards'], color: '#FFD700' }
+    ];
+    sampleTiers.forEach(tier => this.rewardTiers.set(tier.id, tier));
+
+    // Initialize sample shipping rates
+    const sampleRates = [
+      { id: '1', method: 'standard', name: 'Standard Shipping', baseRate: '9.99', estimatedDays: '5-7 days' },
+      { id: '2', method: 'express', name: 'Express Shipping', baseRate: '19.99', estimatedDays: '2-3 days' }
+    ];
+    sampleRates.forEach(rate => this.shippingRates.set(rate.id, rate));
+  }
+
+  // Rewards and Loyalty System
+  async getUserRewards(userId: string): Promise<any> {
+    return this.userRewards.get(userId) || { userId, totalPoints: 0, currentTierId: '1' };
+  }
+
+  async getRewardTiers(): Promise<any[]> {
+    return Array.from(this.rewardTiers.values());
+  }
+
+  async getPointTransactions(userId: string): Promise<any[]> {
+    return Array.from(this.pointTransactions.values()).filter((t: any) => t.userId === userId);
+  }
+
+  async addPointTransaction(transaction: any): Promise<any> {
+    const id = randomUUID();
+    const newTransaction = { ...transaction, id, createdAt: new Date() };
+    this.pointTransactions.set(id, newTransaction);
+    return newTransaction;
+  }
+
+  // Referral System  
+  async getUserReferrals(userId: string): Promise<any[]> {
+    return Array.from(this.referrals.values()).filter((r: any) => r.referrerId === userId);
+  }
+
+  async createReferral(referral: any): Promise<any> {
+    const id = randomUUID();
+    const newReferral = { ...referral, id, createdAt: new Date() };
+    this.referrals.set(id, newReferral);
+    return newReferral;
+  }
+
+  async getReferralByCode(code: string): Promise<any> {
+    return Array.from(this.referrals.values()).find((r: any) => r.referralCode === code);
+  }
+
+  // Special Offers
+  async getActiveOffers(): Promise<any[]> {
+    return Array.from(this.specialOffers.values()).filter((o: any) => o.isActive);
+  }
+
+  async getSpecialOffers(): Promise<any[]> {
+    return Array.from(this.specialOffers.values());
+  }
+
+  async createSpecialOffer(offer: any): Promise<any> {
+    const id = randomUUID();
+    const newOffer = { ...offer, id, createdAt: new Date() };
+    this.specialOffers.set(id, newOffer);
+    return newOffer;
+  }
+
+  // Blog System
+  async getBlogPosts(): Promise<any[]> {
+    return Array.from(this.blogPosts.values());
+  }
+
+  async getPublishedBlogPosts(): Promise<any[]> {
+    return Array.from(this.blogPosts.values()).filter((p: any) => p.status === 'published');
+  }
+
+  async getBlogsByCategory(category: string): Promise<any[]> {
+    return Array.from(this.blogPosts.values()).filter((p: any) => p.category === category);
+  }
+
+  async getBlogPost(id: string): Promise<any> {
+    return this.blogPosts.get(id);
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<any> {
+    return Array.from(this.blogPosts.values()).find((p: any) => p.slug === slug);
+  }
+
+  async createBlogPost(post: any): Promise<any> {
+    const id = randomUUID();
+    const newPost = { ...post, id, createdAt: new Date(), updatedAt: new Date() };
+    this.blogPosts.set(id, newPost);
+    return newPost;
+  }
+
+  async updateBlogPost(id: string, updates: any): Promise<any> {
+    const post = this.blogPosts.get(id);
+    if (!post) return undefined;
+    const updatedPost = { ...post, ...updates, updatedAt: new Date() };
+    this.blogPosts.set(id, updatedPost);
+    return updatedPost;
+  }
+
+  async deleteBlogPost(id: string): Promise<boolean> {
+    return this.blogPosts.delete(id);
+  }
+
+  async incrementBlogViewCount(id: string): Promise<void> {
+    const post = this.blogPosts.get(id);
+    if (post) {
+      post.viewCount = (post.viewCount || 0) + 1;
+      this.blogPosts.set(id, post);
+    }
+  }
+
+  async getBlogCategories(): Promise<string[]> {
+    const categories = new Set<string>();
+    Array.from(this.blogPosts.values()).forEach((p: any) => {
+      if (p.category) categories.add(p.category);
+    });
+    return Array.from(categories);
+  }
+
+  async searchBlogPosts(query: string): Promise<any[]> {
+    return Array.from(this.blogPosts.values()).filter((p: any) => 
+      p.title?.toLowerCase().includes(query.toLowerCase()) || 
+      p.content?.toLowerCase().includes(query.toLowerCase())
+    );
+  }
+
+  // Shipping
+  async getShippingRates(): Promise<any[]> {
+    return Array.from(this.shippingRates.values());
+  }
+
+  async calculateShippingCost(weight: number, method: string): Promise<number> {
+    const rate = Array.from(this.shippingRates.values()).find((r: any) => r.method === method);
+    return rate ? parseFloat(rate.baseRate) : 9.99;
+  }
+
+  // Daily Promotions
+  async getTodaysPromotions(): Promise<any[]> {
+    const today = new Date().toISOString().split('T')[0];
+    return Array.from(this.dailyPromotions.values()).filter((p: any) => p.date === today);
+  }
+
+  async getDailyPromotions(): Promise<any[]> {
+    return Array.from(this.dailyPromotions.values());
+  }
+
+  async getPromotionByDay(day: string): Promise<any> {
+    return Array.from(this.dailyPromotions.values()).find((p: any) => p.date === day);
+  }
+
+  async getDailyPromotionsByDay(day: string): Promise<any[]> {
+    return Array.from(this.dailyPromotions.values()).filter((p: any) => p.date === day);
+  }
+
+  async getDailyPromotion(id: string): Promise<any> {
+    return this.dailyPromotions.get(id);
+  }
+
+  async createDailyPromotion(promotion: any): Promise<any> {
+    const id = randomUUID();
+    const newPromotion = { ...promotion, id, createdAt: new Date() };
+    this.dailyPromotions.set(id, newPromotion);
+    return newPromotion;
+  }
+
+  async updateDailyPromotion(id: string, updates: any): Promise<any> {
+    const promotion = this.dailyPromotions.get(id);
+    if (!promotion) return undefined;
+    const updatedPromotion = { ...promotion, ...updates };
+    this.dailyPromotions.set(id, updatedPromotion);
+    return updatedPromotion;
+  }
+
+  async deleteDailyPromotion(id: string): Promise<boolean> {
+    return this.dailyPromotions.delete(id);
+  }
+
+  async calculatePromotionDiscount(promotionId: string, amount: number): Promise<number> {
+    const promotion = this.dailyPromotions.get(promotionId);
+    if (!promotion) return 0;
+    return promotion.type === 'percentage' ? (amount * parseFloat(promotion.value)) / 100 : parseFloat(promotion.value);
+  }
+
+  async recordPromotionUsage(promotionId: string, userId: string): Promise<void> {
+    const promotion = this.dailyPromotions.get(promotionId);
+    if (promotion) {
+      promotion.currentUses = (promotion.currentUses || 0) + 1;
+      this.dailyPromotions.set(promotionId, promotion);
+    }
   }
 }
 
