@@ -23,6 +23,8 @@ import Blog from "@/pages/blog";
 import BlogPost from "@/pages/blog-post";
 import AISalesPage from "@/pages/ai-sales";
 import { DailyDealsPage } from "@/pages/daily-deals";
+import PrivacyPolicy from "@/pages/privacy-policy";
+import TermsOfService from "@/pages/terms-of-service";
 import NotFound from "@/pages/not-found";
 
 // Hooks
@@ -57,6 +59,8 @@ function AppContent() {
           <Route path="/blog" component={Blog} />
           <Route path="/ai-sales" component={AISalesPage} />
           <Route path="/daily-deals" component={DailyDealsPage} />
+          <Route path="/privacy-policy" component={PrivacyPolicy} />
+          <Route path="/terms-of-service" component={TermsOfService} />
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
