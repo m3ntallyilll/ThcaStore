@@ -78,14 +78,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="max-w-4xl mx-auto"
           >
-            <motion.h1 
-              className="text-6xl md:text-8xl font-display font-bold mb-6 bg-gradient-to-r from-gold via-white to-cannabis bg-clip-text text-transparent"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2 }}
-            >
-              Premium THCA
-            </motion.h1>
+            
             <motion.p 
               className="text-xl md:text-2xl mb-8 text-gray-300 max-w-2xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 30 }}

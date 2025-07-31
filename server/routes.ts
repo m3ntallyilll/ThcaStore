@@ -283,7 +283,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           orderId: order.id,
           productId: cartItem.productId,
           quantity: cartItem.quantity,
-          price: parseFloat(cartItem.product.price),
+          price: cartItem.product.price.toString(),
         });
       }
 
