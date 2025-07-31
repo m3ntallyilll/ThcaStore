@@ -202,6 +202,68 @@ export const aiInteractions = pgTable('ai_interactions', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+// AI Conversational Memory System
+export const aiConversations = pgTable('ai_conversations', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  sessionId: text('session_id').notNull(),
+  title: text('title'), // Auto-generated conversation summary
+  status: text('status', { enum: ['active', 'completed', 'archived'] }).notNull().default('active'),
+  lastInteractionAt: timestamp('last_interaction_at').defaultNow().notNull(),
+  messageCount: integer('message_count').notNull().default(0),
+  topics: text('topics').array(), // Extracted conversation topics
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const aiMessages = pgTable('ai_messages', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  conversationId: varchar('conversation_id').references(() => aiConversations.id).notNull(),
+  userId: varchar('user_id').references(() => users.id),
+  role: text('role', { enum: ['user', 'assistant', 'system'] }).notNull(),
+  content: text('content').notNull(),
+  metadata: text('metadata'), // JSON string for additional data
+  intent: text('intent'),
+  sentiment: text('sentiment', { enum: ['positive', 'neutral', 'negative'] }),
+  productsReferenced: text('products_referenced').array(),
+  ordersReferenced: text('orders_referenced').array(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const aiUserProfiles = pgTable('ai_user_profiles', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull().unique(),
+  preferences: text('preferences'), // JSON string of user preferences
+  interests: text('interests').array(), // Product categories, topics they ask about
+  communicationStyle: text('communication_style', { 
+    enum: ['formal', 'casual', 'technical', 'simple'] 
+  }).default('casual'),
+  lastSeenProducts: text('last_seen_products').array(),
+  frequentQuestions: text('frequent_questions').array(),
+  purchasePatterns: text('purchase_patterns'), // JSON string
+  satisfactionScore: decimal('satisfaction_score', { precision: 3, scale: 2 }).default('0.00'),
+  totalInteractions: integer('total_interactions').notNull().default(0),
+  successfulRecommendations: integer('successful_recommendations').notNull().default(0),
+  lastActiveAt: timestamp('last_active_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const aiContextMemory = pgTable('ai_context_memory', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  contextType: text('context_type', { 
+    enum: ['product_preference', 'order_history', 'support_issue', 'general_info', 'user_goal'] 
+  }).notNull(),
+  contextKey: text('context_key').notNull(), // e.g., 'preferred_category', 'pain_points'
+  contextValue: text('context_value').notNull(), // The actual data
+  importance: integer('importance').notNull().default(1), // 1-10 scale
+  expiresAt: timestamp('expires_at'), // For temporary context
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const salesMetrics = pgTable('sales_metrics', {
   id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
   date: date('date').notNull(),
@@ -295,6 +357,25 @@ export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
   author: one(users, { fields: [blogPosts.authorId], references: [users.id] }),
 }));
 
+// AI Memory Relations
+export const aiConversationsRelations = relations(aiConversations, ({ one, many }) => ({
+  user: one(users, { fields: [aiConversations.userId], references: [users.id] }),
+  messages: many(aiMessages),
+}));
+
+export const aiMessagesRelations = relations(aiMessages, ({ one }) => ({
+  conversation: one(aiConversations, { fields: [aiMessages.conversationId], references: [aiConversations.id] }),
+  user: one(users, { fields: [aiMessages.userId], references: [users.id] }),
+}));
+
+export const aiUserProfilesRelations = relations(aiUserProfiles, ({ one }) => ({
+  user: one(users, { fields: [aiUserProfiles.userId], references: [users.id] }),
+}));
+
+export const aiContextMemoryRelations = relations(aiContextMemory, ({ one }) => ({
+  user: one(users, { fields: [aiContextMemory.userId], references: [users.id] }),
+}));
+
 // Insert and Select Schemas
 export const insertRewardTierSchema = createInsertSchema(rewardTiers);
 export const insertUserRewardSchema = createInsertSchema(userRewards);
@@ -306,6 +387,10 @@ export const insertSalesMetricSchema = createInsertSchema(salesMetrics);
 export const insertShippingRateSchema = createInsertSchema(shippingRates);
 export const insertProhibitedStateSchema = createInsertSchema(prohibitedStates);
 export const insertBlogPostSchema = createInsertSchema(blogPosts);
+export const insertAiConversationSchema = createInsertSchema(aiConversations);
+export const insertAiMessageSchema = createInsertSchema(aiMessages);
+export const insertAiUserProfileSchema = createInsertSchema(aiUserProfiles);
+export const insertAiContextMemorySchema = createInsertSchema(aiContextMemory);
 
 // Types
 export type InsertRewardTier = z.infer<typeof insertRewardTierSchema>;
@@ -328,6 +413,16 @@ export type InsertProhibitedState = z.infer<typeof insertProhibitedStateSchema>;
 export type ProhibitedState = typeof prohibitedStates.$inferSelect;
 export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 export type BlogPost = typeof blogPosts.$inferSelect;
+
+// AI Memory Types
+export type InsertAIConversation = z.infer<typeof insertAiConversationSchema>;
+export type AIConversation = typeof aiConversations.$inferSelect;
+export type InsertAIMessage = z.infer<typeof insertAiMessageSchema>;
+export type AIMessage = typeof aiMessages.$inferSelect;
+export type InsertAIUserProfile = z.infer<typeof insertAiUserProfileSchema>;
+export type AIUserProfile = typeof aiUserProfiles.$inferSelect;
+export type InsertAIContextMemory = z.infer<typeof insertAiContextMemorySchema>;
+export type AIContextMemory = typeof aiContextMemory.$inferSelect;
 
 // Auth user type for frontend
 export interface AuthUser {

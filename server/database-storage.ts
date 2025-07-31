@@ -22,7 +22,15 @@ import type {
   SpecialOffer,
   InsertSpecialOffer,
   BlogPost,
-  InsertBlogPost
+  InsertBlogPost,
+  AIConversation,
+  InsertAIConversation,
+  AIMessage,
+  InsertAIMessage,
+  AIUserProfile,
+  InsertAIUserProfile,
+  AIContextMemory,
+  InsertAIContextMemory
 } from '@shared/schema';
 import { 
   users, 
@@ -37,7 +45,11 @@ import {
   specialOffers,
   shippingRates,
   prohibitedStates,
-  blogPosts
+  blogPosts,
+  aiConversations,
+  aiMessages,
+  aiUserProfiles,
+  aiContextMemory
 } from '@shared/schema';
 
 export class DatabaseStorage {
@@ -832,6 +844,181 @@ export class DatabaseStorage {
         )
       )
       .orderBy(desc(blogPosts.publishedAt));
+  }
+
+  // AI Memory Management Methods
+  
+  // Conversation Management
+  async createConversation(conversation: InsertAIConversation): Promise<AIConversation> {
+    const [result] = await db.insert(aiConversations).values(conversation).returning();
+    return result;
+  }
+
+  async getConversation(id: string): Promise<AIConversation | undefined> {
+    const [conversation] = await db.select().from(aiConversations).where(eq(aiConversations.id, id));
+    return conversation;
+  }
+
+  async getConversationBySession(sessionId: string, userId?: string): Promise<AIConversation | undefined> {
+    const conditions = [eq(aiConversations.sessionId, sessionId)];
+    if (userId) {
+      conditions.push(eq(aiConversations.userId, userId));
+    }
+    
+    const [conversation] = await db.select().from(aiConversations)
+      .where(and(...conditions));
+    return conversation;
+  }
+
+  async getUserConversations(userId: string, limit: number = 10): Promise<AIConversation[]> {
+    return await db.select().from(aiConversations)
+      .where(eq(aiConversations.userId, userId))
+      .orderBy(desc(aiConversations.lastInteractionAt))
+      .limit(limit);
+  }
+
+  async updateConversation(id: string, updates: Partial<InsertAIConversation>): Promise<AIConversation | undefined> {
+    const updateData = { ...updates, updatedAt: new Date() };
+    const [conversation] = await db.update(aiConversations).set(updateData).where(eq(aiConversations.id, id)).returning();
+    return conversation;
+  }
+
+  // Message Management
+  async addMessage(message: InsertAIMessage): Promise<AIMessage> {
+    const [result] = await db.insert(aiMessages).values(message).returning();
+    
+    // Update conversation metadata
+    await db.update(aiConversations)
+      .set({ 
+        lastInteractionAt: new Date(),
+        messageCount: sql`${aiConversations.messageCount} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(aiConversations.id, message.conversationId));
+    
+    return result;
+  }
+
+  async getConversationHistory(conversationId: string, limit: number = 50): Promise<AIMessage[]> {
+    return await db.select().from(aiMessages)
+      .where(eq(aiMessages.conversationId, conversationId))
+      .orderBy(aiMessages.createdAt)
+      .limit(limit);
+  }
+
+  async getRecentMessages(userId: string, limit: number = 20): Promise<AIMessage[]> {
+    return await db.select().from(aiMessages)
+      .where(eq(aiMessages.userId, userId))
+      .orderBy(desc(aiMessages.createdAt))
+      .limit(limit);
+  }
+
+  // User Profile Management
+  async getAIUserProfile(userId: string): Promise<AIUserProfile | undefined> {
+    const [profile] = await db.select().from(aiUserProfiles).where(eq(aiUserProfiles.userId, userId));
+    return profile;
+  }
+
+  async createAIUserProfile(profile: InsertAIUserProfile): Promise<AIUserProfile> {
+    const [result] = await db.insert(aiUserProfiles).values(profile).returning();
+    return result;
+  }
+
+  async updateAIUserProfile(userId: string, updates: Partial<InsertAIUserProfile>): Promise<AIUserProfile | undefined> {
+    const updateData = { ...updates, updatedAt: new Date() };
+    const [profile] = await db.update(aiUserProfiles).set(updateData).where(eq(aiUserProfiles.userId, userId)).returning();
+    return profile;
+  }
+
+  async getOrCreateAIUserProfile(userId: string): Promise<AIUserProfile> {
+    let profile = await this.getAIUserProfile(userId);
+    
+    if (!profile) {
+      profile = await this.createAIUserProfile({
+        userId,
+        preferences: JSON.stringify({}),
+        interests: [],
+        communicationStyle: 'casual',
+        lastSeenProducts: [],
+        frequentQuestions: [],
+        purchasePatterns: JSON.stringify({}),
+        satisfactionScore: '0.00',
+        totalInteractions: 0,
+        successfulRecommendations: 0,
+        lastActiveAt: new Date()
+      });
+    }
+    
+    return profile;
+  }
+
+  // Context Memory Management
+  async saveContext(context: InsertAIContextMemory): Promise<AIContextMemory> {
+    // Check if context already exists and update or create new
+    const existing = await db.select().from(aiContextMemory)
+      .where(and(
+        eq(aiContextMemory.userId, context.userId),
+        eq(aiContextMemory.contextType, context.contextType),
+        eq(aiContextMemory.contextKey, context.contextKey)
+      ))
+      .limit(1);
+
+    if (existing.length > 0) {
+      const [updated] = await db.update(aiContextMemory)
+        .set({ 
+          contextValue: context.contextValue, 
+          importance: context.importance || 1,
+          updatedAt: new Date() 
+        })
+        .where(eq(aiContextMemory.id, existing[0].id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(aiContextMemory).values(context).returning();
+      return created;
+    }
+  }
+
+  async getContext(userId: string, contextType?: string): Promise<AIContextMemory[]> {
+    const conditions = [eq(aiContextMemory.userId, userId), eq(aiContextMemory.isActive, true)];
+    if (contextType) {
+      conditions.push(eq(aiContextMemory.contextType, contextType as any));
+    }
+
+    return await db.select().from(aiContextMemory)
+      .where(and(...conditions))
+      .orderBy(desc(aiContextMemory.importance), desc(aiContextMemory.updatedAt));
+  }
+
+  async getContextByKey(userId: string, contextKey: string): Promise<AIContextMemory | undefined> {
+    const [context] = await db.select().from(aiContextMemory)
+      .where(and(
+        eq(aiContextMemory.userId, userId),
+        eq(aiContextMemory.contextKey, contextKey),
+        eq(aiContextMemory.isActive, true)
+      ));
+    return context;
+  }
+
+  async clearExpiredContext(): Promise<void> {
+    await db.update(aiContextMemory)
+      .set({ isActive: false })
+      .where(and(
+        eq(aiContextMemory.isActive, true),
+        sql`${aiContextMemory.expiresAt} < NOW()`
+      ));
+  }
+
+  async updateInteractionStats(userId: string, successful: boolean = false): Promise<void> {
+    const profile = await this.getOrCreateAIUserProfile(userId);
+    
+    await this.updateAIUserProfile(userId, {
+      totalInteractions: profile.totalInteractions + 1,
+      successfulRecommendations: successful ? 
+        profile.successfulRecommendations + 1 : 
+        profile.successfulRecommendations,
+      lastActiveAt: new Date()
+    });
   }
 
 

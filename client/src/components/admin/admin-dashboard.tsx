@@ -333,7 +333,7 @@ export function AdminDashboard() {
     };
 
     return (
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 text-[#000000]">
         <div>
           <Label htmlFor="name" className="text-white font-semibold">Product Name</Label>
           <Input
