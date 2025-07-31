@@ -132,11 +132,20 @@ export default function Home() {
   const featuresY = useTransform(scrollYProgress, [0.2, 0.8], ['100px', '-100px']);
   const statsScale = useTransform(scrollYProgress, [0.3, 0.6], [0.8, 1.2]);
 
-  // Real-time data fetching
+  // Real-time data fetching - remove admin stats call from public page
+  // Only show generic public stats, not admin-specific data
   const { data: liveStats } = useQuery({
-    queryKey: ['/api/admin/stats'],
-    queryFn: () => apiRequest('/api/admin/stats'),
-    refetchInterval: 5000
+    queryKey: ['/api/products'],
+    queryFn: () => apiRequest('/api/products'),
+    select: (data) => ({
+      totalProducts: data?.length || 0,
+      // Create public-facing stats from product data
+      featuredProducts: data?.filter((p: any) => p.featured)?.length || 0,
+      categories: Array.from(new Set(data?.map((p: any) => p.category) || [])).length,
+      totalUsers: 150 // Static display number for public view
+    }),
+    refetchInterval: false, // Disable auto-refresh
+    staleTime: 300000, // 5 minutes
   });
 
   const { data: featuredProducts } = useQuery({
