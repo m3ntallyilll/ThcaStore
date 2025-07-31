@@ -30,7 +30,11 @@ import type {
   AIUserProfile,
   InsertAIUserProfile,
   AIContextMemory,
-  InsertAIContextMemory
+  InsertAIContextMemory,
+  DailyPromotion,
+  InsertDailyPromotion,
+  PromotionUsage,
+  InsertPromotionUsage
 } from '@shared/schema';
 import { 
   users, 
@@ -49,7 +53,9 @@ import {
   aiConversations,
   aiMessages,
   aiUserProfiles,
-  aiContextMemory
+  aiContextMemory,
+  dailyPromotions,
+  promotionUsage
 } from '@shared/schema';
 
 export class DatabaseStorage {
@@ -1019,6 +1025,94 @@ export class DatabaseStorage {
         profile.successfulRecommendations,
       lastActiveAt: new Date()
     });
+  }
+
+  // Daily Promotions Methods
+  async createDailyPromotion(promotion: InsertDailyPromotion): Promise<DailyPromotion> {
+    const [created] = await db.insert(dailyPromotions).values(promotion).returning();
+    return created;
+  }
+
+  async getDailyPromotions(): Promise<DailyPromotion[]> {
+    return await db.select().from(dailyPromotions)
+      .where(eq(dailyPromotions.isActive, true))
+      .orderBy(dailyPromotions.dayOfWeek);
+  }
+
+  async getPromotionByDay(dayOfWeek: number): Promise<DailyPromotion[]> {
+    return await db.select().from(dailyPromotions)
+      .where(and(
+        eq(dailyPromotions.dayOfWeek, dayOfWeek),
+        eq(dailyPromotions.isActive, true)
+      ));
+  }
+
+  async getTodaysPromotions(): Promise<DailyPromotion[]> {
+    const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+    return await this.getPromotionByDay(today);
+  }
+
+  async updateDailyPromotion(id: string, updates: Partial<InsertDailyPromotion>): Promise<DailyPromotion | undefined> {
+    const [updated] = await db.update(dailyPromotions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(dailyPromotions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteDailyPromotion(id: string): Promise<boolean> {
+    const result = await db.update(dailyPromotions)
+      .set({ isActive: false })
+      .where(eq(dailyPromotions.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async recordPromotionUsage(usage: InsertPromotionUsage): Promise<PromotionUsage> {
+    const [created] = await db.insert(promotionUsage).values(usage).returning();
+    return created;
+  }
+
+  async getPromotionUsage(promotionId: string): Promise<PromotionUsage[]> {
+    return await db.select().from(promotionUsage)
+      .where(eq(promotionUsage.promotionId, promotionId))
+      .orderBy(desc(promotionUsage.usedAt));
+  }
+
+  async calculatePromotionDiscount(
+    promotion: DailyPromotion,
+    cartTotal: number,
+    cartItems: any[]
+  ): Promise<number> {
+    // Check minimum purchase requirement
+    if (cartTotal < parseFloat(promotion.minPurchase || '0')) {
+      return 0;
+    }
+
+    let discount = 0;
+    
+    switch (promotion.discountType) {
+      case 'percentage':
+        discount = cartTotal * (parseFloat(promotion.discountValue) / 100);
+        break;
+      case 'fixed':
+        discount = parseFloat(promotion.discountValue);
+        break;
+      case 'bogo':
+        // Buy one get one logic - simplified
+        discount = cartTotal * 0.5;
+        break;
+      case 'bundle':
+        // Bundle discount logic
+        discount = cartTotal * (parseFloat(promotion.discountValue) / 100);
+        break;
+    }
+
+    // Apply maximum discount limit if set
+    if (promotion.maxDiscount) {
+      discount = Math.min(discount, parseFloat(promotion.maxDiscount));
+    }
+
+    return Math.round(discount * 100) / 100; // Round to 2 decimal places
   }
 
 

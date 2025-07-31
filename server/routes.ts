@@ -665,6 +665,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Daily Promotions API Routes
+  app.get("/api/promotions/today", async (req, res) => {
+    try {
+      const promotions = await storage.getTodaysPromotions();
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/promotions/week", async (req, res) => {
+    try {
+      const promotions = await storage.getDailyPromotions();
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/promotions/day/:dayOfWeek", async (req, res) => {
+    try {
+      const dayOfWeek = parseInt(req.params.dayOfWeek);
+      const promotions = await storage.getPromotionByDay(dayOfWeek);
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin Promotion Management
+  app.get("/api/admin/promotions", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const promotions = await storage.getDailyPromotions();
+      res.json(promotions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/promotions", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const promotion = await storage.createDailyPromotion(req.body);
+      res.json(promotion);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/promotions/:id", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const promotion = await storage.updateDailyPromotion(req.params.id, req.body);
+      if (!promotion) {
+        return res.status(404).json({ message: "Promotion not found" });
+      }
+      res.json(promotion);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/promotions/:id", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const success = await storage.deleteDailyPromotion(req.params.id);
+      if (!success) {
+        return res.status(404).json({ message: "Promotion not found" });
+      }
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/promotions/calculate", async (req, res) => {
+    try {
+      const { promotionId, cartTotal, cartItems } = req.body;
+      const [promotion] = await storage.getPromotionByDay(0); // This should be improved to get specific promotion
+      
+      if (!promotion) {
+        return res.status(404).json({ message: "Promotion not found" });
+      }
+
+      const discount = await storage.calculatePromotionDiscount(promotion, cartTotal, cartItems);
+      res.json({ discount, promotion });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin Blog Routes
   app.get("/api/admin/blog/posts", authenticateToken, requireAdmin, async (req: any, res) => {
     try {

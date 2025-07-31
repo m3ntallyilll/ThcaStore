@@ -418,7 +418,7 @@ How can I help you today? I can:
                                   variant="outline"
                                   size="sm"
                                   onClick={() => onOfferSuggestion?.(offer)}
-                                  className="text-xs border-gold/30 hover:bg-gold/10"
+                                  className="text-xs border-gold/30 hover:bg-gold/10 bg-[#000000]"
                                 >
                                   {offer.name} - {offer.value}%
                                 </Button>

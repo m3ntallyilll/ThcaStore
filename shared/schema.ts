@@ -376,6 +376,46 @@ export const aiContextMemoryRelations = relations(aiContextMemory, ({ one }) => 
   user: one(users, { fields: [aiContextMemory.userId], references: [users.id] }),
 }));
 
+// Daily Sales Promotions
+export const dailyPromotions = pgTable('daily_promotions', {
+  id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+  dayOfWeek: integer('day_of_week').notNull(), // 0 = Sunday, 1 = Monday, etc.
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  discountType: text('discount_type').notNull(), // 'percentage', 'fixed', 'bogo', 'bundle'
+  discountValue: decimal('discount_value', { precision: 10, scale: 2 }).notNull(),
+  minPurchase: decimal('min_purchase', { precision: 10, scale: 2 }).default('0'),
+  maxDiscount: decimal('max_discount', { precision: 10, scale: 2 }),
+  applicableCategories: text('applicable_categories').array().default([]),
+  applicableProducts: text('applicable_products').array().default([]),
+  stackableWithOthers: boolean('stackable_with_others').default(false),
+  isActive: boolean('is_active').default(true),
+  startTime: text('start_time').default('00:00'), // 24-hour format
+  endTime: text('end_time').default('23:59'),
+  timeZone: text('time_zone').default('America/New_York'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const promotionUsage = pgTable('promotion_usage', {
+  id: text('id').primaryKey().default(sql`gen_random_uuid()`),
+  promotionId: text('promotion_id').notNull().references(() => dailyPromotions.id),
+  userId: text('user_id').references(() => users.id),
+  orderId: text('order_id').references(() => orders.id),
+  discountAmount: decimal('discount_amount', { precision: 10, scale: 2 }).notNull(),
+  usedAt: timestamp('used_at').defaultNow(),
+});
+
+export const dailyPromotionsRelations = relations(dailyPromotions, ({ many }) => ({
+  usage: many(promotionUsage),
+}));
+
+export const promotionUsageRelations = relations(promotionUsage, ({ one }) => ({
+  promotion: one(dailyPromotions, { fields: [promotionUsage.promotionId], references: [dailyPromotions.id] }),
+  user: one(users, { fields: [promotionUsage.userId], references: [users.id] }),
+  order: one(orders, { fields: [promotionUsage.orderId], references: [orders.id] }),
+}));
+
 // Insert and Select Schemas
 export const insertRewardTierSchema = createInsertSchema(rewardTiers);
 export const insertUserRewardSchema = createInsertSchema(userRewards);
@@ -391,6 +431,8 @@ export const insertAiConversationSchema = createInsertSchema(aiConversations);
 export const insertAiMessageSchema = createInsertSchema(aiMessages);
 export const insertAiUserProfileSchema = createInsertSchema(aiUserProfiles);
 export const insertAiContextMemorySchema = createInsertSchema(aiContextMemory);
+export const insertDailyPromotionSchema = createInsertSchema(dailyPromotions);
+export const insertPromotionUsageSchema = createInsertSchema(promotionUsage);
 
 // Types
 export type InsertRewardTier = z.infer<typeof insertRewardTierSchema>;
@@ -423,6 +465,10 @@ export type InsertAIUserProfile = z.infer<typeof insertAiUserProfileSchema>;
 export type AIUserProfile = typeof aiUserProfiles.$inferSelect;
 export type InsertAIContextMemory = z.infer<typeof insertAiContextMemorySchema>;
 export type AIContextMemory = typeof aiContextMemory.$inferSelect;
+export type InsertDailyPromotion = z.infer<typeof insertDailyPromotionSchema>;
+export type DailyPromotion = typeof dailyPromotions.$inferSelect;
+export type InsertPromotionUsage = z.infer<typeof insertPromotionUsageSchema>;
+export type PromotionUsage = typeof promotionUsage.$inferSelect;
 
 // Auth user type for frontend
 export interface AuthUser {
