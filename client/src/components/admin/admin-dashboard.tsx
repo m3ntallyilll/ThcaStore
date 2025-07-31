@@ -130,22 +130,42 @@ export function AdminDashboard() {
 
     // Update product mutation
     const updateProductMutation = useMutation({
-      mutationFn: async ({ id, productData }: { id: string; productData: Omit<Product, 'id'> }) => {
-        const response = await apiRequest('PATCH', `/api/products/${id}`, productData);
+      mutationFn: async ({ id, productData }: { id: string; productData: Partial<Product> }) => {
+        // Clean the data before sending
+        const cleanData = {
+          ...productData,
+          stock: productData.stock ? parseInt(productData.stock.toString()) : 0,
+          price: productData.price?.toString(),
+          weight: productData.weight?.toString(),
+          thcaContent: productData.thcaContent?.toString() || null,
+          rating: productData.rating?.toString() || null,
+          effects: Array.isArray(productData.effects) ? productData.effects : []
+        };
+        
+        // Remove undefined values
+        Object.keys(cleanData).forEach(key => {
+          if (cleanData[key as keyof typeof cleanData] === undefined) {
+            delete cleanData[key as keyof typeof cleanData];
+          }
+        });
+
+        const response = await apiRequest('PATCH', `/api/products/${id}`, cleanData);
         return response.json();
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['/api/products'] });
         setIsProductDialogOpen(false);
+        setSelectedProduct(null);
         toast({
           title: "Product Updated",
           description: "Product has been updated successfully.",
         });
       },
-      onError: () => {
+      onError: (error: any) => {
+        console.error('Update error:', error);
         toast({
           title: "Error",
-          description: "Failed to update product.",
+          description: "Failed to update product. Please check the form data.",
           variant: "destructive",
         });
       },

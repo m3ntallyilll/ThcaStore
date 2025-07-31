@@ -368,7 +368,32 @@ export class DatabaseStorage {
   }
 
   async updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product | undefined> {
-    const [product] = await db.update(products).set(updates).where(eq(products.id, id)).returning();
+    // Clean up the updates object to ensure proper types
+    const cleanUpdates: any = { ...updates };
+    
+    // Handle effects array properly
+    if (cleanUpdates.effects !== undefined) {
+      cleanUpdates.effects = Array.isArray(cleanUpdates.effects) ? cleanUpdates.effects : null;
+    }
+    
+    // Convert numeric strings to proper types
+    if (cleanUpdates.price !== undefined) {
+      cleanUpdates.price = cleanUpdates.price.toString();
+    }
+    if (cleanUpdates.stock !== undefined) {
+      cleanUpdates.stock = parseInt(cleanUpdates.stock.toString());
+    }
+    if (cleanUpdates.weight !== undefined) {
+      cleanUpdates.weight = cleanUpdates.weight.toString();
+    }
+    if (cleanUpdates.thcaContent !== undefined && cleanUpdates.thcaContent !== null) {
+      cleanUpdates.thcaContent = cleanUpdates.thcaContent.toString();
+    }
+    if (cleanUpdates.rating !== undefined && cleanUpdates.rating !== null) {
+      cleanUpdates.rating = cleanUpdates.rating.toString();
+    }
+
+    const [product] = await db.update(products).set(cleanUpdates).where(eq(products.id, id)).returning();
     return product || undefined;
   }
 

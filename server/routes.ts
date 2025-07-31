@@ -123,8 +123,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { category, featured } = req.query;
       
       let products;
-      if (category) {
-        products = await storage.getProductsByCategory(category as string);
+      if (category && category !== 'all') {
+        products = await storage.getProducts();
+        products = products.filter(p => p.category === category);
       } else if (featured === 'true') {
         products = await storage.getFeaturedProducts();
       } else {
