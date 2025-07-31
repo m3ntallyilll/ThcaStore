@@ -54,6 +54,9 @@ export function Navigation() {
                 <a href="#about" className="hover:text-glow-green-400 transition-colors duration-300">
                   About
                 </a>
+                <Link href="/returns" className="hover:text-glow-green-400 transition-colors duration-300">
+                  Returns
+                </Link>
                 <a href="#contact" className="hover:text-glow-green-400 transition-colors duration-300">
                   Contact
                 </a>

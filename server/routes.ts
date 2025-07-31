@@ -1080,6 +1080,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Returns and Refunds Routes
+  app.get("/api/returns", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      
+      // Mock return requests for now - in production, fetch from database
+      const mockReturns = [
+        {
+          id: "ret_001",
+          orderId: "ord_123",
+          productId: "prod_456", 
+          productName: "Premium THCA Flower - OG Kush",
+          productImage: "/api/placeholder/150/150",
+          quantity: 1,
+          reason: "quality",
+          description: "Product quality not as expected",
+          status: "pending",
+          returnType: "refund",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          refundAmount: 45.00
+        }
+      ];
+      
+      res.json(mockReturns);
+    } catch (error: any) {
+      console.error('Returns fetch error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/returns", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { orderId, items } = req.body;
+
+      if (!orderId || !items || items.length === 0) {
+        return res.status(400).json({ message: "Order ID and items are required" });
+      }
+
+      // In production, validate order exists and belongs to user
+      // Create return request in database
+      const returnRequest = {
+        id: `ret_${Date.now()}`,
+        userId,
+        orderId,
+        items,
+        status: "pending",
+        createdAt: new Date().toISOString(),
+        estimatedProcessing: "2-3 business days"
+      };
+
+      console.log(`[RETURN REQUEST] User: ${userId} | Order: ${orderId} | Items: ${items.length}`);
+
+      res.json({
+        success: true,
+        returnRequest,
+        message: "Return request submitted successfully"
+      });
+    } catch (error: any) {
+      console.error('Return creation error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/returns/:id", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const returnId = req.params.id;
+
+      // Mock return details - in production, fetch from database
+      const returnDetails = {
+        id: returnId,
+        orderId: "ord_123",
+        status: "processing",
+        trackingNumber: "RT123456789",
+        timeline: [
+          { status: "submitted", date: "2025-01-31T10:00:00Z", description: "Return request submitted" },
+          { status: "approved", date: "2025-01-31T14:00:00Z", description: "Return approved" },
+          { status: "processing", date: "2025-01-31T16:00:00Z", description: "Return being processed" }
+        ],
+        refundAmount: 45.00,
+        estimatedCompletion: "2025-02-03"
+      };
+
+      res.json(returnDetails);
+    } catch (error: any) {
+      console.error('Return details error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // AI Customer Support Routes
   app.post("/api/support/ai-chat", async (req, res) => {
     try {
