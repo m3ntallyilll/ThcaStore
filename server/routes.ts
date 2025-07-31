@@ -786,12 +786,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Optionally seed inventory products if not already present
+      // Seed inventory products when activating AI sales
       try {
-        const { seedInventoryProducts } = await import('./seed-inventory');
+        const seedModule = await import('./seed-inventory');
+        const seedInventoryProducts = seedModule.default || seedModule.seedInventoryProducts;
         await seedInventoryProducts();
+        console.log('Successfully seeded inventory products');
       } catch (seedError) {
-        console.log('Product seeding skipped (products may already exist)');
+        console.log('Product seeding skipped (products may already exist):', seedError.message);
       }
 
       res.json(activationResults);
