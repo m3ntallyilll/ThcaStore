@@ -583,6 +583,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Increment view count endpoint
+  app.post("/api/blog/posts/:id/view", async (req, res) => {
+    try {
+      const post = await storage.getBlogPost(req.params.id);
+      if (!post) {
+        return res.status(404).json({ message: "Blog post not found" });
+      }
+
+      // Only increment for published posts
+      if (post.status === 'published') {
+        await storage.incrementBlogViewCount(post.id);
+      }
+
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Admin Blog Routes
   app.get("/api/admin/blog/posts", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
