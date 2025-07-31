@@ -91,28 +91,38 @@ How can I help you today? I can:
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
     try {
-      const response = await apiRequest('/api/ai/chat', {
+      const response = await fetch('/api/ai/chat', {
         method: 'POST',
-        body: {
-          message: inputMessage,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: messageToSend,
           sessionId,
           userId: user?.id
-        }
+        })
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
 
       const aiMessage: ChatMessage = {
         id: `ai_${Date.now()}`,
         message: inputMessage,
-        response: response.response,
-        intent: response.intent,
-        sentiment: response.sentiment,
-        recommendedProducts: response.recommendedProducts || [],
-        suggestedOffers: response.suggestedOffers || [],
-        actionItems: response.actionItems || [],
+        response: data.response,
+        intent: data.intent,
+        sentiment: data.sentiment,
+        recommendedProducts: data.recommendedProducts || [],
+        suggestedOffers: data.suggestedOffers || [],
+        actionItems: data.actionItems || [],
         timestamp: new Date(),
         isUser: false
       };
@@ -120,8 +130,8 @@ How can I help you today? I can:
       setMessages(prev => [...prev, aiMessage]);
 
       // Handle action items
-      if (response.actionItems) {
-        response.actionItems.forEach((action: any) => {
+      if (data.actionItems) {
+        data.actionItems.forEach((action: any) => {
           switch (action.type) {
             case 'show_rewards':
               // Could trigger a rewards modal or navigation
@@ -137,15 +147,15 @@ How can I help you today? I can:
       }
 
       // Handle product recommendations
-      if (response.recommendedProducts && response.recommendedProducts.length > 0) {
-        response.recommendedProducts.forEach((productId: string) => {
+      if (data.recommendedProducts && data.recommendedProducts.length > 0) {
+        data.recommendedProducts.forEach((productId: string) => {
           onProductRecommendation?.(productId);
         });
       }
 
       // Handle offer suggestions
-      if (response.suggestedOffers && response.suggestedOffers.length > 0) {
-        response.suggestedOffers.forEach((offer: any) => {
+      if (data.suggestedOffers && data.suggestedOffers.length > 0) {
+        data.suggestedOffers.forEach((offer: any) => {
           onOfferSuggestion?.(offer);
         });
       }

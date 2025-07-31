@@ -202,7 +202,7 @@ Remember: Every interaction should move toward a sale while providing genuine va
 
   private async getActiveOffers(userTier?: string): Promise<any[]> {
     const now = new Date();
-    const currentDay = now.toLocaleLowerCase().slice(0, 3); // mon, tue, wed, etc.
+    const currentDay = now.toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase(); // mon, tue, wed, etc.
 
     return await db
       .select()
