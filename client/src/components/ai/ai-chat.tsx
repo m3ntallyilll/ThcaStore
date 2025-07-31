@@ -97,11 +97,11 @@ How can I help you today? I can:
     try {
       const response = await apiRequest('/api/ai/chat', {
         method: 'POST',
-        body: JSON.stringify({
+        body: {
           message: inputMessage,
           sessionId,
           userId: user?.id
-        })
+        }
       });
 
       const aiMessage: ChatMessage = {
