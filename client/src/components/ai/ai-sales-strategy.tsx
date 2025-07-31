@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { DailyDeals } from '@/components/promotions/daily-deals';
 import { 
   Brain, 
   TrendingUp, 
@@ -42,7 +43,9 @@ interface AISalesStrategy {
 
 export function AISalesStrategy() {
   const [activeStrategy, setActiveStrategy] = useState<string | null>(null);
+  const [isActivating, setIsActivating] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch AI-generated sales strategies
   const { data: strategies, isLoading: strategiesLoading } = useQuery({
@@ -63,6 +66,24 @@ export function AISalesStrategy() {
         method: 'POST',
         body: JSON.stringify(params)
       })
+  });
+
+  // Generate daily deals with Groq AI
+  const generateDealsMutation = useMutation({
+    mutationFn: (params: { targetRevenue: number; customerSegment: string; inventoryFocus: string }) => 
+      apiRequest('/api/ai/generate-daily-deals', {
+        method: 'POST',
+        body: JSON.stringify(params)
+      }),
+    onSuccess: (data) => {
+      toast({
+        title: "AI Daily Deals Generated!",
+        description: `${data.dealCount} Groq AI-powered deals created successfully.`,
+      });
+      // Refresh deals data
+      queryClient.invalidateQueries({ queryKey: ['/api/promotions/today'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/promotions/week'] });
+    }
   });
 
   // AI Sales Activation mutation
@@ -174,17 +195,19 @@ export function AISalesStrategy() {
   const activateStrategy = async (strategyId: string) => {
     try {
       setIsActivating(true);
-      const response = await apiRequest2('POST', '/api/ai/activate-sales', { strategyId });
+      const response = await apiRequest('/api/ai/activate-sales', {
+        method: 'POST',
+        body: JSON.stringify({ strategyId })
+      });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          toast({
-            title: "AI Sales Strategy Activated!",
-            description: "Your sales optimization is now live and driving conversions.",
-          });
-          setActivationResult(data);
-        }
+      if (response.success) {
+        toast({
+          title: "AI Sales Strategy Activated!",
+          description: "Your sales optimization is now live and driving conversions.",
+        });
+        // Refresh deals and strategy data
+        queryClient.invalidateQueries({ queryKey: ['/api/promotions/today'] });
+        queryClient.invalidateQueries({ queryKey: ['/api/ai/sales-strategies'] });
       } else {
         throw new Error('Failed to activate strategy');
       }
@@ -205,13 +228,57 @@ export function AISalesStrategy() {
       <div className="text-center space-y-4">
         <div className="flex items-center justify-center gap-3 mb-4">
           <Brain className="w-8 h-8 text-purple-400" />
-          <h1 className="text-4xl font-bold text-white">AI-Driven Sales Strategy</h1>
+          <h1 className="text-4xl font-bold text-white">AI-Powered Sales Strategy & Daily Deals</h1>
         </div>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          Leverage cutting-edge artificial intelligence to guarantee increased sales, optimize conversions, 
-          and drive sustainable revenue growth for your THCA business.
+          Leverage Groq AI technology to optimize sales strategies and generate dynamic daily cannabis deals 
+          that drive conversions and maximize revenue for your THCA business.
         </p>
       </div>
+
+      {/* Integrated Daily Deals Section */}
+      <Card className="bg-gradient-to-r from-green-900/20 to-purple-900/20 border-green-500/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Gift className="w-6 h-6 text-green-400" />
+            AI-Generated Daily Cannabis Deals
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-4 mb-6">
+            <Button
+              onClick={() => generateDealsMutation.mutate({
+                targetRevenue: 2500,
+                customerSegment: 'Cannabis enthusiasts',
+                inventoryFocus: 'High-margin products'
+              })}
+              disabled={generateDealsMutation.isPending}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {generateDealsMutation.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Zap className="w-4 h-4 mr-2" />
+              )}
+              Generate AI Deals with Groq
+            </Button>
+            <Button
+              onClick={() => activateStrategy('groq-deals-integration')}
+              disabled={isActivating}
+              variant="outline"
+              className="border-green-500 text-green-400 hover:bg-green-500/10"
+            >
+              {isActivating ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <CheckCircle className="w-4 h-4 mr-2" />
+              )}
+              Activate Deal Strategy
+            </Button>
+          </div>
+          <DailyDeals />
+        </CardContent>
+      </Card>
 
       {/* Revenue Projections */}
       <Card className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 border-purple-500/30">
