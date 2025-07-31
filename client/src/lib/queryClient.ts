@@ -76,3 +76,33 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+const API_BASE = import.meta.env.VITE_API_URL || (
+  typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
+    ? `${window.location.protocol}//${window.location.hostname}:5000`
+    : 'http://localhost:5000'
+);
+
+export async function apiRequest2(method: string, endpoint: string, data?: any) {
+  const token = localStorage.getItem('auth-token');
+
+  const config: RequestInit = {
+    method: method.toUpperCase(),
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+    },
+  };
+
+  if (data && method.toUpperCase() !== 'GET') {
+    config.body = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}${endpoint}`, config);
+    return response;
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw new Error('Network error - please check your connection');
+  }
+}
