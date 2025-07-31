@@ -19,24 +19,29 @@ export async function apiRequest(
   const headers: any = {
     credentials: "include",
   };
-  
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  
+
   if (body) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(url, {
+      method: method.toUpperCase(),
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return await res.json();
+    await throwIfResNotOk(res);
+    return await res.json();
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw new Error('Network error - please check your connection');
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
