@@ -60,7 +60,17 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    const token = localStorage.getItem('authToken');
+    const headers: any = {
+      credentials: "include",
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const res = await fetch(queryKey.join("/") as string, {
+      headers,
       credentials: "include",
     });
 
@@ -94,7 +104,7 @@ const API_BASE = import.meta.env.VITE_API_URL || (
 );
 
 export async function apiRequest2(method: string, endpoint: string, data?: any) {
-  const token = localStorage.getItem('auth-token');
+  const token = localStorage.getItem('authToken');
 
   const config: RequestInit = {
     method: method.toUpperCase(),

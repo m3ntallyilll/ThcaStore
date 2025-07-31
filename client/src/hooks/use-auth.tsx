@@ -35,7 +35,7 @@ export const useAuth = create<AuthState>()(
           });
 
           // Store token in localStorage for API requests
-          localStorage.setItem('auth-token', data.token);
+          localStorage.setItem('authToken', data.token);
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -56,7 +56,7 @@ export const useAuth = create<AuthState>()(
             isLoading: false 
           });
 
-          localStorage.setItem('auth-token', data.token);
+          localStorage.setItem('authToken', data.token);
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -64,12 +64,12 @@ export const useAuth = create<AuthState>()(
       },
 
       logout: () => {
-        localStorage.removeItem('auth-token');
+        localStorage.removeItem('authToken');
         set({ user: null, token: null });
       },
 
       checkAuth: async () => {
-        const token = localStorage.getItem('auth-token');
+        const token = localStorage.getItem('authToken');
         if (!token) return;
 
         try {
@@ -79,7 +79,7 @@ export const useAuth = create<AuthState>()(
           set({ user, token });
         } catch (error) {
           // Token is invalid, clear it
-          localStorage.removeItem('auth-token');
+          localStorage.removeItem('authToken');
           set({ user: null, token: null });
         }
       },
