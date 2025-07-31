@@ -2,7 +2,7 @@
 
 ## Overview
 
-THCA Store is a full-stack eCommerce web application designed specifically for selling THCA products. It's a modern, responsive platform built with React and Express.js, featuring user authentication, product management, shopping cart functionality, and an admin dashboard.
+THCA Store is a full-stack eCommerce web application designed specifically for reselling THCA (hemp) products. We are a THCA reseller, not growers, specializing exclusively in legal hemp-derived THCA products. It's a modern, responsive platform built with React and Express.js, featuring user authentication, product management, shopping cart functionality, and an admin dashboard.
 
 ## User Preferences
 
@@ -165,6 +165,12 @@ The application is designed to be easily deployable on platforms like Replit, Ve
 ✓ **Comprehensive Returns Interface**: Multi-step return process with order selection, item selection, and detailed return forms
 ✓ **Return Request Management**: Complete system for tracking return status, refund processing, and customer communication
 ✓ **Insurance-Required Policy**: Returns only available for orders with shipping insurance protection
-✓ **Cannabis-Specific Policy**: 30-day return window with unopened packaging requirements and insurance verification
+✓ **Hemp THCA-Specific Policy**: 30-day return window with unopened packaging requirements and insurance verification
 ✓ **Order Integration**: Seamless integration with existing order system for return eligibility and insurance tracking
 ✓ **Enhanced Navigation**: Added returns links to main navigation and footer for easy customer access
+
+### Business Model Update (January 2025)
+✓ **THCA Reseller Clarification**: Updated all content to reflect business as THCA reseller, not grower
+✓ **Hemp-Only Focus**: Clarified that store sells only hemp-derived THCA products, not cannabis
+✓ **Legal Compliance**: Updated SEO tags, descriptions, and documentation for hemp product compliance
+✓ **Brand Consistency**: Ensured all messaging reflects hemp THCA reseller business model

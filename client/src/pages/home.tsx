@@ -325,9 +325,9 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 1.2 }}
                 >
-                  Experience the future of premium cannabis with our revolutionary THCA products. 
+                  Experience premium hemp-derived THCA products from trusted growers. 
                   <span className="text-emerald-400 font-semibold"> Lab-tested purity.</span>
-                  <span className="text-gold font-semibold"> Unmatched potency.</span>
+                  <span className="text-gold font-semibold"> Legal hemp quality.</span>
                   <span className="text-teal-400 font-semibold"> Extraordinary experiences.</span>
                 </motion.p>
 
@@ -440,7 +440,7 @@ export default function Home() {
               transition={{ delay: 0.3, duration: 0.8 }}
               viewport={{ once: true }}
             >
-              Revolutionary technology meets artisanal craftsmanship. Every aspect engineered for perfection.
+              Premium hemp sourcing meets modern technology. Every THCA product carefully selected for quality.
             </motion.p>
           </motion.div>
 
@@ -450,8 +450,8 @@ export default function Home() {
               { 
                 icon: Shield, 
                 title: "Quantum Purity", 
-                subtitle: "99.9% THC-A",
-                description: "Laboratory-verified at the molecular level with blockchain transparency",
+                subtitle: "Hemp-Derived",
+                description: "Hemp-derived THCA products with full lab verification and transparency",
                 color: "from-emerald-500 to-green-400",
                 delay: 0
               },

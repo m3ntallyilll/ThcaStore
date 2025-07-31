@@ -1,6 +1,6 @@
-# THCA Store - Premium Cannabis E-Commerce Platform
+# THCA Store - Premium Hemp THCA Reseller Platform
 
-A comprehensive, modern THCA e-commerce platform built with React, Express.js, and cutting-edge AI technology.
+A comprehensive, modern THCA hemp reseller e-commerce platform built with React, Express.js, and cutting-edge AI technology. We specialize in reselling premium hemp-derived THCA products.
 
 ## 🌿 Features
 
@@ -20,12 +20,12 @@ A comprehensive, modern THCA e-commerce platform built with React, Express.js, a
 - **Daily Promotions**: Automated themed deals system
 - **Smart Recommendations**: Context-aware product suggestions
 
-### Cannabis-Specific Features
-- **Age Verification**: 21+ compliance system
+### Hemp THCA-Specific Features
+- **Age Verification**: 21+ compliance system for hemp products
 - **Discreet Shipping**: Privacy-focused packaging and delivery
-- **Lab Testing**: Product purity and potency verification
-- **Regulatory Compliance**: State-specific shipping restrictions
-- **Educational Content**: Cannabis information and dosage guidance
+- **Lab Testing**: Hemp product purity and THCA potency verification
+- **Regulatory Compliance**: State-specific hemp shipping restrictions
+- **Educational Content**: THCA hemp information and dosage guidance
 
 ### Advanced Functionality
 - **Real-time Updates**: Live inventory and order status
@@ -95,11 +95,11 @@ The application is configured for deployment on Replit with:
 - Identity verification systems
 - Compliance tracking and reporting
 
-### Cannabis Regulations
-- State-specific shipping restrictions
-- Product labeling requirements
-- Lab testing documentation
-- Regulatory reporting capabilities
+### Hemp THCA Regulations
+- State-specific hemp shipping restrictions
+- Hemp product labeling requirements
+- THCA lab testing documentation
+- Hemp regulatory compliance reporting
 
 ### Privacy & Security
 - GDPR/CCPA compliance
@@ -117,9 +117,9 @@ The application is configured for deployment on Replit with:
 
 ## 🎨 Design Philosophy
 
-### Cannabis-Friendly Aesthetics
+### Hemp THCA-Friendly Aesthetics
 - Green and gold color scheme
-- Cannabis leaf iconography
+- Hemp leaf iconography
 - Professional yet approachable design
 - Dark mode optimized for evening browsing
 
@@ -185,4 +185,4 @@ This project is proprietary software. All rights reserved.
 
 ---
 
-**Note**: This application is designed for legal cannabis markets only. Users must be 21+ and comply with local and state cannabis laws.
+**Note**: This application is designed for legal hemp THCA markets only. We are a THCA reseller specializing in hemp-derived products. Users must be 21+ and comply with local and state hemp laws.

@@ -225,7 +225,7 @@ export default function Returns() {
                   <h3 className="font-semibold text-yellow-400 mb-2">Insurance Policy Notice</h3>
                   <p className="text-gray-300 text-sm">
                     <strong>Returns and refunds are only available for orders that include shipping insurance.</strong> 
-                    This policy protects both you and our business from losses during transit of cannabis products.
+                    This policy protects both you and our business from losses during transit of hemp-derived THCA products.
                   </p>
                 </div>
               </div>
