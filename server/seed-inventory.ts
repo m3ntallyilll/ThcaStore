@@ -408,7 +408,7 @@ const inventoryProducts = [
   // HYBRID FLOWER - Gelato (2.5 lbs total)
   {
     name: "Gelato - Eighth (3.5g)",
-    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft cannabis.",
+    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft hemp.",
     price: "49.00", 
     category: "flower",
     imageUrl: "/products/gelato.jpg",
@@ -422,7 +422,7 @@ const inventoryProducts = [
   },
   {
     name: "Gelato - Quarter (7g)",
-    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft cannabis.",
+    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft hemp.",
     price: "92.00", 
     category: "flower",
     imageUrl: "/products/gelato.jpg",
@@ -436,7 +436,7 @@ const inventoryProducts = [
   },
   {
     name: "Gelato - Half (14g)",
-    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft cannabis.",
+    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft hemp.",
     price: "175.00", 
     category: "flower",
     imageUrl: "/products/gelato.jpg",
@@ -450,7 +450,7 @@ const inventoryProducts = [
   },
   {
     name: "Gelato - Ounce (28g)",
-    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft cannabis.",
+    description: "Sweet dessert hybrid with fruity flavors and balanced effects. Uplifting mental high with gentle body relaxation. Premium craft hemp.",
     price: "330.00", 
     category: "flower",
     imageUrl: "/products/gelato.jpg",

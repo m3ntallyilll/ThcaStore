@@ -108,14 +108,14 @@ const AVAILABLE_TOOLS = [
     type: "function" as const,
     function: {
       name: "get_market_trends",
-      description: "Retrieve current cannabis market trends and seasonal patterns",
+      description: "Retrieve current hemp market trends and seasonal patterns",
       parameters: {
         type: "object",
         properties: {
           category: {
             type: "string",
             description: "Market category to analyze",
-            enum: ["thca", "cbd", "hemp", "cannabis_general"]
+            enum: ["thca", "cbd", "hemp", "hemp_general"]
           },
           timespan: {
             type: "string",
@@ -200,7 +200,7 @@ const AVAILABLE_TOOLS = [
           category: {
             type: "string",
             description: "Content category",
-            enum: ["thca_education", "cannabis_news", "product_reviews", "legal_updates"]
+            enum: ["thca_education", "hemp_news", "product_reviews", "legal_updates"]
           },
           audience: {
             type: "string",
@@ -400,9 +400,9 @@ const TOOL_FUNCTIONS = {
           "THCA Benefits for Wellness and Health",
           "Legal Status of THCA Products by State"
         ],
-        cannabis_news: [
-          "Latest Cannabis Legalization Updates",
-          "New Research on Cannabis Benefits",
+        hemp_news: [
+          "Latest Hemp Legalization Updates",
+          "New Research on Hemp Benefits",
           "Industry Trends and Market Analysis",
           "Regulatory Changes Affecting THCA"
         ],
@@ -546,7 +546,7 @@ Always ensure deals are profitable and strategically positioned in the market.`;
     ];
 
     const systemPrompt = `You are an AI content strategist for a THCA store blog. Use the available tools to:
-1. Research trending topics and keywords in the cannabis/THCA space
+1. Research trending topics and keywords in the hemp/THCA space
 2. Analyze current blog performance metrics
 3. Get market trends to inform content strategy
 4. Create data-driven, SEO-optimized content that ranks well

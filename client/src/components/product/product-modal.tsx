@@ -40,7 +40,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'flower':
-        return 'bg-cannabis text-white';
+        return 'bg-hemp text-white';
       case 'concentrates':
         return 'bg-gold text-black';
       case 'edibles':
@@ -163,7 +163,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                 <Button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
-                  className="w-full bg-gradient-to-r from-cannabis to-cannabis-600 hover:from-cannabis-600 hover:to-cannabis text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-cannabis/30 transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-hemp to-hemp-600 hover:from-hemp-600 hover:to-hemp text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-hemp/30 transition-all duration-300"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
                   {product.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}

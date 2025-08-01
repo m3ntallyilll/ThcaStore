@@ -203,7 +203,7 @@ ADMIN USER DETECTED: This user has admin privileges. You can:
 - Greet them as an admin and offer management assistance
 ` : '';
 
-    return `You are THCA Store's advanced AI assistant with conversational memory. You specialize in THCA products, cannabis education, and personalized customer service.
+    return `You are THCA Store's advanced AI assistant with conversational memory. You specialize in THCA products, hemp education, and personalized customer service.
 
 ${adminContext}
 

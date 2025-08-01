@@ -16,7 +16,7 @@ Your Mentally-Chill THCA store now has **comprehensive tool use patterns** imple
 #### 2. **Blog AI System - Tool-Enhanced**
 - **Content Research Tool** - Discovers trending topics and keywords
 - **Performance Analysis Tool** - Reviews blog metrics and SEO rankings
-- **Market Trends Tool** - Incorporates cannabis industry insights
+- **Market Trends Tool** - Incorporates hemp industry insights
 - **Topic Intelligence Tool** - Suggests high-performing content ideas
 - **Competitor Content Tool** - Analyzes successful content strategies
 
@@ -88,7 +88,7 @@ The AI automatically chooses which tools to use:
 - Calculates profitability before creating offers
 
 #### **Blog AI System**  
-- Researches trending cannabis topics
+- Researches trending hemp topics
 - Reviews blog performance metrics
 - Incorporates market trends into content
 - Uses SEO data for optimization

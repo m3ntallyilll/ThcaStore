@@ -126,7 +126,7 @@ export default function Products() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 bg-gradient-to-r from-gold via-white to-cannabis bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 bg-gradient-to-r from-gold via-white to-hemp bg-clip-text text-transparent">
               Premium Collection
             </h1>
             <p className="text-xl max-w-3xl mx-auto mb-8 text-[#4cff4c]">
@@ -183,7 +183,7 @@ export default function Products() {
                       <Filter className="w-4 h-4 mr-2" />
                       Effects
                       {selectedEffects.length > 0 && (
-                        <Badge className="ml-2 bg-cannabis text-white">
+                        <Badge className="ml-2 bg-hemp text-white">
                           {selectedEffects.length}
                         </Badge>
                       )}
@@ -264,7 +264,7 @@ export default function Products() {
                 <Badge
                   key={effect}
                   variant="secondary"
-                  className="bg-cannabis/20 text-cannabis hover:bg-cannabis/30 cursor-pointer capitalize"
+                  className="bg-hemp/20 text-hemp hover:bg-hemp/30 cursor-pointer capitalize"
                   onClick={() => setSelectedEffects(selectedEffects.filter(e => e !== effect))}
                 >
                   {effect} ×

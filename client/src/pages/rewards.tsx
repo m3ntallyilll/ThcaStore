@@ -14,10 +14,10 @@ export default function RewardsPage() {
         >
           <div className="flex items-center justify-center gap-3 mb-4">
             <Crown className="w-10 h-10 text-gold" />
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-gold via-gold-400 to-cannabis bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-gold via-gold-400 to-hemp bg-clip-text text-transparent">
               Rewards Program
             </h1>
-            <Sparkles className="w-10 h-10 text-cannabis" />
+            <Sparkles className="w-10 h-10 text-hemp" />
           </div>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
             Earn points, unlock tiers, and enjoy exclusive benefits with every purchase. 

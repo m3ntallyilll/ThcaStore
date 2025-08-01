@@ -58,10 +58,10 @@ export default {
           "600": "var(--glow-green-600)",
           "700": "var(--glow-green-700)",
         },
-        "cannabis": {
-          "400": "var(--cannabis-400)",
-          "500": "var(--cannabis-500)",
-          "600": "var(--cannabis-600)",
+        "hemp": {
+          "400": "var(--hemp-400)",
+          "500": "var(--hemp-500)",
+          "600": "var(--hemp-600)",
         },
         sidebar: {
           DEFAULT: "var(--sidebar-background)",

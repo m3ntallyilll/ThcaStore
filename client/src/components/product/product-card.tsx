@@ -47,7 +47,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'flower':
-        return 'bg-cannabis text-white';
+        return 'bg-hemp text-white';
       case 'concentrates':
         return 'bg-glow-green-500 text-black';
       case 'edibles':

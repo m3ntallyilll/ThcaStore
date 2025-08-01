@@ -293,7 +293,7 @@ export const shippingRates = pgTable('shipping_rates', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-// Prohibited States - Cannabis laws vary by state
+// Prohibited States - Hemp laws vary by state
 export const prohibitedStates = pgTable('prohibited_states', {
   id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
   stateCode: text('state_code').notNull().unique(), // 'ID', 'SD', etc.

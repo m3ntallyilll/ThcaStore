@@ -228,7 +228,7 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-cannabis to-cannabis-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-cannabis/30 transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-hemp to-hemp-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-hemp/30 transition-all duration-300"
                 >
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>

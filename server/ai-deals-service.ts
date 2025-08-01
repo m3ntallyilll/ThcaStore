@@ -63,14 +63,14 @@ export class AIDealsService {
   }
 
   private async generateAIDeals(request: DealGenerationRequest, products: any[]): Promise<GeneratedDeal[]> {
-    const systemPrompt = `You are an expert e-commerce marketing strategist specializing in THCA and cannabis product promotions. 
+    const systemPrompt = `You are an expert e-commerce marketing strategist specializing in THCA and hemp product promotions. 
 
 Create compelling, profitable special offers that:
 - Drive sales and customer acquisition
 - Build brand loyalty and repeat purchases  
 - Clear inventory strategically
 - Maximize profit margins while providing real value
-- Comply with cannabis marketing regulations
+- Comply with hemp marketing regulations
 - Create urgency and FOMO (fear of missing out)
 
 Available product categories: ${Array.from(new Set(products.map(p => p.category))).join(', ')}
@@ -84,7 +84,7 @@ Generate 3-5 strategic deals with different approaches:
 5. Seasonal/trending promotion
 
 Marketing Goals: ${request.marketingGoal || 'balanced acquisition and retention'}
-Target Audience: ${request.targetAudience || 'cannabis enthusiasts and newcomers'}
+Target Audience: ${request.targetAudience || 'hemp enthusiasts and newcomers'}
 Urgency Level: ${request.urgency || 'medium'}
 Season/Context: ${request.season || 'current market trends'}
 
@@ -93,7 +93,7 @@ For each deal, consider:
 - Profit margins and business impact
 - Customer lifetime value optimization
 - Competitive positioning
-- Legal compliance for cannabis marketing
+- Legal compliance for hemp marketing
 
 Return JSON array with this structure:
 [

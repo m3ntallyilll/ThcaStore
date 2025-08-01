@@ -3,6 +3,9 @@
 ## Overview
 THCA Store is a full-stack eCommerce web application for reselling legal hemp-derived THCA products. It provides a modern, responsive platform for product display, user authentication, shopping cart functionality, and admin management, aiming to be a specialized online retail destination for THCA products.
 
+## Recent Changes
+- **August 1, 2025**: Replaced all cannabis references with hemp throughout the entire codebase for consistent branding and messaging. Updated CSS classes, component references, AI content, viral marketing materials, and all text content to use "hemp" terminology instead of "cannabis".
+
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 

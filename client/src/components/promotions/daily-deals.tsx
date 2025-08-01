@@ -121,7 +121,7 @@ export function DailyDeals() {
           <div className="p-3 bg-gradient-to-r from-green-500/20 to-gold/20 rounded-xl border border-green-500/30">
             <Calendar className="w-8 h-8 text-green-400" />
           </div>
-          <h1 className="text-4xl font-bold text-white">Daily Cannabis Deals</h1>
+          <h1 className="text-4xl font-bold text-white">Daily Hemp Deals</h1>
         </motion.div>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
           Fresh deals every day of the week! From Sunday Starter Packs to Stoned Saturday blowouts.

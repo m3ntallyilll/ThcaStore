@@ -224,7 +224,7 @@ export function AdminDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending': return 'bg-glow-green-500/20 text-glow-green-300';
-      case 'processing': return 'bg-cannabis-500/20 text-cannabis-400';
+      case 'processing': return 'bg-hemp-500/20 text-hemp-400';
       case 'shipped': return 'bg-glow-green-600/20 text-glow-green-400';
       case 'delivered': return 'bg-glow-green-500/30 text-glow-green-300';
       case 'cancelled': return 'bg-red-500/20 text-red-300';
@@ -534,8 +534,8 @@ export function AdminDashboard() {
                       <p className="text-gray-400 text-sm">Total Orders</p>
                       <p className="text-2xl font-bold">{stats.totalOrders}</p>
                     </div>
-                    <div className="w-12 h-12 bg-cannabis/20 rounded-lg flex items-center justify-center">
-                      <ShoppingCart className="w-6 h-6 text-cannabis" />
+                    <div className="w-12 h-12 bg-hemp/20 rounded-lg flex items-center justify-center">
+                      <ShoppingCart className="w-6 h-6 text-hemp" />
                     </div>
                   </div>
                 </CardContent>

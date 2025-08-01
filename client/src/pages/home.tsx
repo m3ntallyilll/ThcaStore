@@ -500,7 +500,7 @@ export default function Home() {
                 icon: Crown, 
                 title: "VIP Treatment", 
                 subtitle: "Concierge Service",
-                description: "Personal cannabis sommelier and 24/7 premium support",
+                description: "Personal hemp sommelier and 24/7 premium support",
                 color: "from-gold to-yellow-400",
                 delay: 0.5
               }
@@ -714,7 +714,7 @@ export default function Home() {
                   transition={{ delay: 0.4, duration: 0.8 }}
                   viewport={{ once: true }}
                 >
-                  We're not just another cannabis company. We're 
+                  We're not just another hemp company. We're 
                   <span className="text-emerald-400 font-bold"> pioneers of a new era</span> – 
                   where cutting-edge science meets artisanal craftsmanship.
                 </motion.p>
@@ -741,7 +741,7 @@ export default function Home() {
                 >
                   Every batch is a masterpiece – lab-verified at the molecular level, 
                   blockchain-tracked for transparency, and crafted with the precision 
-                  of Swiss watchmaking. This is cannabis evolution.
+                  of Swiss watchmaking. This is hemp evolution.
                 </motion.p>
               </div>
 
@@ -856,7 +856,7 @@ export default function Home() {
                   ))}
                 </motion.div>
 
-                {/* Floating cannabis leaves */}
+                {/* Floating hemp leaves */}
                 {Array.from({ length: 4 }).map((_, i) => (
                   <motion.div
                     key={i}
@@ -938,7 +938,7 @@ export default function Home() {
                     </div>
                     <div>
                       <p className="font-semibold">Address</p>
-                      <p className="text-gray-400">420 Cannabis Ave<br />Green Valley, CA 90210</p>
+                      <p className="text-gray-400">420 Hemp Ave<br />Green Valley, CA 90210</p>
                     </div>
                   </div>
                 </div>

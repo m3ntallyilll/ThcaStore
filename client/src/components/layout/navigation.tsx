@@ -98,7 +98,7 @@ export function Navigation() {
                 <Link href="/admin">
                   <Button
                     variant="ghost"
-                    className="text-cannabis hover:text-cannabis-300 transition-colors duration-300"
+                    className="text-hemp hover:text-hemp-300 transition-colors duration-300"
                   >
                     <Settings className="w-4 h-4" />
                   </Button>

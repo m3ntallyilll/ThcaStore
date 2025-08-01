@@ -19,7 +19,7 @@ export default function PrivacyPolicy() {
             "Name, email address, and contact information when you create an account",
             "Shipping and billing addresses for order fulfillment",
             "Payment information (processed securely through Stripe)",
-            "Age verification data (required for cannabis products)"
+            "Age verification data (required for hemp products)"
           ]
         },
         {
@@ -65,8 +65,8 @@ export default function PrivacyPolicy() {
         {
           subtitle: "Legal Compliance",
           items: [
-            "Verify age and legal eligibility for cannabis purchases",
-            "Comply with state and federal cannabis regulations",
+            "Verify age and legal eligibility for hemp purchases",
+            "Comply with state and federal hemp regulations",
             "Maintain required records for regulatory reporting"
           ]
         }
@@ -143,15 +143,15 @@ export default function PrivacyPolicy() {
       ]
     },
     {
-      id: "cannabis-specific",
-      title: "Cannabis-Specific Privacy",
+      id: "hemp-specific",
+      title: "Hemp-Specific Privacy",
       icon: <Calendar className="w-5 h-5" />,
       content: [
         {
           subtitle: "Discretion and Confidentiality",
           items: [
             "All packages shipped in discreet, unmarked packaging",
-            "No external indication of cannabis-related contents",
+            "No external indication of hemp-related contents",
             "Customer information kept confidential from unauthorized parties"
           ]
         },
@@ -293,12 +293,12 @@ export default function PrivacyPolicy() {
               <div className="space-y-2 text-gray-300">
                 <p><strong>Email:</strong> privacy@thcastore.com</p>
                 <p><strong>Phone:</strong> (555) 123-THCA ext. 2</p>
-                <p><strong>Mail:</strong> THCA Store Privacy Officer, 123 Cannabis Ave, Suite 420, Denver, CO 80202</p>
+                <p><strong>Mail:</strong> THCA Store Privacy Officer, 123 Hemp Ave, Suite 420, Denver, CO 80202</p>
               </div>
               <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                 <p className="text-green-400 font-semibold mb-2">Your Privacy Matters</p>
                 <p className="text-gray-300 text-sm">
-                  We are committed to protecting your privacy and maintaining the confidentiality of your cannabis purchases. 
+                  We are committed to protecting your privacy and maintaining the confidentiality of your hemp purchases. 
                   This policy will be updated as needed to reflect changes in our practices or legal requirements.
                 </p>
               </div>

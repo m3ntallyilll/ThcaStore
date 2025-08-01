@@ -181,7 +181,7 @@ export function RewardsDashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <Card className="glass-dark border-cannabis/20">
+          <Card className="glass-dark border-hemp/20">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -191,8 +191,8 @@ export function RewardsDashboard() {
                     {currentTier && getTierIcon(currentTier.name)}
                   </div>
                 </div>
-                <div className="p-3 bg-cannabis/20 rounded-full">
-                  <Crown className="w-6 h-6 text-cannabis" />
+                <div className="p-3 bg-hemp/20 rounded-full">
+                  <Crown className="w-6 h-6 text-hemp" />
                 </div>
               </div>
             </CardContent>
@@ -279,8 +279,8 @@ export function RewardsDashboard() {
                         <p className="text-gold font-semibold">{parseFloat(nextTier.multiplier).toFixed(1)}x</p>
                         <p className="text-xs text-gray-400">Points Multiplier</p>
                       </div>
-                      <div className="text-center p-3 bg-cannabis/10 rounded-lg">
-                        <p className="text-cannabis font-semibold">{nextTier.benefits.length}</p>
+                      <div className="text-center p-3 bg-hemp/10 rounded-lg">
+                        <p className="text-hemp font-semibold">{nextTier.benefits.length}</p>
                         <p className="text-xs text-gray-400">New Benefits</p>
                       </div>
                     </div>
@@ -359,7 +359,7 @@ export function RewardsDashboard() {
                 >
                   <Card className={`glass-dark transition-all duration-300 ${
                     isCurrentTier ? 'border-gold/50 shadow-gold/25' : 
-                    isUnlocked ? 'border-cannabis/30' : 'border-white/10'
+                    isUnlocked ? 'border-hemp/30' : 'border-white/10'
                   }`}>
                     <CardHeader>
                       <div className="flex items-center justify-between">
@@ -423,8 +423,8 @@ export function RewardsDashboard() {
                     <p className="text-2xl font-bold text-gold">500</p>
                     <p className="text-sm text-gray-400">Points for you</p>
                   </div>
-                  <div className="text-center p-4 bg-cannabis/10 rounded-lg">
-                    <p className="text-2xl font-bold text-cannabis">250</p>
+                  <div className="text-center p-4 bg-hemp/10 rounded-lg">
+                    <p className="text-2xl font-bold text-hemp">250</p>
                     <p className="text-sm text-gray-400">Points for friend</p>
                   </div>
                 </div>

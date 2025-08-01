@@ -6,7 +6,7 @@ async function generateDailyDeals() {
       apiKey: process.env.GROQ_API_KEY
     });
 
-    const prompt = `You are an expert cannabis retail strategist. Generate 7 dynamic daily deals for a premium THCA hemp store.
+    const prompt = `You are an expert hemp retail strategist. Generate 7 dynamic daily deals for a premium THCA hemp store.
 
 Context:
 - Target daily revenue: $8000
@@ -29,7 +29,7 @@ Return ONLY the JSON array, no other text.`;
       messages: [
         {
           role: "system",
-          content: "You are a cannabis retail strategist expert. Generate only valid JSON responses."
+          content: "You are a hemp retail strategist expert. Generate only valid JSON responses."
         },
         {
           role: "user", 

@@ -231,7 +231,7 @@ export function AISalesStrategy() {
           <h1 className="text-4xl font-bold text-white">AI-Powered Sales Strategy & Daily Deals</h1>
         </div>
         <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          Leverage Groq AI technology to optimize sales strategies and generate dynamic daily cannabis deals 
+          Leverage Groq AI technology to optimize sales strategies and generate dynamic daily hemp deals 
           that drive conversions and maximize revenue for your THCA business.
         </p>
       </div>
@@ -241,7 +241,7 @@ export function AISalesStrategy() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <Gift className="w-6 h-6 text-green-400" />
-            AI-Generated Daily Cannabis Deals
+            AI-Generated Daily Hemp Deals
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -249,7 +249,7 @@ export function AISalesStrategy() {
             <Button
               onClick={() => generateDealsMutation.mutate({
                 targetRevenue: 2500,
-                customerSegment: 'Cannabis enthusiasts',
+                customerSegment: 'Hemp enthusiasts',
                 inventoryFocus: 'High-margin products'
               })}
               disabled={generateDealsMutation.isPending}
@@ -458,7 +458,7 @@ export function AISalesStrategy() {
         <CardContent className="text-center p-8">
           <h3 className="text-2xl font-bold text-white mb-4">Ready to Guarantee Your Sales Growth?</h3>
           <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-            Our AI-driven approach has helped cannabis businesses increase revenue by an average of 127% 
+            Our AI-driven approach has helped hemp businesses increase revenue by an average of 127% 
             within the first 90 days. Join the revolution in intelligent commerce.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

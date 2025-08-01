@@ -834,7 +834,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           conversionPrediction: 96.8,
           revenueProjection: 145000,
           confidence: 94.7,
-          targetAudience: ["Cannabis Enthusiasts", "Medical Users", "New THCA Customers", "Bulk Buyers"],
+          targetAudience: ["Hemp Enthusiasts", "Medical Users", "New THCA Customers", "Bulk Buyers"],
           tactics: [
             "Groq AI Dynamic Deal Generation",
             "Real-time Inventory Optimization", 
@@ -1047,16 +1047,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stock: p.stock
       }));
 
-      const aiPrompt = `You are an expert cannabis retail strategist. Generate 7 dynamic daily deals for a THCA hemp store.
+      const aiPrompt = `You are an expert hemp retail strategist. Generate 7 dynamic daily deals for a THCA hemp store.
 
 Context:
 - Target daily revenue: $${targetRevenue || 2500}
-- Customer segment: ${customerSegment || 'General cannabis enthusiasts'}
+- Customer segment: ${customerSegment || 'General hemp enthusiasts'}
 - Inventory focus: ${inventoryFocus || 'Balanced across categories'}
 - Top products: ${JSON.stringify(topProducts)}
 
 Generate exactly 7 daily deals (Sunday through Saturday) with:
-1. Deal name (catchy, cannabis-themed)
+1. Deal name (catchy, hemp-themed)
 2. Discount type (percentage, fixed, bogo)
 3. Discount value (reasonable but attractive)
 4. Target category or specific products
@@ -1066,7 +1066,7 @@ Format as JSON array with objects containing: dayOfWeek (0-6), title, descriptio
 
       const groqResponse = await aiAssistant.generateResponse(aiPrompt, {
         context: 'deal_generation',
-        systemRole: 'cannabis_retail_strategist'
+        systemRole: 'hemp_retail_strategist'
       });
 
       let aiDeals;
@@ -1144,7 +1144,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       const groqResponse = await aiAssistant.generateResponse(aiPrompt, {
         context: 'sales_strategy',
-        systemRole: 'cannabis_business_strategist'
+        systemRole: 'hemp_business_strategist'
       });
 
       const strategy = {
@@ -1391,7 +1391,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         excerpt: blogContent.content.substring(0, 200).replace(/<[^>]*>/g, '') + '...',
         metaTitle: blogContent.title,
         metaDescription: `Comprehensive guide to ${topic}. Expert insights, practical tips, and everything you need to know.`,
-        keywords: keywords || [topic, 'THCA', 'cannabis', 'hemp'],
+        keywords: keywords || [topic, 'THCA', 'hemp', 'hemp'],
         authorId: req.user.id,
         category,
         tags: keywords || [],

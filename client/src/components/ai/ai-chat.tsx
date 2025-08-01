@@ -72,7 +72,7 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
       const welcomeMessage: ChatMessage = {
         id: 'welcome',
         message: '',
-        response: `🌟 Welcome to THCA Store! I'm your ${user?.isAdmin ? 'AI admin assistant' : 'personal cannabis expert assistant'}. ${user?.isAdmin ? "I'm here to help you manage the store and optimize operations!" : "I'm here to help you find the perfect THCA products, discover amazing deals, and maximize your rewards!"}
+        response: `🌟 Welcome to THCA Store! I'm your ${user?.isAdmin ? 'AI admin assistant' : 'personal hemp expert assistant'}. ${user?.isAdmin ? "I'm here to help you manage the store and optimize operations!" : "I'm here to help you find the perfect THCA products, discover amazing deals, and maximize your rewards!"}
 
 ${user ? `Great to see you again, ${user.username}! ${user.isAdmin ? 'I have access to all admin functions and can help manage your store.' : 'I can see your rewards status and purchase history to give you personalized recommendations.'}` : 'Sign in to unlock personalized recommendations and track your rewards!'}
 
@@ -259,7 +259,7 @@ How can I help you today? I can:
       case 'product_recommendation':
         return <Sparkles className="w-4 h-4 text-gold" />;
       case 'rewards_inquiry':
-        return <Gift className="w-4 h-4 text-cannabis" />;
+        return <Gift className="w-4 h-4 text-hemp" />;
       case 'price_inquiry':
         return <TrendingUp className="w-4 h-4 text-blue-400" />;
       default:
@@ -289,9 +289,9 @@ How can I help you today? I can:
       >
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="w-16 h-16 rounded-full bg-gradient-to-r from-gold via-gold-600 to-cannabis shadow-2xl hover:shadow-gold/25 transition-all duration-300 group relative overflow-hidden"
+          className="w-16 h-16 rounded-full bg-gradient-to-r from-gold via-gold-600 to-hemp shadow-2xl hover:shadow-gold/25 transition-all duration-300 group relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-gold to-cannabis animate-pulse opacity-75" />
+          <div className="absolute inset-0 bg-gradient-to-r from-gold to-hemp animate-pulse opacity-75" />
           <div className="relative z-10">
             {isOpen ? (
               <X className="w-6 h-6 text-black" />
@@ -332,7 +332,7 @@ How can I help you today? I can:
                     </div>
                     <div>
                       <h3 className="font-bold text-xl">🌿 THCA Expert AI</h3>
-                      <p className="text-sm opacity-90 font-medium">Your Personal Cannabis Guide & Daily Deals Assistant</p>
+                      <p className="text-sm opacity-90 font-medium">Your Personal Hemp Guide & Daily Deals Assistant</p>
                     </div>
                   </div>
                   <Button
@@ -386,8 +386,8 @@ How can I help you today? I can:
 
                         {/* Recommended Products */}
                         {msg.recommendedProducts && msg.recommendedProducts.length > 0 && (
-                          <div className="mt-3 p-2 bg-cannabis/10 rounded-lg border border-cannabis/20">
-                            <p className="text-xs text-cannabis font-semibold mb-2">
+                          <div className="mt-3 p-2 bg-hemp/10 rounded-lg border border-hemp/20">
+                            <p className="text-xs text-hemp font-semibold mb-2">
                               💎 Recommended Products:
                             </p>
                             <div className="space-y-1">
@@ -397,7 +397,7 @@ How can I help you today? I can:
                                   variant="outline"
                                   size="sm"
                                   onClick={() => onProductRecommendation?.(productId)}
-                                  className="text-xs border-cannabis/30 hover:bg-cannabis/10 bg-[#000000]"
+                                  className="text-xs border-hemp/30 hover:bg-hemp/10 bg-[#000000]"
                                 >
                                   View Product #{productId.slice(-4)}
                                 </Button>
@@ -453,7 +453,7 @@ How can I help you today? I can:
                         <div className="flex items-center gap-2">
                           <div className="flex gap-1">
                             <div className="w-2 h-2 bg-gold rounded-full animate-pulse" />
-                            <div className="w-2 h-2 bg-cannabis rounded-full animate-pulse delay-100" />
+                            <div className="w-2 h-2 bg-hemp rounded-full animate-pulse delay-100" />
                             <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse delay-200" />
                           </div>
                           <span className="text-xs text-gray-400">AI is thinking...</span>

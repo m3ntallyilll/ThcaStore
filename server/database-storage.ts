@@ -185,7 +185,7 @@ export class DatabaseStorage {
       {
         stateCode: 'ID',
         stateName: 'Idaho',
-        reason: 'Cannabis products including THCA are prohibited under state law',
+        reason: 'Hemp products including THCA are prohibited under state law',
         isActive: true
       },
       {
@@ -203,7 +203,7 @@ export class DatabaseStorage {
       {
         stateCode: 'WY',
         stateName: 'Wyoming',
-        reason: 'Cannabis derivatives including THCA not permitted',
+        reason: 'Hemp derivatives including THCA not permitted',
         isActive: true
       }
     ];

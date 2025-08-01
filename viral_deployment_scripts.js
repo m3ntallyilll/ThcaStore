@@ -13,14 +13,14 @@ const viralContentScheduler = {
         "Why everyone's switching from Delta-8 to THCA in 2025",
         "THCA vs THC: The difference that changes everything"
       ],
-      hashtags: "#THCA #LegalWeed #Cannabis #Hemp #Education #Wellness #MentallyChill #Legal #PlantMedicine #Alternative #Natural",
+      hashtags: "#THCA #LegalWeed #Hemp #Hemp #Education #Wellness #MentallyChill #Legal #PlantMedicine #Alternative #Natural",
       postingFrequency: 3 // posts per day
     },
     
     instagram: {
       optimalTimes: ['11:00', '13:00', '19:00', '21:00'],
       contentTypes: ['Aesthetic reels', 'Customer testimonials', 'Product unboxing', 'Educational carousels'],
-      hashtags: "#THCA #PremiumHemp #WellnessJourney #MentalHealth #LegalCannabis #QualityFirst #LabTested #Organic #MentallyChill",
+      hashtags: "#THCA #PremiumHemp #WellnessJourney #MentalHealth #LegalHemp #QualityFirst #LabTested #Organic #MentallyChill",
       postingFrequency: 2 // reels per day + 5 stories
     },
     
@@ -45,7 +45,7 @@ const viralContentScheduler = {
         'Industry trends and predictions',
         'Quality indicators for premium THCA'
       ],
-      hashtags: "#THCA #CannabisEducation #Hemp #Legal #Wellness #PlantBased #Health #Alternative #MentallyChill",
+      hashtags: "#THCA #HempEducation #Hemp #Legal #Wellness #PlantBased #Health #Alternative #MentallyChill",
       postingFrequency: 5 // tweets per day + threading
     }
   },
@@ -73,7 +73,7 @@ Use the code TIKTOK15 at checkout to get 15% off your first order!`,
 I was skeptical at first, but after trying Mentally-Chill's THCA products, I experienced significant relief from my migraines! That's why Mentally-Chill only uses premium THCA products, backed by lab results and certifications!
 
 But don't wait! Our limited-time sale is ending soon! Join our community and get access to exclusive deals!`,
-        hashtags: "#THCA #MentallyChill #CannabisEducation #Wellness #NaturalPainRelief #LimitedTimeOffer",
+        hashtags: "#THCA #MentallyChill #HempEducation #Wellness #NaturalPainRelief #LimitedTimeOffer",
         estimatedViews: "750K-1M"
       }
     ],
@@ -127,7 +127,7 @@ Happy to answer questions about specific products or comparisons!`,
           "6/ @MentallyChill sets the gold standard for THCA quality and transparency",
           "7/ Retweet if this opened your eyes to the THCA advantage 👇"
         ],
-        hashtags: "#THCA #CannabisEducation #Hemp #Legal #Wellness #MentallyChill"
+        hashtags: "#THCA #HempEducation #Hemp #Legal #Wellness #MentallyChill"
       }
     ]
   },

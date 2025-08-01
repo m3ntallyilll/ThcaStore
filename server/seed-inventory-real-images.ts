@@ -1,4 +1,4 @@
-// Seed inventory with real professional cannabis/hemp images from Pexels and Pixabay
+// Seed inventory with real professional hemp images from Pexels and Pixabay
 import { randomUUID } from "crypto";
 import type { MemStorage } from "./storage";
 
@@ -17,7 +17,7 @@ interface ProductWithImageData {
   effects: string[];
 }
 
-// Professional cannabis/hemp images from Pexels (royalty-free)
+// Professional hemp/hemp images from Pexels (royalty-free)
 const realImages = {
   // Flower bud images from Pexels
   blueDream: "https://images.pexels.com/photos/2753946/pexels-photo-2753946.jpeg?auto=compress&cs=tinysrgb&w=500",
@@ -33,7 +33,7 @@ const realImages = {
   infusedPreRoll: "https://cdn.pixabay.com/photo/2019/09/11/21/23/cbd-4469987_640.jpg",
   premiumPreRoll: "https://cdn.pixabay.com/photo/2019/09/13/21/31/cbd-4474903_640.jpg",
   hybridPreRoll: "https://cdn.pixabay.com/photo/2018/09/07/18/18/hemp-plant-3661210_640.jpg",
-  sativaPreRoll: "https://cdn.pixabay.com/photo/2017/09/18/09/10/cannabis-2761102_640.jpg",
+  sativaPreRoll: "https://cdn.pixabay.com/photo/2017/09/18/09/10/hemp-2761102_640.jpg",
   indicaPreRoll: "https://cdn.pixabay.com/photo/2018/09/08/09/39/hemp-3662166_640.jpg"
 };
 

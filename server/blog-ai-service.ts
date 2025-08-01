@@ -85,12 +85,12 @@ export class BlogAIService {
 - Use location-specific keywords: ${request.locationKeywords?.join(', ') || `THCA ${request.targetLocation}, buy THCA in ${request.targetLocation}`}
 - Address ${request.targetLocation} residents specifically` : '';
 
-    const systemPrompt = `You are an expert cannabis and THCA content writer specializing in SEO-optimized blog posts for a premium THCA store. 
+    const systemPrompt = `You are an expert hemp and THCA content writer specializing in SEO-optimized blog posts for a premium THCA store. 
 
 Create engaging, informative, and SEO-friendly content that:
-- Educates readers about THCA, cannabis, and related topics
+- Educates readers about THCA, hemp, and related topics
 - Maintains a ${request.tone || 'professional'} tone
-- Targets ${request.targetAudience || 'cannabis enthusiasts and newcomers'}
+- Targets ${request.targetAudience || 'hemp enthusiasts and newcomers'}
 - Is approximately ${lengthGuidance[request.length || 'medium']} long
 - Includes relevant keywords naturally
 - Provides valuable information that builds trust and authority
@@ -105,7 +105,7 @@ SEO-DOMINATING Content Requirements:
 - Include "Key Takeaways" boxes and summary sections
 - Mention legal considerations and compliance appropriately
 - Create content that's highly shareable and link-worthy
-- Use cannabis terminology correctly and educationally
+- Use hemp terminology correctly and educationally
 - Focus on benefits, education, safety, and responsible use
 - Add internal linking opportunities and related topics
 - Include calls-to-action throughout (if requested)
@@ -121,7 +121,7 @@ STRUCTURE REQUIREMENTS:
 
 Topic: ${request.topic}
 Category: ${request.category}
-Keywords to include: ${request.keywords?.join(', ') || 'THCA, cannabis, hemp, premium quality, lab-tested'}
+Keywords to include: ${request.keywords?.join(', ') || 'THCA, hemp, hemp, premium quality, lab-tested'}
 
 Return your response as JSON with this structure:
 {
@@ -167,7 +167,7 @@ Return your response as JSON with this structure:
     <div class="blog-content">
       <div class="intro-section">
         <h2>Introduction: Understanding ${request.topic}</h2>
-        <p>Welcome to the most comprehensive guide about ${request.topic} available online. Whether you're new to cannabis or an experienced user, this detailed article will provide you with expert insights, scientific backing, and practical information you can't find anywhere else.</p>
+        <p>Welcome to the most comprehensive guide about ${request.topic} available online. Whether you're new to hemp or an experienced user, this detailed article will provide you with expert insights, scientific backing, and practical information you can't find anywhere else.</p>
         
         <p>In this extensive guide, we'll explore every aspect of ${request.topic}, from the basic science and legal considerations to advanced applications and quality indicators. Our team has compiled the latest research, industry insights, and expert knowledge to create this authoritative resource.</p>
         
@@ -185,15 +185,15 @@ Return your response as JSON with this structure:
       </div>
 
       <h2>What Is ${request.topic}? A Complete Scientific Breakdown</h2>
-      <p>To truly understand ${request.topic}, we need to dive deep into the science, regulations, and practical applications that make this topic so important in today's cannabis landscape. This comprehensive analysis will provide you with the foundation you need to make informed decisions.</p>
+      <p>To truly understand ${request.topic}, we need to dive deep into the science, regulations, and practical applications that make this topic so important in today's hemp landscape. This comprehensive analysis will provide you with the foundation you need to make informed decisions.</p>
       
       <h3>The Science Behind ${request.topic}</h3>
-      <p>Recent research has revealed fascinating insights about how ${request.topic} works at the molecular level. Scientific studies have shown that understanding these mechanisms is crucial for making informed decisions about cannabis products and their applications.</p>
+      <p>Recent research has revealed fascinating insights about how ${request.topic} works at the molecular level. Scientific studies have shown that understanding these mechanisms is crucial for making informed decisions about hemp products and their applications.</p>
       
-      <p>The endocannabinoid system plays a central role in how our bodies interact with cannabis compounds. This complex network of receptors, enzymes, and signaling molecules helps regulate various physiological processes, making the science behind ${request.topic} both fascinating and practically important.</p>
+      <p>The endocannabinoid system plays a central role in how our bodies interact with hemp compounds. This complex network of receptors, enzymes, and signaling molecules helps regulate various physiological processes, making the science behind ${request.topic} both fascinating and practically important.</p>
       
       <h3>Legal Framework and Compliance</h3>
-      <p>The legal landscape surrounding ${request.topic} continues to evolve rapidly. Understanding current regulations is essential for anyone interested in cannabis products, whether for personal use or business purposes.</p>
+      <p>The legal landscape surrounding ${request.topic} continues to evolve rapidly. Understanding current regulations is essential for anyone interested in hemp products, whether for personal use or business purposes.</p>
       
       <p>Federal and state laws often differ significantly, creating a complex regulatory environment that requires careful navigation. We'll break down the key legal considerations and compliance requirements you need to know.</p>
 
@@ -277,8 +277,8 @@ Return your response as JSON with this structure:
 
       <h2>Frequently Asked Questions About ${request.topic}</h2>
       
-      <h3>What makes ${request.topic} different from other cannabis products?</h3>
-      <p>The key differences lie in the specific mechanisms of action, legal status, and therapeutic applications. Unlike many cannabis products, ${request.topic} offers unique benefits while maintaining compliance with current regulations.</p>
+      <h3>What makes ${request.topic} different from other hemp products?</h3>
+      <p>The key differences lie in the specific mechanisms of action, legal status, and therapeutic applications. Unlike many hemp products, ${request.topic} offers unique benefits while maintaining compliance with current regulations.</p>
       
       <h3>Is ${request.topic} legal in my state?</h3>
       <p>Legal status varies by jurisdiction and can change frequently. We recommend checking current local and federal regulations before making any purchases. Our team monitors regulatory changes to provide updated information to customers.</p>
@@ -337,10 +337,10 @@ Return your response as JSON with this structure:
       </table>
 
       <h2>Industry Trends and Future Outlook</h2>
-      <p>The cannabis industry continues evolving rapidly, with ${request.topic} representing an important segment. Key trends include:</p>
+      <p>The hemp industry continues evolving rapidly, with ${request.topic} representing an important segment. Key trends include:</p>
       
       <h3>Research and Development</h3>
-      <p>Ongoing scientific research continues expanding our understanding of cannabis compounds and their potential applications. This research drives product innovation and regulatory development.</p>
+      <p>Ongoing scientific research continues expanding our understanding of hemp compounds and their potential applications. This research drives product innovation and regulatory development.</p>
       
       <h3>Regulatory Evolution</h3>
       <p>Legislative changes at federal and state levels continue shaping the industry landscape. Staying informed about these changes helps consumers and businesses navigate the evolving environment.</p>
@@ -351,7 +351,7 @@ Return your response as JSON with this structure:
       <h2>Conclusion: Making Informed Decisions About ${request.topic}</h2>
       <p>Understanding ${request.topic} requires considering multiple factors: scientific evidence, legal compliance, product quality, safety considerations, and individual needs. This comprehensive approach ensures decisions that support wellness goals while maintaining safety and legal compliance.</p>
       
-      <p>The cannabis industry offers tremendous potential for those seeking natural wellness alternatives. By staying informed, choosing quality products, and following best practices, consumers can safely explore the benefits that ${request.topic} may offer.</p>
+      <p>The hemp industry offers tremendous potential for those seeking natural wellness alternatives. By staying informed, choosing quality products, and following best practices, consumers can safely explore the benefits that ${request.topic} may offer.</p>
       
       <p>Remember that individual experiences vary, and what works for one person may not work for another. Starting conservatively, consulting with healthcare providers when appropriate, and choosing reputable sources are key strategies for success.</p>
       
@@ -378,7 +378,7 @@ Return your response as JSON with this structure:
   }
 
   private async generateSEOMetadata(request: BlogGenerationRequest, title: string): Promise<SEOMetadata> {
-    const systemPrompt = `You are an SEO expert specializing in cannabis and THCA content. Generate optimized metadata for the blog post.
+    const systemPrompt = `You are an SEO expert specializing in hemp and THCA content. Generate optimized metadata for the blog post.
 
 Requirements:
 - Meta title: 50-60 characters, includes primary keyword
@@ -389,7 +389,7 @@ Requirements:
 Topic: ${request.topic}
 Title: ${title}
 Category: ${request.category}
-Target keywords: ${request.keywords?.join(', ') || 'THCA, cannabis'}
+Target keywords: ${request.keywords?.join(', ') || 'THCA, hemp'}
 
 Return JSON format:
 {
@@ -431,8 +431,8 @@ Return JSON format:
 
       return {
         metaTitle: title.length > 60 ? title.substring(0, 57) + '...' : title,
-        metaDescription: `Learn everything about ${request.topic} in our comprehensive guide. Expert insights on THCA, cannabis, and more.`,
-        keywords: request.keywords || ['THCA', 'cannabis', 'hemp', request.topic],
+        metaDescription: `Learn everything about ${request.topic} in our comprehensive guide. Expert insights on THCA, hemp, and more.`,
+        keywords: request.keywords || ['THCA', 'hemp', 'hemp', request.topic],
         slug
       };
     }
@@ -486,7 +486,7 @@ Return JSON format:
       throw new Error('Blog post not found');
     }
 
-    const systemPrompt = `You are an expert content editor specializing in cannabis and THCA blog posts. 
+    const systemPrompt = `You are an expert content editor specializing in hemp and THCA blog posts. 
 
 Current blog post:
 Title: ${currentPost.title}
@@ -549,7 +549,7 @@ Please improve the blog post while maintaining its core message and SEO optimiza
 Ideas should be:
 - SEO-friendly and searchable
 - Educational and valuable
-- Relevant to THCA and cannabis
+- Relevant to THCA and hemp
 - Appeal to both beginners and experienced users
 - Trend-aware and current
 

@@ -18,7 +18,7 @@ export default function TermsOfService() {
       id: "age-verification",
       title: "Age Verification & Legal Requirements",
       icon: <Users className="w-5 h-5" />,
-      content: "You must be at least 21 years old to purchase THCA products. By using our services, you confirm that you are legally authorized to purchase cannabis products in your jurisdiction."
+      content: "You must be at least 21 years old to purchase THCA products. By using our services, you confirm that you are legally authorized to purchase hemp products in your jurisdiction."
     },
     {
       id: "product-information",
@@ -64,7 +64,7 @@ export default function TermsOfService() {
             </h1>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            These terms govern your use of THCA Store and the purchase of our cannabis products.
+            These terms govern your use of THCA Store and the purchase of our hemp products.
           </p>
           <Badge variant="outline" className="mt-4 text-purple-400 border-purple-400">
             Last Updated: {lastUpdated}
@@ -115,7 +115,7 @@ export default function TermsOfService() {
             <CardContent>
               <div className="space-y-4 text-gray-300">
                 <p>
-                  <strong>Legal Compliance:</strong> Cannabis laws vary by state and locality. 
+                  <strong>Legal Compliance:</strong> Hemp laws vary by state and locality. 
                   It is your responsibility to ensure that your purchase and possession of THCA products 
                   complies with applicable laws in your jurisdiction.
                 </p>
@@ -125,7 +125,7 @@ export default function TermsOfService() {
                   These products are not intended to diagnose, treat, cure, or prevent any disease.
                 </p>
                 <p>
-                  <strong>Use Responsibly:</strong> Cannabis products may cause drowsiness, dizziness, 
+                  <strong>Use Responsibly:</strong> Hemp products may cause drowsiness, dizziness, 
                   or impairment. Do not operate machinery or drive after use. Keep out of reach of children and pets.
                 </p>
               </div>

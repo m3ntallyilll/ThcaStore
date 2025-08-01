@@ -78,9 +78,9 @@ Your mission: Create the PERFECT blog introduction that:
 - Sets authoritative, trustworthy tone
 - 400-600 words of engaging introduction content
 
-Target: ${request.targetAudience || 'cannabis enthusiasts and newcomers'}
+Target: ${request.targetAudience || 'hemp enthusiasts and newcomers'}
 Tone: ${request.tone || 'professional but approachable'}
-Keywords: ${request.keywords?.join(', ') || 'THCA, premium cannabis, lab-tested'}
+Keywords: ${request.keywords?.join(', ') || 'THCA, premium hemp, lab-tested'}
 ${locationContext}
 
 Return ONLY a JSON object:
@@ -143,7 +143,7 @@ Requirements:
 - Professional tone with educational value
 ${locationContext}
 
-Keywords to include: ${request.keywords?.join(', ') || 'THCA, cannabis, hemp, premium, lab-tested'}
+Keywords to include: ${request.keywords?.join(', ') || 'THCA, hemp, hemp, premium, lab-tested'}
 
 Return ONLY the HTML content for this section, no JSON wrapper needed.`;
 
@@ -185,7 +185,7 @@ Requirements:
 - Professional, helpful tone
 ${locationContext}
 
-Keywords: ${request.keywords?.join(', ') || 'THCA, cannabis, hemp'}
+Keywords: ${request.keywords?.join(', ') || 'THCA, hemp, hemp'}
 
 Return ONLY the HTML content for the complete FAQ section.`;
 
@@ -224,7 +224,7 @@ Requirements:
 - Professional, authoritative tone that builds trust
 - Strong finish that encourages action
 
-Target audience: ${request.targetAudience || 'cannabis enthusiasts'}
+Target audience: ${request.targetAudience || 'hemp enthusiasts'}
 
 Return ONLY the HTML content for the conclusion section.`;
 
@@ -303,7 +303,7 @@ Return ONLY the HTML content for the conclusion section.`;
       topic: `${focus} ${category}`,
       category: category,
       tone: 'educational',
-      targetAudience: 'cannabis enthusiasts and newcomers',
+      targetAudience: 'hemp enthusiasts and newcomers',
       length: 'long',
       keywords: [category, 'THCA', 'premium', 'lab-tested', focus],
       includeCallToAction: true

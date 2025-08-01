@@ -464,7 +464,7 @@ export function BlogManagement({ blogFormData }: BlogManagementProps) {
               Generate Blog Post with AI
             </DialogTitle>
             <DialogDescription>
-              Let AI create SEO-optimized content for your blog using advanced THCA and cannabis expertise.
+              Let AI create SEO-optimized content for your blog using advanced THCA and hemp expertise.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -533,7 +533,7 @@ export function BlogManagement({ blogFormData }: BlogManagementProps) {
                   id="targetAudience"
                   value={aiGenerationData.targetAudience}
                   onChange={(e) => setAiGenerationData(prev => ({ ...prev, targetAudience: e.target.value }))}
-                  placeholder="e.g., New cannabis users"
+                  placeholder="e.g., New hemp users"
                   className="bg-dark-700 border-dark-600 text-white"
                 />
               </div>
