@@ -12,6 +12,8 @@ interface BlogGenerationRequest {
   length?: 'short' | 'medium' | 'long';
   targetAudience?: string;
   includeCallToAction?: boolean;
+  targetLocation?: string; // Add location targeting for local SEO
+  locationKeywords?: string[]; // State/city specific keywords
 }
 
 interface SEOMetadata {
@@ -74,6 +76,15 @@ export class BlogAIService {
       long: '2000-3000 words'
     };
 
+    const locationContext = request.targetLocation ? 
+      `\n\nLocation-Specific Focus:
+- Target location: ${request.targetLocation}
+- Include local THCA laws and regulations for ${request.targetLocation}
+- Mention shipping and delivery options to ${request.targetLocation}
+- Reference local hemp stores and dispensaries when relevant
+- Use location-specific keywords: ${request.locationKeywords?.join(', ') || `THCA ${request.targetLocation}, buy THCA in ${request.targetLocation}`}
+- Address ${request.targetLocation} residents specifically` : '';
+
     const systemPrompt = `You are an expert cannabis and THCA content writer specializing in SEO-optimized blog posts for a premium THCA store. 
 
 Create engaging, informative, and SEO-friendly content that:
@@ -83,7 +94,7 @@ Create engaging, informative, and SEO-friendly content that:
 - Is approximately ${lengthGuidance[request.length || 'medium']} long
 - Includes relevant keywords naturally
 - Provides valuable information that builds trust and authority
-- ${request.includeCallToAction ? 'Includes a compelling call-to-action for the THCA store' : 'Focuses on education without being overly promotional'}
+- ${request.includeCallToAction ? 'Includes a compelling call-to-action for the THCA store' : 'Focuses on education without being overly promotional'}${locationContext}
 
 Content Guidelines:
 - Use proper HTML formatting with headings (h2, h3), paragraphs, lists
@@ -92,6 +103,7 @@ Content Guidelines:
 - Create content that's shareable and link-worthy
 - Use cannabis terminology correctly
 - Focus on benefits, education, and responsible use
+- For location-targeted content, include city names, local regulations, and shipping information
 
 Topic: ${request.topic}
 Category: ${request.category}
