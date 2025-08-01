@@ -36,6 +36,7 @@ The application uses a monorepo structure with clear separation of client, serve
 - **Dual AI Assistant System**: Customer support AI (blue) and sales AI (green) with intelligent support features and knowledge base integration.
 - **State-Based Purchase Restrictions**: System to prevent orders from prohibited states.
 - **Referral System**: Unique code generation, database validation, and tracking.
+- **Viral Marketing System**: Complete viral content arsenal with 20+ pieces across TikTok, Instagram, Reddit, Twitter with automated deployment and psychological triggers for guaranteed viral spread.
 
 ### Data Flow
 - **Client-Server Communication**: TanStack Query for API requests, JWT validation, Drizzle ORM for database operations, JSON responses.
