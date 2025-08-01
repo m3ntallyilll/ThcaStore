@@ -608,6 +608,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Deals Generation Routes
+  app.post("/api/admin/deals/generate", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiDealsService } = await import('./ai-deals-service');
+      const { targetAudience, season, products, discountRange, urgency, marketingGoal } = req.body;
+
+      const deals = await aiDealsService.generateDeals({
+        targetAudience,
+        season,
+        products,
+        discountRange,
+        urgency,
+        marketingGoal
+      });
+
+      // Save generated deals to database
+      const savedDeals = [];
+      for (const deal of deals) {
+        const saved = await storage.createSpecialOffer(deal);
+        savedDeals.push(saved);
+      }
+
+      res.json({
+        success: true,
+        deals: savedDeals,
+        message: `Generated ${savedDeals.length} AI-powered deals successfully`
+      });
+    } catch (error: any) {
+      console.error('AI Deals Generation Error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/admin/deals/activate-strategy", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiDealsService } = await import('./ai-deals-service');
+      const result = await aiDealsService.activateDealStrategy();
+      res.json(result);
+    } catch (error: any) {
+      console.error('Deal Strategy Activation Error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/deals/analytics", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiDealsService } = await import('./ai-deals-service');
+      const analytics = await aiDealsService.getDealPerformanceAnalytics();
+      res.json(analytics);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/deals/personalized/:userId", authenticateToken, async (req: any, res) => {
+    try {
+      const { aiDealsService } = await import('./ai-deals-service');
+      const deal = await aiDealsService.generatePersonalizedDeal(req.params.userId);
+      
+      if (deal) {
+        res.json(deal);
+      } else {
+        res.status(404).json({ message: "No personalized deal available at this time" });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // AI Assistant routes
   app.post("/api/ai/chat", async (req, res) => {
     try {
