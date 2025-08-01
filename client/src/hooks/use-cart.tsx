@@ -52,7 +52,10 @@ export const useCart = create<CartState>((set, get) => ({
     if (!token) throw new Error('Authentication required');
 
     try {
-      await apiRequest('POST', '/api/cart', { productId, quantity });
+      await apiRequest('/api/cart', { 
+        method: 'POST', 
+        body: { productId, quantity } 
+      });
       await get().fetchCart();
     } catch (error) {
       throw error;
@@ -64,7 +67,10 @@ export const useCart = create<CartState>((set, get) => ({
     if (!token) throw new Error('Authentication required');
 
     try {
-      await apiRequest('PUT', `/api/cart/${itemId}`, { quantity });
+      await apiRequest(`/api/cart/${itemId}`, { 
+        method: 'PUT', 
+        body: { quantity } 
+      });
       await get().fetchCart();
     } catch (error) {
       throw error;
@@ -76,7 +82,9 @@ export const useCart = create<CartState>((set, get) => ({
     if (!token) throw new Error('Authentication required');
 
     try {
-      await apiRequest('DELETE', `/api/cart/${itemId}`);
+      await apiRequest(`/api/cart/${itemId}`, { 
+        method: 'DELETE' 
+      });
       await get().fetchCart();
     } catch (error) {
       throw error;
