@@ -376,7 +376,6 @@ Return your response as JSON with this structure:
     
     return { title, content };
   }
-  }
 
   private async generateSEOMetadata(request: BlogGenerationRequest, title: string): Promise<SEOMetadata> {
     const systemPrompt = `You are an SEO expert specializing in cannabis and THCA content. Generate optimized metadata for the blog post.
