@@ -1067,17 +1067,31 @@ export class DatabaseStorage {
       .orderBy(dailyPromotions.dayOfWeek);
   }
 
-  async getPromotionByDay(dayOfWeek: number): Promise<DailyPromotion[]> {
-    return await db.select().from(dailyPromotions)
+  async getDailyPromotionsByDay(dayOfWeek: number): Promise<DailyPromotion[]> {
+    console.log(`Querying promotions for day: ${dayOfWeek}`);
+    const results = await db.select().from(dailyPromotions)
       .where(and(
         eq(dailyPromotions.dayOfWeek, dayOfWeek),
         eq(dailyPromotions.isActive, true)
       ));
+    console.log(`Found ${results.length} promotions for day ${dayOfWeek}:`, results);
+    return results;
+  }
+
+  async getPromotionByDay(dayOfWeek: number): Promise<DailyPromotion[]> {
+    return await this.getDailyPromotionsByDay(dayOfWeek);
+  }
+
+  async getDailyPromotion(id: string): Promise<DailyPromotion | undefined> {
+    const [promotion] = await db.select().from(dailyPromotions)
+      .where(eq(dailyPromotions.id, id))
+      .limit(1);
+    return promotion;
   }
 
   async getTodaysPromotions(): Promise<DailyPromotion[]> {
     const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-    return await this.getPromotionByDay(today);
+    return await this.getDailyPromotionsByDay(today);
   }
 
   async updateDailyPromotion(id: string, updates: Partial<InsertDailyPromotion>): Promise<DailyPromotion | undefined> {

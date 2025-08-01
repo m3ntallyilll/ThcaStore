@@ -90,8 +90,8 @@ export interface IStorage {
   // Daily Promotions
   getTodaysPromotions(): Promise<any[]>;
   getDailyPromotions(): Promise<any[]>;
-  getPromotionByDay(day: string): Promise<any>;
-  getDailyPromotionsByDay(day: string): Promise<any[]>;
+  getPromotionByDay(dayOfWeek: number): Promise<any[]>;
+  getDailyPromotionsByDay(dayOfWeek: number): Promise<any[]>;
   getDailyPromotion(id: string): Promise<any>;
   createDailyPromotion(promotion: any): Promise<any>;
   updateDailyPromotion(id: string, updates: any): Promise<any>;
@@ -637,8 +637,8 @@ export class MemStorage implements IStorage {
     return Array.from(this.dailyPromotions.values()).find((p: any) => p.date === day);
   }
 
-  async getDailyPromotionsByDay(day: string): Promise<any[]> {
-    return Array.from(this.dailyPromotions.values()).filter((p: any) => p.date === day);
+  async getDailyPromotionsByDay(dayOfWeek: number): Promise<any[]> {
+    return Array.from(this.dailyPromotions.values()).filter((p: any) => p.dayOfWeek === dayOfWeek);
   }
 
   async getDailyPromotion(id: string): Promise<any> {
@@ -679,4 +679,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { DatabaseStorage } from "./database-storage";
+
+export const storage = new DatabaseStorage();
