@@ -1,4 +1,5 @@
 import Groq from 'groq-sdk';
+import { groqToolsService } from './groq-tools-service';
 
 const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
@@ -28,37 +29,41 @@ export class BlogAIStreamingService {
     }
 
     try {
-      console.log(`🚀 Starting multi-agent blog generation for: ${request.topic}`);
+      console.log(`🚀 Starting tool-enhanced multi-agent blog generation for: ${request.topic}`);
       
-      // Multi-agent parallel generation for maximum coverage
+      // First, enhance content strategy with tools
+      const toolResult = await groqToolsService.enhanceBlogContentGeneration(request);
+      console.log(`📊 Tool-enhanced research completed for: ${request.topic}`);
+      
+      // Multi-agent parallel generation for maximum coverage with tool insights
       const [
         introSection,
         mainSections,
         faqSection,
         conclusionSection
       ] = await Promise.all([
-        this.generateIntroductionAgent(request),
-        this.generateMainContentAgent(request),
-        this.generateFAQAgent(request),
-        this.generateConclusionAgent(request)
+        this.generateIntroductionAgent(request, toolResult),
+        this.generateMainContentAgent(request, toolResult),
+        this.generateFAQAgent(request, toolResult),
+        this.generateConclusionAgent(request, toolResult)
       ]);
 
       // Combine all sections into comprehensive blog post
       const fullContent = this.assembleBlogPost(introSection, mainSections, faqSection, conclusionSection, request);
       
-      console.log(`✅ Complete blog generated: ${fullContent.content.length} characters`);
+      console.log(`✅ Tool-enhanced blog generated: ${fullContent.content.length} characters`);
       
       return {
         title: introSection.title,
         content: fullContent.content
       };
     } catch (error) {
-      console.error('Error in multi-agent blog generation:', error);
+      console.error('Error in tool-enhanced multi-agent blog generation:', error);
       throw new Error('Failed to generate complete blog post. Please try again.');
     }
   }
 
-  private async generateIntroductionAgent(request: BlogGenerationRequest): Promise<BlogSection> {
+  private async generateIntroductionAgent(request: BlogGenerationRequest, toolResult?: any): Promise<BlogSection> {
     const locationContext = request.targetLocation ? 
       `Focus on ${request.targetLocation} with local THCA laws, shipping options, and location-specific keywords.` : '';
 
@@ -111,7 +116,7 @@ Return ONLY a JSON object:
     }
   }
 
-  private async generateMainContentAgent(request: BlogGenerationRequest): Promise<BlogSection[]> {
+  private async generateMainContentAgent(request: BlogGenerationRequest, toolResult?: any): Promise<BlogSection[]> {
     const locationContext = request.targetLocation ? 
       `Include ${request.targetLocation}-specific information, local regulations, and shipping details.` : '';
 
@@ -162,7 +167,7 @@ Return ONLY the HTML content for this section, no JSON wrapper needed.`;
     return Promise.all(sectionPromises);
   }
 
-  private async generateFAQAgent(request: BlogGenerationRequest): Promise<BlogSection> {
+  private async generateFAQAgent(request: BlogGenerationRequest, toolResult?: any): Promise<BlogSection> {
     const locationContext = request.targetLocation ? 
       `Include questions about ${request.targetLocation} laws, shipping, and local availability.` : '';
 
@@ -201,7 +206,7 @@ Return ONLY the HTML content for the complete FAQ section.`;
     };
   }
 
-  private async generateConclusionAgent(request: BlogGenerationRequest): Promise<BlogSection> {
+  private async generateConclusionAgent(request: BlogGenerationRequest, toolResult?: any): Promise<BlogSection> {
     const ctaContext = request.includeCallToAction ? 
       'Include a compelling call-to-action for premium THCA products.' : 
       'Focus on educational wrap-up and next steps.';

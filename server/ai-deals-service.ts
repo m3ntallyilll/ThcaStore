@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk';
 import { storage } from './database-storage';
+import { groqToolsService } from './groq-tools-service';
 import type { InsertSpecialOffer } from '@shared/schema';
 
 const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
