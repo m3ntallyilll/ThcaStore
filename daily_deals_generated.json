@@ -1,0 +1,74 @@
+Here are 7 dynamic daily deals for a premium THCA store:
+
+[
+  {
+    "dayOfWeek": 0,
+    "title": "Sunday Sesh Starter",
+    "description": "Kick off your week with a bang! Get 20% off all flower bundles.",
+    "discountType": "percentage",
+    "discountValue": 20,
+    "categories": ["flower"],
+    "isActive": true,
+    "marketingMessage": "Start your week with a premium flower bundle and enjoy 20% off! Use code SUNDAYSESH at checkout."
+  },
+  {
+    "dayOfWeek": 1,
+    "title": "Monday Madness",
+    "description": "BOGO on our best-selling pre-rolls! Stock up on Northern Lights and Jack Herer.",
+    "discountType": "bogo",
+    "discountValue": 0,
+    "categories": ["pre-rolls"],
+    "isActive": true,
+    "marketingMessage": "It's Monday Funday! Get buy one, get one free on our popular pre-rolls. Use code MONDAYMADNESS at checkout."
+  },
+  {
+    "dayOfWeek": 2,
+    "title": "Tuesday Takedown",
+    "description": "Take 25% off all OG Kush and Granddaddy Purple flower. Limited time only!",
+    "discountType": "percentage",
+    "discountValue": 25,
+    "categories": ["flower", "OG Kush", "Granddaddy Purple"],
+    "isActive": true,
+    "marketingMessage": "Don't miss out on this limited time offer! Get 25% off our top-shelf OG Kush and Granddaddy Purple flower. Use code TUESDAYTAKEDOWN at checkout."
+  },
+  {
+    "dayOfWeek": 3,
+    "title": "Wednesday Wisdom",
+    "description": "Get 18% off all Blue Dream and Green Crack flower. Wisdom is knowing when to stock up!",
+    "discountType": "percentage",
+    "discountValue": 18,
+    "categories": ["flower", "Blue Dream", "Green Crack"],
+    "isActive": true,
+    "marketingMessage": "Wise decision alert! Get 18% off our popular Blue Dream and Green Crack flower. Use code WEDNESDAYWISDOM at checkout."
+  },
+  {
+    "dayOfWeek": 4,
+    "title": "Thursday Throwdown",
+    "description": "20% off all Sour Diesel and Girl Scout Cookies flower. It's time to get loud!",
+    "discountType": "percentage",
+    "discountValue": 20,
+    "categories": ["flower", "Sour Diesel", "Girl Scout Cookies"],
+    "isActive": true,
+    "marketingMessage": "Get ready to rumble! Get 20% off our potent Sour Diesel and Girl Scout Cookies flower. Use code THURSDAYTHROWDOWN at checkout."
+  },
+  {
+    "dayOfWeek": 5,
+    "title": "Friday Frenzy",
+    "description": "30% off all Purple Punch and Gelato flower. It's almost the weekend, yeah!",
+    "discountType": "percentage",
+    "discountValue": 30,
+    "categories": ["flower", "Purple Punch", "Gelato"],
+    "isActive": true,
+    "marketingMessage": "The weekend is almost here! Get 30% off our popular Purple Punch and Gelato flower. Use code FRIDAYFRENZY at checkout."
+  },
+  {
+    "dayOfWeek": 6,
+    "title": "Saturday Savings",
+    "description": "Buy one, get one 50% off on all pre-rolls. Stock up and enjoy the weekend!",
+    "discountType": "bogo",
+    "discountValue": 50,
+    "categories": ["pre-rolls"],
+    "isActive": true,
+    "marketingMessage": "It's Saturday! Treat yourself to a pre-roll party. Buy one, get one 50% off. Use code SATURDAYSavings at checkout."
+  }
+]
