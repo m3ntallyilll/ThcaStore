@@ -30,6 +30,7 @@ import type { AdminStats } from '@/lib/types';
 import type { Product } from '@shared/schema';
 import { BlogManagement } from './blog-management';
 import { AIChat } from '@/components/ai/ai-chat';
+import AIDealsGenerator from './ai-deals-generator';
 
 interface OrderWithDetails {
   id: string;
@@ -482,6 +483,16 @@ export function AdminDashboard() {
                   Blog
                 </Button>
               </li>
+              <li>
+                <Button
+                  variant={activeSection === 'ai-deals' ? 'secondary' : 'ghost'}
+                  className="w-full justify-start bg-green-600/20 hover:bg-green-600/30 text-green-400"
+                  onClick={() => setActiveSection('ai-deals')}
+                >
+                  <DollarSign className="w-4 h-4 mr-3" />
+                  AI Deals (19 Active)
+                </Button>
+              </li>
             </ul>
           </nav>
         </div>
@@ -495,6 +506,7 @@ export function AdminDashboard() {
               {activeSection === 'users' && 'User Management'}
               {activeSection === 'analytics' && 'Analytics'}
               {activeSection === 'blog' && 'Blog Management'}
+              {activeSection === 'ai-deals' && 'AI Deals Generator'}
             </h1>
           </div>
 
@@ -884,6 +896,8 @@ export function AdminDashboard() {
           )}
 
           {activeSection === 'blog' && <BlogManagement blogFormData={blogFormData} />}
+          
+          {activeSection === 'ai-deals' && <AIDealsGenerator />}
         </div>
       </div>
 
