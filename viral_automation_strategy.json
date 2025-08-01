@@ -1,0 +1,37 @@
+{
+  "contentSchedule": {
+    "tiktok": "3 posts per day, peak hours 6-9pm",
+    "instagram": "2 reels per day, peak hours 11am-1pm, 7-9pm",
+    "reddit": "1 high-value post per day, different subreddits",
+    "twitter": "5 tweets per day, threading strategy"
+  },
+  "viralMechanics": {
+    "hooks": [
+      "POV: You just discovered legal THCA...",
+      "Things your dispensary won't tell you about THCA",
+      "I tried THCA for 30 days, here's what happened",
+      "THCA vs regular flower: The shocking truth",
+      "Why everyone's switching to THCA in 2025"
+    ],
+    "trending": [
+      "#THCA #Hemp #Cannabis #LegalWeed #MentalHealth",
+      "#Wellness #Productivity #Focus #Anxiety #Sleep",
+      "#NaturalHealing #PlantMedicine #Alternative",
+      "#Legal #THCAlternative #CannabisEducation"
+    ],
+    "engagement": [
+      "Comment your state and I'll tell you if THCA is legal",
+      "Which THCA strain should I try next?",
+      "Tag someone who needs to know about THCA",
+      "Share if this helped you understand THCA",
+      "Follow for daily THCA education content"
+    ]
+  },
+  "viralTriggers": [
+    "Controversy: Why big pharma doesn't want you to know about THCA",
+    "Transformation: 30-day THCA journey results",
+    "Education: THCA science explained simply",
+    "Community: Real customer success stories",
+    "Trending: Latest THCA news and updates"
+  ]
+}
