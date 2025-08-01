@@ -1447,6 +1447,126 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // AI SEO Enhancement Routes
+  app.post("/api/admin/seo/enhance/:postId", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiSEOService } = await import('./ai-seo-service');
+      const { postId } = req.params;
+      const { targetKeywords } = req.body;
+
+      const enhancedPost = await aiSEOService.enhanceBlogPostSEO(postId, targetKeywords);
+      
+      res.json({
+        success: true,
+        message: 'Blog post SEO enhanced successfully',
+        post: enhancedPost
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false, 
+        message: error.message 
+      });
+    }
+  });
+
+  app.post("/api/admin/seo/bulk-enhance", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiSEOService } = await import('./ai-seo-service');
+      const { postIds } = req.body;
+
+      if (!Array.isArray(postIds) || postIds.length === 0) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Post IDs array is required' 
+        });
+      }
+
+      // Start background process
+      aiSEOService.bulkEnhanceBlogSEO(postIds).catch(console.error);
+      
+      res.json({
+        success: true,
+        message: `Started bulk SEO enhancement for ${postIds.length} posts`,
+        processingCount: postIds.length
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false, 
+        message: error.message 
+      });
+    }
+  });
+
+  app.post("/api/admin/seo/build-pyramid", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
+      const strategy = await aiLinkPyramidService.buildIntelligentLinkPyramid();
+      
+      res.json({
+        success: true,
+        message: 'Link pyramid strategy generated successfully',
+        strategy: {
+          topTierCount: strategy.topTierPosts.length,
+          middleTierCount: strategy.middleTierPosts.length,
+          baseTierCount: strategy.baseTierPosts.length,
+          totalLinks: strategy.linkingStrategy.length,
+          topTierPosts: strategy.topTierPosts.map(p => ({ 
+            id: p.postId, 
+            title: p.title, 
+            authorityScore: p.authorityScore 
+          })),
+          linkingStrategy: strategy.linkingStrategy
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false, 
+        message: error.message 
+      });
+    }
+  });
+
+  app.post("/api/admin/seo/implement-pyramid", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
+      const strategy = await aiLinkPyramidService.buildIntelligentLinkPyramid();
+      
+      // Start background implementation
+      aiLinkPyramidService.implementLinkPyramid(strategy).catch(console.error);
+      
+      res.json({
+        success: true,
+        message: 'Link pyramid implementation started',
+        strategy: {
+          postsToUpdate: strategy.topTierPosts.length + strategy.middleTierPosts.length + strategy.baseTierPosts.length,
+          linksToCreate: strategy.linkingStrategy.length
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false, 
+        message: error.message 
+      });
+    }
+  });
+
+  app.get("/api/admin/seo/pyramid-health", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
+      const healthReport = await aiLinkPyramidService.analyzePyramidHealth();
+      
+      res.json({
+        success: true,
+        healthReport
+      });
+    } catch (error: any) {
+      res.status(500).json({ 
+        success: false, 
+        message: error.message 
+      });
+    }
+  });
+
   app.get("/api/blog/categories", async (req, res) => {
     try {
       const categories = await storage.getBlogCategories();

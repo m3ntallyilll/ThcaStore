@@ -5,6 +5,7 @@ THCA Store is a full-stack eCommerce web application for reselling legal hemp-de
 
 ## Recent Changes
 - **August 1, 2025**: Replaced all cannabis references with hemp throughout the entire codebase for consistent branding and messaging. Updated CSS classes, component references, AI content, viral marketing materials, and all text content to use "hemp" terminology instead of "cannabis".
+- **August 1, 2025**: Implemented AI-Enhanced SEO System using Groq AI with automated metadata generation, intelligent internal link pyramids, and schema markup generation. Added comprehensive AI SEO Manager dashboard for admins with link pyramid health analysis and bulk enhancement capabilities.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
@@ -40,6 +41,7 @@ The application uses a monorepo structure with clear separation of client, serve
 - **State-Based Purchase Restrictions**: System to prevent orders from prohibited states.
 - **Referral System**: Unique code generation, database validation, and tracking.
 - **Viral Marketing System**: Complete viral content arsenal with 20+ pieces across TikTok, Instagram, Reddit, Twitter with automated deployment and psychological triggers for guaranteed viral spread.
+- **AI-Enhanced SEO System**: Groq-powered metadata generation, intelligent internal link pyramids, schema markup automation, and comprehensive SEO health analysis with pyramid structure optimization.
 
 ### Data Flow
 - **Client-Server Communication**: TanStack Query for API requests, JWT validation, Drizzle ORM for database operations, JSON responses.

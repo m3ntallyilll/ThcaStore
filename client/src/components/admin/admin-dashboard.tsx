@@ -31,6 +31,7 @@ import type { Product } from '@shared/schema';
 import { BlogManagement } from './blog-management';
 import { AIChat } from '@/components/ai/ai-chat';
 import AIDealsGenerator from './ai-deals-generator';
+import { AISEOManager } from './ai-seo-manager';
 
 interface OrderWithDetails {
   id: string;
@@ -493,6 +494,16 @@ export function AdminDashboard() {
                   AI Deals (19 Active)
                 </Button>
               </li>
+              <li>
+                <Button
+                  variant={activeSection === 'ai-seo' ? 'secondary' : 'ghost'}
+                  className="w-full justify-start bg-purple-600/20 hover:bg-purple-600/30 text-purple-400"
+                  onClick={() => setActiveSection('ai-seo')}
+                >
+                  <Search className="w-4 h-4 mr-3" />
+                  AI SEO Enhancement
+                </Button>
+              </li>
             </ul>
           </nav>
         </div>
@@ -507,6 +518,7 @@ export function AdminDashboard() {
               {activeSection === 'analytics' && 'Analytics'}
               {activeSection === 'blog' && 'Blog Management'}
               {activeSection === 'ai-deals' && 'AI Deals Generator'}
+              {activeSection === 'ai-seo' && 'AI SEO Enhancement Center'}
             </h1>
           </div>
 
@@ -898,6 +910,9 @@ export function AdminDashboard() {
           {activeSection === 'blog' && <BlogManagement blogFormData={blogFormData} />}
           
           {activeSection === 'ai-deals' && <AIDealsGenerator />}
+
+          {/* AI SEO Enhancement Section */}
+          {activeSection === 'ai-seo' && <AISEOManager />}
         </div>
       </div>
 
