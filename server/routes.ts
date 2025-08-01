@@ -1358,27 +1358,61 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   // AI Blog Generation Routes
   app.post("/api/admin/blog/ai/generate", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const { blogAIService } = await import('./blog-ai-service');
-      const { topic, category, keywords, tone, length, targetAudience, includeCallToAction } = req.body;
+      const { blogAIStreamingService } = await import('./blog-ai-streaming-service');
+      const { topic, category, keywords, tone, length, targetAudience, includeCallToAction, targetLocation, locationKeywords } = req.body;
 
       if (!topic || !category) {
         return res.status(400).json({ message: "Topic and category are required" });
       }
 
-      const blogPost = await blogAIService.generateBlogPost({
+      console.log(`🚀 Multi-agent blog generation started for: ${topic}`);
+
+      // Use the new streaming service with multiple AI agents
+      const blogContent = await blogAIStreamingService.generateCompleteBlogPost({
         topic,
         category,
         keywords,
         tone,
         length,
         targetAudience,
-        includeCallToAction
-      }, req.user.id);
+        includeCallToAction,
+        targetLocation,
+        locationKeywords
+      });
+
+      // Create blog post object for database
+      const wordCount = Math.ceil(blogContent.content.length / 5);
+      const readTime = Math.ceil(wordCount / 200);
+      
+      const blogPost = {
+        title: blogContent.title,
+        slug: blogContent.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+        content: blogContent.content,
+        excerpt: blogContent.content.substring(0, 200).replace(/<[^>]*>/g, '') + '...',
+        metaTitle: blogContent.title,
+        metaDescription: `Comprehensive guide to ${topic}. Expert insights, practical tips, and everything you need to know.`,
+        keywords: keywords || [topic, 'THCA', 'cannabis', 'hemp'],
+        authorId: req.user.id,
+        category,
+        tags: keywords || [],
+        status: 'published' as const,
+        isAiGenerated: true,
+        readTime,
+        publishedAt: new Date()
+      };
 
       const savedPost = await storage.createBlogPost(blogPost);
-      res.json(savedPost);
+      
+      console.log(`✅ Complete blog post saved: ${wordCount} words`);
+      
+      res.json({
+        ...savedPost,
+        message: "Complete blog post generated with multi-agent AI system",
+        wordCount,
+        sections: "Introduction, Main Content (6 sections), FAQ, Conclusion"
+      });
     } catch (error: any) {
-      console.error('AI Blog Generation Error:', error);
+      console.error('Multi-Agent Blog Generation Error:', error);
       res.status(500).json({ message: error.message });
     }
   });
