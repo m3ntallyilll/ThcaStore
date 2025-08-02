@@ -2,7 +2,7 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
+
 import { useEffect, useRef } from "react";
 import { useLocation } from "wouter";
 // Analytics tracking hook
@@ -161,10 +161,8 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider delayDuration={0}>
-        <AppContent />
-        <Toaster />
-      </TooltipProvider>
+      <AppContent />
+      <Toaster />
     </QueryClientProvider>
   );
 }
