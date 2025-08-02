@@ -17,10 +17,25 @@ app.use((err: any, req: any, res: any, next: any) => {
 });
 app.use(express.urlencoded({ extended: false }));
 
+// Bot-friendly middleware - no restrictions for crawlers
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
+
+  // Set bot-friendly headers
+  res.setHeader('X-Robots-Tag', 'index, follow, all');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for bots
+  
+  // Allow all crawlers access
+  const userAgent = req.get('User-Agent') || '';
+  const isBot = /bot|crawler|spider|scraper|crawling|facebookexternalhit|twitterbot|linkedinbot|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|whatsapp/i.test(userAgent);
+  
+  if (isBot) {
+    // Extra welcoming headers for bots
+    res.setHeader('X-Bot-Welcome', 'true');
+    res.setHeader('X-Crawl-Friendly', 'maximum-access');
+  }
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {

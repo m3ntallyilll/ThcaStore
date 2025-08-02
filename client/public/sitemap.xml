@@ -4,7 +4,7 @@
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
     <loc>https://thcastore.replit.app/</loc>
-    <lastmod>2025-01-31</lastmod>
+    <lastmod>2025-02-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
@@ -12,6 +12,29 @@
       <image:title>Premium THCA Hemp Products</image:title>
       <image:caption>Lab-tested THCA flower and concentrates</image:caption>
     </image:image>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/</loc>
+    <lastmod>2025-02-02</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg</image:loc>
+      <image:title>Premium THCA Hemp Products - Mentally Chill</image:title>
+      <image:caption>Lab-tested hemp THCA flower and concentrates</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thcastore.replit.app/crawler-welcome</loc>
+    <lastmod>2025-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/crawler-welcome</loc>
+    <lastmod>2025-02-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://thcastore.replit.app/products</loc>

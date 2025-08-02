@@ -1,0 +1,10 @@
+Contact: contact@mentally-chill.online
+Expires: 2026-12-31T23:59:59.000Z
+Acknowledgments: https://mentally-chill.online/security-acknowledgments
+Preferred-Languages: en
+Policy: https://mentally-chill.online/security-policy
+Hiring: https://mentally-chill.online/careers
+
+# This is for legitimate security research only
+# This site provides legal hemp-derived THCA products
+# All bots and crawlers are welcome for indexing purposes

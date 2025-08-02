@@ -1,0 +1,7 @@
+# Backup robots.txt location for maximum discoverability
+User-agent: *
+Allow: /
+
+# Welcome message for all crawlers
+# This is a legal hemp-derived THCA product store
+# All bots and crawlers are welcome

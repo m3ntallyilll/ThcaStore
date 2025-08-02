@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { aiAssistant } from "./ai-assistant";
 import Stripe from "stripe";
@@ -2105,6 +2106,69 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
+  });
+
+  // Bot and crawler friendly routes
+  app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.setHeader('X-Robots-Tag', 'index, follow, all');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.sendFile(path.join(__dirname, '../client/public/robots.txt'));
+  });
+
+  app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml');
+    res.setHeader('X-Robots-Tag', 'index, follow, all');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.sendFile(path.join(__dirname, '../client/public/sitemap.xml'));
+  });
+
+  app.get('/.well-known/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.setHeader('X-Robots-Tag', 'index, follow, all');
+    res.sendFile(path.join(__dirname, '../client/public/.well-known/robots.txt'));
+  });
+
+  app.get('/.well-known/security.txt', (req, res) => {
+    res.type('text/plain');
+    res.setHeader('X-Robots-Tag', 'index, follow, all');
+    res.sendFile(path.join(__dirname, '../client/public/.well-known/security.txt'));
+  });
+
+  // Enhanced crawler welcome endpoint
+  app.get('/crawler-welcome', (req, res) => {
+    const userAgent = req.get('User-Agent') || '';
+    const isBot = /bot|crawler|spider|scraper|crawling|facebookexternalhit|twitterbot|linkedinbot|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|whatsapp/i.test(userAgent);
+    
+    res.setHeader('X-Robots-Tag', 'index, follow, all');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    
+    res.json({
+      message: 'Welcome crawlers and bots!',
+      site: 'mentally-chill.online',
+      type: 'Hemp THCA Store',
+      crawl_friendly: true,
+      bot_detected: isBot,
+      user_agent: userAgent,
+      pages_to_crawl: [
+        '/',
+        '/products',
+        '/blog',
+        '/contact',
+        '/privacy',
+        '/terms',
+        '/returns',
+        '/rewards'
+      ],
+      sitemaps: [
+        '/sitemap.xml',
+        'https://mentally-chill.online/sitemap.xml',
+        'https://thcastore.replit.app/sitemap.xml'
+      ],
+      legal_compliance: 'Farm Bill 2018 compliant hemp products',
+      age_restriction: '21+',
+      last_updated: new Date().toISOString()
+    });
   });
 
   // Set up global storage for seed functions

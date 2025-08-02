@@ -1,27 +1,85 @@
 User-agent: *
 Allow: /
 
-# Allow search engines to index all public pages
+# MAXIMUM ACCESSIBILITY FOR ALL BOTS AND CRAWLERS
+# Allow all major search engine bots
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Twitterbot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: LinkedInBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: WhatsApp
+Allow: /
+Crawl-delay: 0.5
+
+# Explicitly allow all public content areas
+Allow: /
 Allow: /products
+Allow: /products/*
 Allow: /blog
+Allow: /blog/*
 Allow: /contact
 Allow: /privacy
 Allow: /terms
 Allow: /returns
+Allow: /rewards
+Allow: /sitemap.xml
+Allow: /manifest.json
+Allow: /robots.txt
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.svg
+Allow: /*.webp
+Allow: /*.ico
 
-# Disallow admin and sensitive areas
+# Only restrict truly private areas
 Disallow: /admin
 Disallow: /checkout
-Disallow: /cart
-Disallow: /api
+Disallow: /api/auth
+Disallow: /api/admin
 
-# Sitemap location
+# Multiple sitemap locations for maximum discoverability
 Sitemap: https://thcastore.replit.app/sitemap.xml
+Sitemap: https://mentally-chill.online/sitemap.xml
 
-# Crawl delay for responsible crawling
-Crawl-delay: 1
+# Minimal crawl delay for fast indexing
+Crawl-delay: 0.5
 
-# Hemp/Cannabis specific guidelines
-# This site sells legal hemp-derived THCA products (< 0.3% Delta-9 THC)
-# Age restriction: 21+ only
-# Geographic restrictions apply in some states
+# Legal hemp-derived THCA products
+# Compliant with Farm Bill 2018 (<0.3% Delta-9 THC)
+# Age verification: 21+ required
+# State compliance: Available in legal jurisdictions
