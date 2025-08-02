@@ -156,7 +156,7 @@ Return JSON:
       description: parsed.description || `Premium ${productWeight} ${strainName} ${request.isInfused ? 'infused ' : ''}${request.productType}`,
       price: (parsed.price || this.randomPriceInRange(request.priceRange)).toString(),
       category: request.productType === 'pre-roll' ? 'pre-rolls' : 'flower',
-      imageUrl: '', // Will be added later by user
+      imageUrl: this.generateProductImageUrl(request.productType, strainName, request.isInfused),
       stock: quantity,
       weight: productWeight,
       featured: Math.random() < 0.1, // 10% chance of being featured
@@ -167,6 +167,34 @@ Return JSON:
     };
 
     return product;
+  }
+
+  private generateProductImageUrl(productType: string, strainName: string, isInfused?: boolean): string {
+    // Generate search-friendly URLs for your cannabis product images
+    const baseSearchUrl = 'https://images.google.com/search?q=';
+    
+    let searchTerms: string;
+    
+    if (productType === 'pre-roll') {
+      if (isInfused) {
+        searchTerms = `${strainName.replace(/\s+/g, '+')}+infused+pre+roll+cannabis+product`;
+      } else {
+        searchTerms = `${strainName.replace(/\s+/g, '+')}+pre+roll+cannabis+joint`;
+      }
+    } else if (productType === 'flower') {
+      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+flower+bud+nug`;
+    } else if (productType === 'concentrate') {
+      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+concentrate+wax+shatter`;
+    } else if (productType === 'edible') {
+      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+edible+gummy+chocolate`;
+    } else {
+      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+product`;
+    }
+    
+    // Return placeholder image service URL for development
+    // In production, you would replace this with your actual image URLs
+    const imageId = Math.abs(strainName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 1000;
+    return `https://picsum.photos/seed/${imageId}/400/400`;
   }
 
   private calculateQuantity(productType: string, strainType: string): number {
