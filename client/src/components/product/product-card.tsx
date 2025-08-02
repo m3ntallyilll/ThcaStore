@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/components/ui/toast-provider';
+import { useToast } from '@/hooks/use-toast';
 import { ProductVariantSelector } from './product-variant-selector';
 import type { Product, ProductVariant } from '@shared/schema';
 
@@ -40,31 +40,46 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
     e.stopPropagation();
     
     if (!user) {
-      toast('Please login to add items to cart', 'warning');
+      toast({
+        title: "Login required",
+        description: "Please login to add items to cart",
+        variant: "destructive"
+      });
       return;
     }
 
     if (currentVariant.stock === 0) {
-      toast('This variant is out of stock', 'warning');
+      toast({
+        title: "Out of stock",
+        description: "This variant is out of stock",
+        variant: "destructive"
+      });
       return;
     }
 
     try {
       // For now, use the product ID. In a full implementation, you'd pass variant info
       await addToCart(product.id);
-      toast(`${currentVariant.weight} ${product.name} added to cart!`, 'success');
+      toast({
+        title: "Added to cart",
+        description: `${currentVariant.weight} ${product.name} added to cart!`
+      });
     } catch (error) {
-      toast('Failed to add product to cart', 'error');
+      toast({
+        title: "Error",
+        description: "Failed to add product to cart",
+        variant: "destructive"
+      });
     }
   };
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsWishlisted(!isWishlisted);
-    toast(
-      isWishlisted ? 'Removed from wishlist' : 'Added to wishlist',
-      'info'
-    );
+    toast({
+      title: isWishlisted ? "Removed from wishlist" : "Added to wishlist",
+      description: isWishlisted ? "Product removed from your wishlist" : "Product added to your wishlist"
+    });
   };
 
   const getCategoryColor = (category: string) => {
@@ -120,7 +135,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         
         <div className="absolute top-4 left-4 flex flex-col gap-2">
           <Badge className={`${getCategoryColor(product.category)} text-sm font-semibold flex items-center gap-1`}>
-            {getSubcategoryIcon(product.category, product.subcategory)}
+            {getSubcategoryIcon(product.category, product.subcategory || undefined)}
             {product.featured ? 'Premium' : product.category}
           </Badge>
           {product.subcategory && (
