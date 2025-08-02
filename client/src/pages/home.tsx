@@ -283,10 +283,10 @@ export default function Home() {
                     transition={{ duration: 1, delay: 0.3 }}
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-green-300 to-teal-400 bg-clip-text text-transparent animate-pulse">
-                      THCA
+                      Premium THCA Hemp Products - Lab-Tested & Legal
                     </span>
                     <span className="relative bg-gradient-to-r from-emerald-300 via-green-200 to-teal-300 bg-clip-text text-transparent">
-                      THCA
+                      Premium THCA Hemp Products - Lab-Tested & Legal
                     </span>
                   </motion.h1>
                   
@@ -297,7 +297,7 @@ export default function Home() {
                     transition={{ duration: 1.5, delay: 0.6 }}
                   >
                     <span className="bg-gradient-to-r from-gold via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-                      REVOLUTION
+                      Shop THCA Flower, Pre-Rolls & Concentrates with Fast Shipping
                     </span>
                   </motion.h2>
                 </motion.div>

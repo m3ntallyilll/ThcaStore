@@ -158,7 +158,7 @@ export default function Products() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 bg-gradient-to-r from-gold via-white to-hemp bg-clip-text text-transparent">
-              Premium Collection
+              THCA Hemp Products - Premium Collection
             </h1>
             <p className="text-xl max-w-3xl mx-auto mb-8 text-[#4cff4c]">
               Expertly crafted THCA products designed to elevate your experience with uncompromising quality and purity
@@ -341,8 +341,9 @@ export default function Products() {
           )}
         </motion.div>
 
-        {/* Results Count */}
+        {/* Results Section with H2 */}
         <div className="mb-8">
+          <h2 className="text-3xl font-bold text-white mb-4">Browse THCA Products</h2>
           <p className="text-gray-400">
             Showing {filteredProducts.length} of {products.length} products
           </p>
