@@ -85,6 +85,7 @@ function AppContent() {
   const { checkAuth, user } = useAuth();
   const isAuthenticated = !!user;
   const { fetchCart } = useCart();
+  const [location, setLocation] = useLocation();
 
   useEffect(() => {
     checkAuth();
@@ -96,6 +97,24 @@ function AppContent() {
     }
   }, [isAuthenticated]);
 
+  // Handle AI product recommendations by linking to actual products
+  const handleProductRecommendation = (productId: string) => {
+    // Navigate to products page with the product highlighted
+    setLocation('/products');
+    
+    // Scroll to product after navigation (wait for page to load)
+    setTimeout(() => {
+      const productElement = document.querySelector(`[data-product-id="${productId}"]`);
+      if (productElement) {
+        productElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        productElement.classList.add('ring-2', 'ring-gold', 'ring-opacity-75');
+        setTimeout(() => {
+          productElement.classList.remove('ring-2', 'ring-gold', 'ring-opacity-75');
+        }, 3000);
+      }
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-dark-900 text-white">
       <SkipLinks />
@@ -105,7 +124,10 @@ function AppContent() {
       </main>
       <Footer />
       <CartSidebar />
-      <AIChat autoOpen={true} />
+      <AIChat 
+        autoOpen={true} 
+        onProductRecommendation={handleProductRecommendation}
+      />
       <AISupport />
       <ToastProvider />
     </div>

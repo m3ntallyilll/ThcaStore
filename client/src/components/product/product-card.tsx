@@ -66,6 +66,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
       whileHover={{ y: -10, rotateX: 5 }}
       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="product-card glass rounded-2xl overflow-hidden group cursor-pointer"
+      data-product-id={product.id}
       onClick={() => onProductClick(product)}
     >
       <div className="relative overflow-hidden">
