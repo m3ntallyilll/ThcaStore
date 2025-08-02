@@ -170,31 +170,25 @@ Return JSON:
   }
 
   private generateProductImageUrl(productType: string, strainName: string, isInfused?: boolean): string {
-    // Generate search-friendly URLs for your cannabis product images
-    const baseSearchUrl = 'https://images.google.com/search?q=';
+    // Generate stable image URLs using strain name as seed for consistency
+    const imageId = Math.abs(strainName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 1000;
     
-    let searchTerms: string;
-    
+    // Use different image categories based on product type
     if (productType === 'pre-roll') {
       if (isInfused) {
-        searchTerms = `${strainName.replace(/\s+/g, '+')}+infused+pre+roll+cannabis+product`;
+        return `https://picsum.photos/seed/infused-${imageId}/400/400`;
       } else {
-        searchTerms = `${strainName.replace(/\s+/g, '+')}+pre+roll+cannabis+joint`;
+        return `https://picsum.photos/seed/preroll-${imageId}/400/400`;
       }
     } else if (productType === 'flower') {
-      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+flower+bud+nug`;
+      return `https://picsum.photos/seed/flower-${imageId}/400/400`;
     } else if (productType === 'concentrate') {
-      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+concentrate+wax+shatter`;
+      return `https://picsum.photos/seed/concentrate-${imageId}/400/400`;
     } else if (productType === 'edible') {
-      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+edible+gummy+chocolate`;
+      return `https://picsum.photos/seed/edible-${imageId}/400/400`;
     } else {
-      searchTerms = `${strainName.replace(/\s+/g, '+')}+cannabis+product`;
+      return `https://picsum.photos/seed/product-${imageId}/400/400`;
     }
-    
-    // Return placeholder image service URL for development
-    // In production, you would replace this with your actual image URLs
-    const imageId = Math.abs(strainName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 1000;
-    return `https://picsum.photos/seed/${imageId}/400/400`;
   }
 
   private calculateQuantity(productType: string, strainType: string): number {
