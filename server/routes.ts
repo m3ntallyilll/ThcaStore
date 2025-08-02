@@ -143,7 +143,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Product routes
   app.get("/api/products", async (req, res) => {
     try {
-      const { category, featured } = req.query;
+      const { category, featured, limit = '1000' } = req.query;
 
       let products;
       if (category && category !== 'all') {
@@ -155,8 +155,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         products = await storage.getProducts();
       }
 
+      // Apply limit if specified
+      const limitNum = parseInt(limit as string);
+      if (limitNum && limitNum > 0) {
+        products = products.slice(0, limitNum);
+      }
+
+      console.log(`API: Returning ${products.length} products`);
       res.json(products);
     } catch (error: any) {
+      console.error('Products API error:', error);
       res.status(500).json({ message: error.message });
     }
   });
