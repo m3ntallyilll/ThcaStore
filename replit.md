@@ -4,6 +4,8 @@
 THCA Store is a full-stack eCommerce web application for reselling legal hemp-derived THCA products. It provides a modern, responsive platform for product display, user authentication, shopping cart functionality, and admin management, aiming to be a specialized online retail destination for THCA products.
 
 ## Recent Changes
+- **August 2, 2025**: IMPLEMENTED DYNAMIC DISCOUNT POPUP SYSTEM - Created attention-grabbing price slash animations with rotating discount offers (FLASH25, WELCOME30, BULK20, WEEKEND35). Features animated price crossing, countdown timers, sparkle effects, and cart integration showing savings. Popups appear after 15 seconds with 30-minute cooldown.
+- **August 2, 2025**: CREATED PERFECTLY BALANCED 80-PRODUCT CATALOG - 10 strains each available as flower (5 size variants) and pre-rolls (4 size variants), plus 30 concentrates, 10 edibles, 10 accessories, 10 topicals. All authentic dispensary weights from 0.5g-28g with proper strain-specific images and variant selection system.
 - **August 2, 2025**: UPDATED TO AUTHENTIC CANNABIS INDUSTRY WEIGHTS - Pre-rolls now use standard sizes (1.1g, 1.25g, 1.45g, 1.5g) and flower uses traditional dispensary weights (1g, 3.5g eighth, 7g quarter, 14g half, 28g oz). Generated 1,577+ new products with proper industry sizing in 5 minutes.
 - **August 2, 2025**: Implemented Industry Expert Product Catalog with authentic cannabis market sizing and pricing. Created comprehensive product range including 0.5g-2g pre-rolls, 3.5g-28g flower, concentrates, and edibles with real dispensary pricing ($6-320 range). System generating thousands of products with industry-standard weights and authentic strain genetics.
 - **August 2, 2025**: Deployed massive inventory generation system capable of creating 100,000+ products across multiple categories. Successfully generated and stored thousands of products with proper weight formatting, strain types, and market-appropriate pricing tiers.
@@ -45,6 +47,7 @@ The application uses a monorepo structure with clear separation of client, serve
 - **Referral System**: Unique code generation, database validation, and tracking.
 - **Viral Marketing System**: Complete viral content arsenal with 20+ pieces across TikTok, Instagram, Reddit, Twitter with automated deployment and psychological triggers for guaranteed viral spread.
 - **AI-Enhanced SEO System**: Groq-powered metadata generation, intelligent internal link pyramids, schema markup automation, and comprehensive SEO health analysis with pyramid structure optimization.
+- **Dynamic Discount System**: Attention-grabbing popups with animated price slashes, countdown timers, rotating offers (20-35% off), cart integration, and persistent discount banners with codes FLASH25, WELCOME30, BULK20, WEEKEND35.
 
 ### Data Flow
 - **Client-Server Communication**: TanStack Query for API requests, JWT validation, Drizzle ORM for database operations, JSON responses.
