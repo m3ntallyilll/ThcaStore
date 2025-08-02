@@ -12,6 +12,8 @@ interface BulkProductRequest {
   thcRange: { min: number; max: number };
   includeDeals?: boolean;
   includePackages?: boolean;
+  preRollWeight?: '1.1g' | '1.25g' | '1.45g';
+  isInfused?: boolean;
 }
 
 interface StrainTemplate {
@@ -109,59 +111,33 @@ export class BulkProductGenerator {
       throw new Error('Groq AI service not configured.');
     }
 
-    const prompt = `Generate detailed product information for a premium THCA ${request.productType} product featuring the "${strainName}" strain.
+    const weight = request.preRollWeight || '1.1g';
+    const isInfused = request.isInfused || false;
+    const productTypeName = isInfused ? 'infused pre-roll' : request.productType;
 
-Product Type: ${request.productType}
-Strain: ${strainName}
-Strain Type: ${request.strainType}
-Price Range: $${request.priceRange.min}-${request.priceRange.max}
-THC Range: ${request.thcRange.min}%-${request.thcRange.max}%
+    const prompt = `Create premium THCA ${productTypeName} for ${strainName} strain.
 
-Create authentic, compelling product details that highlight the unique characteristics of ${strainName}. Include:
-- Accurate strain genetics and lineage
-- Realistic effects and benefits
-- Terpene profile and flavor notes
-- Professional product description
-- Quality indicators and testing info
-- Compliance and safety information
+Product: ${weight} ${productTypeName}${isInfused ? ' (THC-A infused)' : ''}
+Strain: ${strainName} (${request.strainType})
+Price: $${request.priceRange.min}-${request.priceRange.max}
+THC: ${request.thcRange.min}-${request.thcRange.max}%
 
-Return ONLY a JSON object with this structure:
+Return JSON:
 {
-  "name": "Product name with strain and type",
-  "strain": "${strainName}",
-  "category": "pre-rolls" or "flower",
-  "description": "Detailed product description (200-300 words)",
-  "price": "Price in dollars (number)",
-  "thcContent": "THC percentage (number between ${request.thcRange.min}-${request.thcRange.max})",
-  "strainType": "${request.strainType}",
-  "effects": ["effect1", "effect2", "effect3", "effect4"],
-  "flavors": ["flavor1", "flavor2", "flavor3"],
-  "terpenes": ["terpene1", "terpene2", "terpene3"],
-  "genetics": "Parent strain information",
-  "difficulty": "beginner, intermediate, or advanced",
-  "features": ["feature1", "feature2", "feature3", "feature4"],
-  "labTestResults": {
-    "thc": "THC percentage",
-    "cbd": "CBD percentage (0.1-2.0)",
-    "totalCannabinoids": "Total cannabinoid percentage",
-    "terpenes": "Total terpene percentage"
-  }
-}
-
-Important guidelines:
-- Use realistic pricing within the specified range
-- Include accurate strain genetics and effects
-- Mention Farm Bill 2018 compliance
-- Include 21+ age requirements
-- Focus on quality and authenticity
-- Use professional cannabis industry language`;
+  "name": "Short product name",
+  "description": "Brief description (50 words max)",
+  "price": ${request.priceRange.min + Math.floor(Math.random() * (request.priceRange.max - request.priceRange.min))},
+  "thcContent": ${request.thcRange.min + Math.floor(Math.random() * (request.thcRange.max - request.thcRange.min))},
+  "effects": ["${this.getDefaultEffects(request.strainType).slice(0, 3).join('", "')}"],
+  "flavors": ["${this.getDefaultFlavors(strainName).slice(0, 2).join('", "')}"]
+}`;
 
     const response = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile", // the newest model is "llama-3.3-70b-versatile" which was released December 2024
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
-      temperature: 0.8,
-      max_tokens: 2000
+      temperature: 0.7,
+      max_tokens: 500
     });
 
     const content = response.choices[0].message.content || '{}';
@@ -169,16 +145,20 @@ Important guidelines:
 
     // Calculate quantities based on product type
     const quantity = this.calculateQuantity(request.productType, request.strainType);
-    const weight = this.calculateWeight(request.productType);
+    const productWeight = this.calculateWeight(request.productType, request.preRollWeight);
+
+    const productName = request.isInfused ? 
+      `${productWeight} ${strainName} Infused Pre-Roll` : 
+      `${productWeight} ${strainName} ${request.productType}`;
 
     const product: InsertProduct = {
-      name: parsed.name || `${strainName} ${request.productType}`,
-      description: parsed.description || `Premium ${strainName} ${request.productType}`,
+      name: parsed.name || productName,
+      description: parsed.description || `Premium ${productWeight} ${strainName} ${request.isInfused ? 'infused ' : ''}${request.productType}`,
       price: (parsed.price || this.randomPriceInRange(request.priceRange)).toString(),
       category: request.productType === 'pre-roll' ? 'pre-rolls' : 'flower',
       imageUrl: '', // Will be added later by user
       stock: quantity,
-      weight: weight,
+      weight: productWeight,
       featured: Math.random() < 0.1, // 10% chance of being featured
       rating: '4.5',
       thcaContent: `${parsed.thcContent || this.randomInRange(request.thcRange.min, request.thcRange.max)}%`,
@@ -204,9 +184,9 @@ Important guidelines:
     }
   }
 
-  private calculateWeight(productType: string): string {
+  private calculateWeight(productType: string, preRollWeight?: string): string {
     if (productType === 'pre-roll') {
-      return '1g';
+      return preRollWeight || '1.1g';
     } else {
       const weights = ['1g', '3.5g', '7g', '14g', '28g'];
       return weights[Math.floor(Math.random() * weights.length)];

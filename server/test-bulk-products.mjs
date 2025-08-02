@@ -1,4 +1,4 @@
-import { bulkProductGenerator } from './bulk-product-generator.js';
+import { bulkProductGenerator } from './bulk-product-generator.ts';
 
 // Test the bulk product generation system
 async function testBulkProducts() {
