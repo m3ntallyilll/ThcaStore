@@ -28,6 +28,158 @@ import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET || "thca-store-secret-key-2025";
 
+// AI Recommendation Helper Functions
+function generatePersonalizedRecommendations(products: any[], viewedIds: string[], preferences: any) {
+  const recommended = products
+    .filter(p => !viewedIds.includes(p.id))
+    .filter(p => preferences.categories?.includes(p.category) || true)
+    .sort((a, b) => {
+      const aScore = (a.effects || []).filter((e: string) => preferences.effects?.includes(e)).length;
+      const bScore = (b.effects || []).filter((e: string) => preferences.effects?.includes(e)).length;
+      return bScore - aScore;
+    })
+    .slice(0, 8);
+  
+  return recommended;
+}
+
+function generateTrendingRecommendations(products: any[]) {
+  return products
+    .filter(p => p.rating && parseFloat(p.rating) >= 4.0)
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 8);
+}
+
+function generateSimilarRecommendations(products: any[], currentId?: string, viewedIds: string[] = []) {
+  if (!currentId) {
+    return products
+      .filter(p => !viewedIds.includes(p.id))
+      .slice(0, 8);
+  }
+  
+  const currentProduct = products.find(p => p.id === currentId);
+  if (!currentProduct) return [];
+  
+  return products
+    .filter(p => p.id !== currentId && !viewedIds.includes(p.id))
+    .filter(p => p.category === currentProduct.category)
+    .sort((a, b) => {
+      const aEffectMatch = (a.effects || []).filter((e: string) => 
+        (currentProduct.effects || []).includes(e)
+      ).length;
+      const bEffectMatch = (b.effects || []).filter((e: string) => 
+        (currentProduct.effects || []).includes(e)
+      ).length;
+      return bEffectMatch - aEffectMatch;
+    })
+    .slice(0, 8);
+}
+
+function generateComplementaryRecommendations(products: any[], cartIds: string[] = []) {
+  if (!cartIds.length) return [];
+  
+  const cartProducts = products.filter(p => cartIds.includes(p.id));
+  const cartCategories = [...new Set(cartProducts.map(p => p.category))];
+  
+  const complementCategories = ['flower', 'prerolls', 'concentrates', 'edibles']
+    .filter(cat => !cartCategories.includes(cat));
+  
+  return products
+    .filter(p => !cartIds.includes(p.id))
+    .filter(p => complementCategories.includes(p.category))
+    .slice(0, 8);
+}
+
+function generatePromoCode() {
+  const prefixes = ['HEMP', 'SAVE', 'DEAL', 'FIRE', 'CHILL'];
+  const suffix = Math.random().toString(36).substr(2, 4).toUpperCase();
+  return prefixes[Math.floor(Math.random() * prefixes.length)] + suffix;
+}
+
+function generateBalancedCatalog() {
+  const strains = {
+    indica: ['Purple Punch', 'Granddaddy Purple', 'Northern Lights', 'Bubba Kush', 'Afghan Kush'],
+    sativa: ['Green Crack', 'Sour Diesel', 'Jack Herer', 'Durban Poison', 'Maui Wowie'],
+    hybrid: ['Blue Dream', 'Girl Scout Cookies', 'Wedding Cake', 'Gelato', 'White Widow']
+  };
+  
+  const weights = {
+    flower: ['1g', '3.5g', '7g', '14g', '28g'],
+    prerolls: ['1.1g', '1.25g', '1.45g', '1.5g'],
+    concentrates: ['0.5g', '1g', '2g'],
+    edibles: ['100mg', '250mg', '500mg', '1000mg']
+  };
+  
+  const baseImages = [
+    'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400',
+    'https://images.unsplash.com/photo-1583912086096-8c60d75a53d0?w=400',
+    'https://images.unsplash.com/photo-1605185020656-ac2c5a9eff9d?w=400'
+  ];
+  
+  const effects = ['relaxing', 'energizing', 'creative', 'focused', 'euphoric', 'calming'];
+  
+  const products = [];
+  
+  Object.entries(strains).forEach(([strainType, strainNames]) => {
+    strainNames.forEach((strainName, strainIndex) => {
+      Object.entries(weights).forEach(([category, weightList]) => {
+        weightList.forEach((weight, weightIndex) => {
+          const basePrices = {
+            flower: { '1g': 15, '3.5g': 45, '7g': 85, '14g': 160, '28g': 300 },
+            prerolls: { '1.1g': 12, '1.25g': 14, '1.45g': 16, '1.5g': 18 },
+            concentrates: { '0.5g': 35, '1g': 65, '2g': 120 },
+            edibles: { '100mg': 20, '250mg': 35, '500mg': 65, '1000mg': 120 }
+          };
+          
+          const basePrice = basePrices[category as keyof typeof basePrices][weight as keyof typeof basePrices[typeof category]];
+          const priceVariation = 1 + (Math.random() - 0.5) * 0.4;
+          const finalPrice = Math.round(basePrice * priceVariation);
+          
+          const thcaContent = Math.round(15 + Math.random() * 20);
+          const rating = (4.0 + Math.random() * 1.0).toFixed(1);
+          
+          const variants = weightList.map((w, i) => ({
+            id: `variant-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            weight: w,
+            price: Math.round(basePrices[category as keyof typeof basePrices][w as keyof typeof basePrices[typeof category]] * priceVariation),
+            stock: Math.floor(20 + Math.random() * 80),
+            isDefault: i === weightIndex
+          }));
+          
+          const priceRange = {
+            min: Math.min(...variants.map(v => v.price)),
+            max: Math.max(...variants.map(v => v.price))
+          };
+          
+          products.push({
+            name: `${strainName} ${category === 'flower' ? 'Flower' : category === 'prerolls' ? 'Pre-Roll' : category === 'concentrates' ? 'Concentrate' : 'Edibles'}`,
+            description: `Premium ${strainType} ${category} with ${thcaContent}% THCA. Perfect for ${effects[Math.floor(Math.random() * effects.length)]} and ${effects[Math.floor(Math.random() * effects.length)]} effects.`,
+            price: finalPrice.toString(),
+            category,
+            subcategory: strainType,
+            imageUrl: baseImages[strainIndex % baseImages.length],
+            stock: Math.floor(50 + Math.random() * 150),
+            weight,
+            thcaContent: `${thcaContent}%`,
+            potency: thcaContent >= 25 ? 'High' : thcaContent >= 18 ? 'Medium' : 'Low',
+            rating,
+            effects: [effects[Math.floor(Math.random() * effects.length)], effects[Math.floor(Math.random() * effects.length)]],
+            variants,
+            priceRange,
+            featured: Math.random() > 0.8,
+            labTested: true,
+            organic: Math.random() > 0.5,
+            strainType,
+            harvestDate: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+          });
+        });
+      });
+    });
+  });
+  
+  return products;
+}
+
 // Middleware to verify JWT token
 const authenticateToken = async (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
@@ -322,6 +474,213 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
     } catch (error: any) {
       console.error('Bulk update error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // AI Recommendations API
+  app.post("/api/ai/recommendations", async (req, res) => {
+    try {
+      const { userId, currentProductId, viewedProductIds = [], cartProductIds = [], preferences = {} } = req.body;
+      
+      console.log('🤖 Generating AI recommendations for user:', userId);
+      
+      // Get all products for recommendation engine
+      const allProducts = await storage.getProducts();
+      
+      // AI-powered recommendation logic
+      const recommendationCategories = [
+        {
+          title: "Perfect for You",
+          description: "Hand-picked based on your browsing patterns",
+          icon: "❤️",
+          reason: "Based on your preferences",
+          products: generatePersonalizedRecommendations(allProducts, viewedProductIds, preferences)
+        },
+        {
+          title: "Trending Now",
+          description: "Popular products customers are loving",
+          icon: "🔥",
+          reason: "High demand this week",
+          products: generateTrendingRecommendations(allProducts)
+        },
+        {
+          title: "Similar Products",
+          description: "More like what you've been viewing",
+          icon: "🎯",
+          reason: "Similar to your interests",
+          products: generateSimilarRecommendations(allProducts, currentProductId, viewedProductIds)
+        },
+        {
+          title: "Complete Your Collection",
+          description: "Great additions to your cart",
+          icon: "✨",
+          reason: "Complements your selection",
+          products: generateComplementaryRecommendations(allProducts, cartProductIds)
+        }
+      ].filter(category => category.products.length > 0);
+
+      res.json({ categories: recommendationCategories });
+      
+    } catch (error: any) {
+      console.error('AI recommendations error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Track user interactions for AI learning
+  app.post("/api/ai/track-interaction", async (req, res) => {
+    try {
+      const { userId, action, productId, metadata = {} } = req.body;
+      
+      // Store interaction for AI learning (would integrate with AI service)
+      console.log('📊 Tracked interaction:', { userId, action, productId, metadata });
+      
+      // In a real implementation, this would:
+      // 1. Store interaction in AI memory database
+      // 2. Update user preference models
+      // 3. Improve future recommendations
+      
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Generate balanced product catalog
+  app.post("/api/admin/generate-balanced-catalog", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      console.log('🎯 Generating balanced product catalog...');
+      
+      const balancedProducts = generateBalancedCatalog();
+      
+      // Create products in batches
+      let createdCount = 0;
+      for (const productData of balancedProducts) {
+        try {
+          await storage.createProduct(productData);
+          createdCount++;
+        } catch (error) {
+          console.error(`Failed to create product: ${productData.name}`);
+        }
+      }
+      
+      console.log(`✅ Created ${createdCount} balanced products`);
+      res.json({ 
+        success: true, 
+        createdCount,
+        message: `Successfully created ${createdCount} balanced products covering all strains, weights, and price ranges`
+      });
+      
+    } catch (error: any) {
+      console.error('Balanced catalog generation error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Promo code generation and management
+  app.post("/api/admin/promo-codes", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { 
+        code, 
+        discountType, 
+        discountValue, 
+        minPurchase = 0, 
+        maxUses = null,
+        expiresAt,
+        applicableCategories = [],
+        description 
+      } = req.body;
+      
+      // Generate unique code if not provided
+      const promoCode = code || generatePromoCode();
+      
+      const newPromo = await storage.createPromoCode({
+        code: promoCode.toUpperCase(),
+        discountType, // 'percentage' | 'fixed' | 'free_shipping'
+        discountValue: parseFloat(discountValue),
+        minPurchase: parseFloat(minPurchase),
+        maxUses: maxUses ? parseInt(maxUses) : null,
+        currentUses: 0,
+        isActive: true,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        applicableCategories,
+        description: description || `${discountValue}${discountType === 'percentage' ? '%' : '$'} off`,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      
+      res.json(newPromo);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/promo-codes", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const promoCodes = await storage.getPromoCodes();
+      res.json(promoCodes);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/promo-codes/validate", async (req, res) => {
+    try {
+      const { code, cartTotal, categories = [] } = req.body;
+      
+      const promoCode = await storage.getPromoCodeByCode(code.toUpperCase());
+      
+      if (!promoCode) {
+        return res.status(404).json({ message: "Invalid promo code" });
+      }
+      
+      if (!promoCode.isActive) {
+        return res.status(400).json({ message: "Promo code is inactive" });
+      }
+      
+      if (promoCode.expiresAt && new Date() > promoCode.expiresAt) {
+        return res.status(400).json({ message: "Promo code has expired" });
+      }
+      
+      if (promoCode.maxUses && promoCode.currentUses >= promoCode.maxUses) {
+        return res.status(400).json({ message: "Promo code usage limit reached" });
+      }
+      
+      if (cartTotal < promoCode.minPurchase) {
+        return res.status(400).json({ 
+          message: `Minimum purchase of $${promoCode.minPurchase} required` 
+        });
+      }
+      
+      // Check category restrictions
+      if (promoCode.applicableCategories.length > 0) {
+        const hasApplicableItems = categories.some(cat => 
+          promoCode.applicableCategories.includes(cat)
+        );
+        if (!hasApplicableItems) {
+          return res.status(400).json({ 
+            message: "Promo code not applicable to items in your cart" 
+          });
+        }
+      }
+      
+      // Calculate discount
+      let discountAmount = 0;
+      if (promoCode.discountType === 'percentage') {
+        discountAmount = (cartTotal * promoCode.discountValue) / 100;
+      } else if (promoCode.discountType === 'fixed') {
+        discountAmount = Math.min(promoCode.discountValue, cartTotal);
+      }
+      
+      res.json({
+        valid: true,
+        discountAmount,
+        discountType: promoCode.discountType,
+        description: promoCode.description
+      });
+      
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
@@ -2537,6 +2896,77 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       age_restriction: '21+',
       last_updated: new Date().toISOString()
     });
+  });
+
+  // Promo Codes Admin Routes
+  app.get('/api/admin/promo-codes', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const promoCodes = await storage.getPromoCodes();
+      res.json(promoCodes);
+    } catch (error) {
+      console.error('Error fetching promo codes:', error);
+      res.status(500).json({ error: 'Failed to fetch promo codes' });
+    }
+  });
+
+  app.post('/api/admin/promo-codes', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { code, discountType, discountValue, minPurchase, maxUses, expiresAt, applicableCategories, description } = req.body;
+      
+      // Generate code if not provided
+      const promoCode = code || generatePromoCode();
+      
+      const newPromoCode = await storage.createPromoCode({
+        code: promoCode.toUpperCase(),
+        discountType,
+        discountValue: discountValue.toString(),
+        minPurchase: minPurchase?.toString() || '0.00',
+        maxUses,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        applicableCategories: applicableCategories || [],
+        description: description || ''
+      });
+      
+      res.status(201).json(newPromoCode);
+    } catch (error) {
+      console.error('Error creating promo code:', error);
+      res.status(500).json({ error: 'Failed to create promo code' });
+    }
+  });
+
+  // Promo Code Validation Route
+  app.post('/api/promo-codes/validate', async (req: Request, res: Response) => {
+    try {
+      const { code, orderTotal } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ message: 'Promo code is required' });
+      }
+
+      const promoCode = await storage.validatePromoCode(code.toUpperCase(), parseFloat(orderTotal || '0'));
+      
+      if (!promoCode) {
+        return res.status(400).json({ message: 'Invalid or expired promo code' });
+      }
+
+      // Calculate discount
+      let discount = 0;
+      if (promoCode.discountType === 'percentage') {
+        discount = parseFloat(promoCode.discountValue);
+      } else {
+        discount = parseFloat(promoCode.discountValue);
+      }
+
+      res.json({
+        code: promoCode.code,
+        type: promoCode.discountType,
+        discount: discount,
+        description: promoCode.description
+      });
+    } catch (error) {
+      console.error('Error validating promo code:', error);
+      res.status(500).json({ message: 'Failed to validate promo code' });
+    }
   });
 
   // Set up global storage for seed functions

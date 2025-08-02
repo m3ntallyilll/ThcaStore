@@ -73,6 +73,13 @@ export interface IStorage {
   // Blog System
   getBlogPosts(): Promise<any[]>;
   getPublishedBlogPosts(): Promise<any[]>;
+
+  // Promo Code System
+  getPromoCodes(): Promise<any[]>;
+  getPromoCodeByCode(code: string): Promise<any>;
+  createPromoCode(promoCode: any): Promise<any>;
+  updatePromoCodeUsage(code: string): Promise<any>;
+  validatePromoCode(code: string, orderTotal: number): Promise<any>;
   getBlogsByCategory(category: string): Promise<any[]>;
   getBlogPost(id: string): Promise<any>;
   getBlogPostBySlug(slug: string): Promise<any>;
@@ -114,6 +121,7 @@ export class MemStorage implements IStorage {
   private blogPosts: Map<string, any>;
   private shippingRates: Map<string, any>;
   private dailyPromotions: Map<string, any>;
+  private promoCodes: Map<string, any>;
 
   constructor() {
     this.users = new Map();
@@ -129,6 +137,7 @@ export class MemStorage implements IStorage {
     this.blogPosts = new Map();
     this.shippingRates = new Map();
     this.dailyPromotions = new Map();
+    this.promoCodes = new Map();
     
     // Initialize with sample data
     this.initializeSampleData();

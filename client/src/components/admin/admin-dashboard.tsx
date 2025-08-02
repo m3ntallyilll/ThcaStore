@@ -34,6 +34,7 @@ import AIDealsGenerator from './ai-deals-generator';
 import { AISEOManager } from './ai-seo-manager';
 import BulkProductGenerator from './bulk-product-generator';
 import { ProductVariantManager } from './product-variant-manager';
+import { PromoCodeManager } from './promo-code-manager';
 
 interface OrderWithDetails {
   id: string;
@@ -508,6 +509,16 @@ export function AdminDashboard() {
                   AI SEO Enhancement
                 </Button>
               </li>
+              <li>
+                <Button
+                  variant={activeSection === 'promo-codes' ? 'secondary' : 'ghost'}
+                  className="w-full justify-start"
+                  onClick={() => setActiveSection('promo-codes')}
+                >
+                  <DollarSign className="w-4 h-4 mr-3" />
+                  Promo Codes
+                </Button>
+              </li>
             </ul>
           </nav>
         </div>
@@ -523,6 +534,7 @@ export function AdminDashboard() {
               {activeSection === 'blog' && 'Blog Management'}
               {activeSection === 'ai-deals' && 'AI Deals Generator'}
               {activeSection === 'ai-seo' && 'AI SEO Enhancement Center'}
+              {activeSection === 'promo-codes' && 'Promo Code Manager'}
             </h1>
           </div>
 
@@ -1007,6 +1019,7 @@ export function AdminDashboard() {
 
           {/* AI SEO Enhancement Section */}
           {activeSection === 'ai-seo' && <AISEOManager />}
+          {activeSection === 'promo-codes' && <PromoCodeManager />}
         </div>
       </div>
 

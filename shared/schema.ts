@@ -661,3 +661,33 @@ export interface AuthUser {
   };
   referralCode?: string;
 }
+
+// Promo Code System
+export const promoCodes = pgTable("promo_codes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: text("code").notNull().unique(),
+  discountType: text("discount_type").notNull(), // 'percentage' | 'fixed' | 'free_shipping'
+  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
+  minPurchase: decimal("min_purchase", { precision: 10, scale: 2 }).default("0.00"),
+  maxUses: integer("max_uses"), // null = unlimited
+  currentUses: integer("current_uses").default(0),
+  isActive: boolean("is_active").default(true),
+  expiresAt: timestamp("expires_at"),
+  applicableCategories: jsonb("applicable_categories").$type<string[]>().default([]),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertPromoCodeSchema = createInsertSchema(promoCodes);
+export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
+export type PromoCode = typeof promoCodes.$inferSelect;
+
+// Product variant interface for enhanced product management
+export interface ProductVariant {
+  id: string;
+  weight: string;
+  price: number;
+  stock: number;
+  isDefault?: boolean;
+}

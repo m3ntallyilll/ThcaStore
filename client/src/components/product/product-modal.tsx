@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/components/ui/toast-provider';
+import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@shared/schema';
+import { AIProductRecommendations } from '@/components/recommendations/ai-product-recommendations';
 
 interface ProductModalProps {
   product: Product | null;
@@ -17,23 +18,34 @@ interface ProductModalProps {
 export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   if (!product) return null;
 
   const handleAddToCart = async () => {
-    if (!isAuthenticated) {
-      toast('Please login to add items to cart', 'warning');
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to add items to cart",
+        variant: "destructive"
+      });
       return;
     }
 
     try {
       await addToCart(product.id, quantity);
-      toast(`Added ${quantity} ${product.name} to cart!`, 'success');
+      toast({
+        title: "Added to cart",
+        description: `Added ${quantity} ${product.name} to cart!`
+      });
       onClose();
     } catch (error) {
-      toast('Failed to add product to cart', 'error');
+      toast({
+        title: "Error",
+        description: "Failed to add product to cart",
+        variant: "destructive"
+      });
     }
   };
 
@@ -66,7 +78,7 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="glass-dark rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            className="glass-dark rounded-2xl max-w-6xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
@@ -169,6 +181,16 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                   {product.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}
                 </Button>
               </div>
+            </div>
+
+            {/* AI Recommendations Section */}
+            <div className="px-8 pb-8">
+              <AIProductRecommendations 
+                currentProductId={product.id}
+                category={product.category}
+                userPreferences={product.effects || []}
+                className="mt-6"
+              />
             </div>
 
             {/* Close Button */}

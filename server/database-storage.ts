@@ -46,7 +46,9 @@ import type {
   LoyaltyStreak,
   InsertLoyaltyStreak,
   LoyaltyLeaderboard,
-  InsertLoyaltyLeaderboard
+  InsertLoyaltyLeaderboard,
+  PromoCode,
+  InsertPromoCode
 } from '@shared/schema';
 import { 
   users, 
@@ -73,6 +75,7 @@ import {
   dailyChallenges,
   userChallenges,
   loyaltyStreaks,
+  promoCodes,
   loyaltyLeaderboard
 } from '@shared/schema';
 
@@ -1561,6 +1564,58 @@ export class DatabaseStorage {
         longestStreak
       });
     }
+  }
+
+  // Promo Code System Methods
+  async getPromoCodes(): Promise<PromoCode[]> {
+    return await db.select().from(promoCodes).orderBy(desc(promoCodes.createdAt));
+  }
+
+  async getPromoCodeByCode(code: string): Promise<PromoCode | undefined> {
+    const result = await db.select().from(promoCodes).where(eq(promoCodes.code, code.toUpperCase())).limit(1);
+    return result[0];
+  }
+
+  async createPromoCode(promoCode: InsertPromoCode): Promise<PromoCode> {
+    const result = await db.insert(promoCodes).values(promoCode).returning();
+    return result[0];
+  }
+
+  async updatePromoCodeUsage(code: string): Promise<PromoCode | undefined> {
+    const result = await db.update(promoCodes)
+      .set({ 
+        currentUses: sql`${promoCodes.currentUses} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(promoCodes.code, code.toUpperCase()))
+      .returning();
+    return result[0];
+  }
+
+  async validatePromoCode(code: string, orderTotal: number): Promise<PromoCode | null> {
+    const promoCode = await this.getPromoCodeByCode(code);
+    
+    if (!promoCode) {
+      return null;
+    }
+
+    // Check if expired
+    if (promoCode.expiresAt && promoCode.expiresAt < new Date()) {
+      return null;
+    }
+
+    // Check usage limit
+    if (promoCode.maxUses && promoCode.currentUses >= promoCode.maxUses) {
+      return null;
+    }
+
+    // Check minimum purchase requirement
+    const minPurchase = parseFloat(promoCode.minPurchase || '0');
+    if (orderTotal < minPurchase) {
+      return null;
+    }
+
+    return promoCode;
   }
 
 

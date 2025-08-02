@@ -52,6 +52,10 @@ const CheckoutForm = ({
   const [selectedShipping, setSelectedShipping] = useState<string>('standard');
   const [availableStates, setAvailableStates] = useState<Array<{code: string, name: string}>>([]);
   const [stateError, setStateError] = useState<string>('');
+  const [promoCode, setPromoCode] = useState<string>('');
+  const [appliedPromo, setAppliedPromo] = useState<{code: string, discount: number, type: string} | null>(null);
+  const [promoError, setPromoError] = useState<string>('');
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({
     name: '',
     email: '',
@@ -68,7 +72,7 @@ const CheckoutForm = ({
   useEffect(() => {
     const loadStates = async () => {
       try {
-        const response = await apiRequest('GET', '/api/shipping/states');
+        const response = await apiRequest('/api/shipping/states');
         if (response.ok) {
           const data = await response.json();
           setAvailableStates(data);
@@ -86,8 +90,9 @@ const CheckoutForm = ({
     setStateError('');
     
     try {
-      const response = await apiRequest('POST', '/api/shipping/validate-state', {
-        state: stateCode
+      const response = await apiRequest('/api/shipping/validate-state', {
+        method: 'POST',
+        body: { state: stateCode }
       });
       
       if (!response.ok) {
@@ -110,10 +115,13 @@ const CheckoutForm = ({
   const calculateShipping = async (method: string) => {
     try {
       const totalWeight = items.reduce((sum, item) => sum + (parseFloat((item.product as any).weight || '0.1') * item.quantity), 0);
-      const response = await apiRequest('POST', '/api/shipping/calculate', {
-        method,
-        weight: totalWeight,
-        subtotal: total
+      const response = await apiRequest('/api/shipping/calculate', {
+        method: 'POST',
+        body: {
+          method,
+          weight: totalWeight,
+          subtotal: total
+        }
       });
 
       if (response.ok) {
@@ -140,8 +148,9 @@ const CheckoutForm = ({
 
     // Validate shipping address state
     try {
-      const stateResponse = await apiRequest('POST', '/api/shipping/validate-state', {
-        state: shippingAddress.state
+      const stateResponse = await apiRequest('/api/shipping/validate-state', {
+        method: 'POST',
+        body: { state: shippingAddress.state }
       });
 
       if (!stateResponse.ok) {
@@ -378,7 +387,7 @@ export default function Checkout() {
 
   useEffect(() => {
     // Fetch shipping rates
-    apiRequest('GET', '/api/shipping/rates')
+    apiRequest('/api/shipping/rates')
       .then((res) => res.json())
       .then((data) => {
         setShippingRates(data);
@@ -388,10 +397,13 @@ export default function Checkout() {
     // Create PaymentIntent
     const createPaymentIntent = async () => {
       try {
-        const response = await apiRequest("POST", "/api/create-payment-intent", { 
-          items,
-          subtotal: total,
-          shippingCost: shippingCost.cost
+        const response = await apiRequest("/api/create-payment-intent", { 
+          method: "POST",
+          body: {
+            items,
+            subtotal: total,
+            shippingCost: shippingCost.cost
+          }
         });
 
         if (response.ok) {
