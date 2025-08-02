@@ -5,15 +5,17 @@ import type { InsertProduct } from '@shared/schema';
 const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
 interface BulkProductRequest {
-  productType: 'pre-roll' | 'flower';
+  productType: 'pre-roll' | 'flower' | 'concentrate' | 'edible';
   strainType: 'indica' | 'sativa' | 'hybrid';
   count: number;
   priceRange: { min: number; max: number };
   thcRange: { min: number; max: number };
   includeDeals?: boolean;
   includePackages?: boolean;
-  preRollWeight?: '1.1g' | '1.25g' | '1.45g';
+  preRollWeight?: '1.1g' | '1.25g' | '1.45g' | '1.5g';
+  flowerWeight?: '1g' | '3.5g' | '7g' | '14g' | '28g';
   isInfused?: boolean;
+  category?: string;
 }
 
 interface StrainTemplate {
