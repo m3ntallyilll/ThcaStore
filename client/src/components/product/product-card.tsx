@@ -79,9 +79,12 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-4 left-4 flex flex-col gap-2">
           <Badge className={`${getCategoryColor(product.category)} text-sm font-semibold`}>
             {product.featured ? 'Premium' : product.category}
+          </Badge>
+          <Badge className="bg-white/90 text-black font-bold text-sm">
+            {product.weight}
           </Badge>
         </div>
         
@@ -105,13 +108,28 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
           {product.description}
         </p>
         
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <span className="text-2xl font-bold text-glow-green-400 glow-effect">
             ${product.price}
           </span>
           <div className="flex items-center text-glow-green-400">
             <Star className="w-4 h-4 fill-current mr-1" />
             <span className="text-sm">{product.rating}</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-center">
+            <p className="text-xs text-gray-400 uppercase tracking-wide">Weight</p>
+            <p className="text-lg font-bold text-glow-green-400">{product.weight}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-gray-400 uppercase tracking-wide">THCA</p>
+            <p className="text-lg font-bold text-glow-green-400">{product.thcaContent}</p>
+          </div>
+          <div className="text-center">
+            <p className="text-xs text-gray-400 uppercase tracking-wide">Type</p>
+            <p className="text-sm font-semibold text-white capitalize">{product.strainType}</p>
           </div>
         </div>
         

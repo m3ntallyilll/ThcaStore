@@ -25,10 +25,26 @@ import type { Product } from '@shared/schema';
 
 const categories = [
   { value: 'all', label: 'All Products' },
+  { value: 'pre-rolls', label: 'Pre-Rolls' },
   { value: 'flower', label: 'Flower' },
   { value: 'concentrates', label: 'Concentrates' },
   { value: 'edibles', label: 'Edibles' },
   { value: 'accessories', label: 'Accessories' },
+];
+
+const weightCategories = [
+  { value: 'all', label: 'All Weights' },
+  // Pre-roll weights
+  { value: '1.1g', label: '1.1g Pre-Roll' },
+  { value: '1.25g', label: '1.25g Pre-Roll' },
+  { value: '1.45g', label: '1.45g Pre-Roll' },
+  { value: '1.5g', label: '1.5g Pre-Roll' },
+  // Flower weights
+  { value: '1g', label: '1g Gram' },
+  { value: '3.5g', label: '3.5g Eighth' },
+  { value: '7g', label: '7g Quarter' },
+  { value: '14g', label: '14g Half' },
+  { value: '28g', label: '28g Ounce' },
 ];
 
 const sortOptions = [
@@ -41,6 +57,7 @@ const sortOptions = [
 
 export default function Products() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedWeight, setSelectedWeight] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -58,6 +75,11 @@ export default function Products() {
     .filter((product) => {
       // Category filter
       if (selectedCategory !== 'all' && product.category !== selectedCategory) {
+        return false;
+      }
+
+      // Weight filter
+      if (selectedWeight !== 'all' && product.weight !== selectedWeight) {
         return false;
       }
 
@@ -158,7 +180,7 @@ export default function Products() {
             {/* Filter Controls */}
             <div className="flex flex-wrap gap-3 items-center">
               {/* Category Filter */}
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 {categories.map((category) => (
                   <Button
                     key={category.value}
@@ -174,6 +196,20 @@ export default function Products() {
                   </Button>
                 ))}
               </div>
+
+              {/* Weight Filter */}
+              <Select value={selectedWeight} onValueChange={setSelectedWeight}>
+                <SelectTrigger className="w-[200px] glass border-white/20">
+                  <SelectValue placeholder="Filter by weight" />
+                </SelectTrigger>
+                <SelectContent className="glass-dark border-white/20">
+                  {weightCategories.map((weight) => (
+                    <SelectItem key={weight.value} value={weight.value}>
+                      {weight.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
               {/* Effects Filter */}
               {allEffects.length > 0 && (
@@ -248,7 +284,7 @@ export default function Products() {
           </div>
 
           {/* Active Filters */}
-          {(selectedCategory !== 'all' || selectedEffects.length > 0 || searchQuery) && (
+          {(selectedCategory !== 'all' || selectedWeight !== 'all' || selectedEffects.length > 0 || searchQuery) && (
             <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-white/10">
               <span className="text-sm text-gray-400">Active filters:</span>
               {selectedCategory !== 'all' && (
@@ -258,6 +294,15 @@ export default function Products() {
                   onClick={() => setSelectedCategory('all')}
                 >
                   {categories.find(c => c.value === selectedCategory)?.label} ×
+                </Badge>
+              )}
+              {selectedWeight !== 'all' && (
+                <Badge 
+                  variant="secondary" 
+                  className="bg-hemp/20 text-hemp hover:bg-hemp/30 cursor-pointer"
+                  onClick={() => setSelectedWeight('all')}
+                >
+                  {weightCategories.find(w => w.value === selectedWeight)?.label} ×
                 </Badge>
               )}
               {selectedEffects.map((effect) => (
