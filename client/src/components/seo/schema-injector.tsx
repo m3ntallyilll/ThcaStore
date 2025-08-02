@@ -161,7 +161,7 @@ function updateMetaTags(post: any) {
   updateOrCreateMeta('name', 'twitter:site', '@THCAStore');
 
   // Google Search Console verification
-  updateOrCreateMeta('name', 'google-site-verification', 'Roqq07dSQ0SdBL8CFIXwygO1hLvmuVyfMYHu9cb23ZQ');
+  updateOrCreateMeta('name', 'google-site-verification', 'AMabPToUKnvo-XeqjVfqUa2OAuE0sJjet1TEdrwSM7I');
 
   // Canonical URL
   updateOrCreateLink('canonical', `${window.location.origin}/blog/${post.slug}`);
