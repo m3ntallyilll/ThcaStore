@@ -25,23 +25,25 @@ export const useCart = create<CartState>((set, get) => ({
   isLoading: false,
 
   fetchCart: async () => {
-    const { token } = useAuth.getState();
-    if (!token) return;
+    const { user, token } = useAuth.getState();
+    if (!user || !token) {
+      set({ items: [] });
+      return;
+    }
 
     set({ isLoading: true });
     try {
-      const response = await fetch('/api/cart', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      const response = await apiRequest('/api/cart');
 
       if (response.ok) {
         const items = await response.json();
         set({ items });
+      } else {
+        set({ items: [] });
       }
     } catch (error) {
       console.error('Failed to fetch cart:', error);
+      set({ items: [] });
     } finally {
       set({ isLoading: false });
     }

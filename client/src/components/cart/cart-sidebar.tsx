@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/components/ui/toast-provider';
+import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { useLocation } from 'wouter';
 
@@ -20,7 +20,7 @@ export function CartSidebar() {
     getTotal,
     clearCart 
   } = useCart();
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
 
@@ -33,27 +33,46 @@ export function CartSidebar() {
     try {
       await updateQuantity(itemId, newQuantity);
     } catch (error) {
-      toast('Failed to update quantity', 'error');
+      toast({
+        title: "Error",
+        description: "Failed to update quantity",
+        variant: "destructive"
+      });
     }
   };
 
   const handleRemoveItem = async (itemId: string) => {
     try {
       await removeFromCart(itemId);
-      toast('Item removed from cart', 'info');
+      toast({
+        title: "Item removed",
+        description: "Item removed from cart"
+      });
     } catch (error) {
-      toast('Failed to remove item', 'error');
+      toast({
+        title: "Error", 
+        description: "Failed to remove item",
+        variant: "destructive"
+      });
     }
   };
 
   const handleCheckout = () => {
-    if (!isAuthenticated) {
-      toast('Please login to checkout', 'warning');
+    if (!user) {
+      toast({
+        title: "Login required",
+        description: "Please login to checkout",
+        variant: "destructive"
+      });
       return;
     }
 
     if (items.length === 0) {
-      toast('Your cart is empty', 'warning');
+      toast({
+        title: "Cart empty",
+        description: "Your cart is empty",
+        variant: "destructive"
+      });
       return;
     }
 
