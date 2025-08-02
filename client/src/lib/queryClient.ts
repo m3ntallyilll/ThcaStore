@@ -49,8 +49,8 @@ export async function apiRequest(
       // Only throw auth error, don't log to console
       throw new Error('Authentication required - please log in again');
     }
-    // Only log actual network/server errors, but not empty error objects
-    if (error && typeof error === 'object' && Object.keys(error).length > 0) {
+    // Only log significant errors, avoid spam
+    if (error && typeof error === 'object' && Object.keys(error).length > 0 && !error.message?.includes('Authentication')) {
       console.error('API Request Error:', error);
     }
     throw error;

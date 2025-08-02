@@ -38,16 +38,16 @@ export default function BlogPost() {
   });
 
   useEffect(() => {
-    if (post && !viewMutation.isSuccess && !viewMutation.isPending) {
+    if (post && postId) {
       const sessionKey = `blog_view_${postId}`;
       const hasViewed = sessionStorage.getItem(sessionKey);
       
-      if (!hasViewed) {
+      if (!hasViewed && !viewMutation.isSuccess && !viewMutation.isPending) {
         viewMutation.mutate();
         sessionStorage.setItem(sessionKey, 'true');
       }
     }
-  }, [post, postId]); // Remove viewMutation from dependencies to prevent loop
+  }, [post, postId]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

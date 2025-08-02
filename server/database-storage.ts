@@ -822,8 +822,13 @@ export class DatabaseStorage {
   }
 
   async getBlogPost(id: string): Promise<BlogPost | undefined> {
-    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
-    return post || undefined;
+    try {
+      const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
+      return post || undefined;
+    } catch (error) {
+      console.error('Error fetching blog post:', error);
+      return undefined;
+    }
   }
 
   async getBlogPostBySlug(slug: string): Promise<BlogPost | undefined> {
@@ -854,8 +859,13 @@ export class DatabaseStorage {
   }
 
   async getBlogCategories(): Promise<string[]> {
-    const result = await db.selectDistinct({ category: blogPosts.category }).from(blogPosts);
-    return result.map(r => r.category);
+    try {
+      const result = await db.selectDistinct({ category: blogPosts.category }).from(blogPosts);
+      return result.map(r => r.category);
+    } catch (error) {
+      console.error('Error fetching blog categories:', error);
+      return [];
+    }
   }
 
   async getBlogsByCategory(category: string): Promise<BlogPost[]> {

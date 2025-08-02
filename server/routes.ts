@@ -39,7 +39,7 @@ const authenticateToken = async (req: any, res: any, next: any) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
-    
+
     // Try to get user, but handle missing users gracefully
     let user;
     try {
@@ -48,11 +48,11 @@ const authenticateToken = async (req: any, res: any, next: any) => {
       console.error('User lookup error:', userError);
       return res.status(401).json({ message: 'User account not found' });
     }
-    
+
     if (!user) {
       return res.status(401).json({ message: 'User account no longer exists' });
     }
-    
+
     // Ensure the user object has all necessary properties
     req.user = { 
       ...user, 
@@ -343,21 +343,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Simple rate limiting for admin stats
   const statsRequestCache = new Map();
-  
+
   // Admin stats route
   app.get("/api/admin/stats", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const userId = req.user.id;
       const now = Date.now();
       const lastRequest = statsRequestCache.get(userId);
-      
+
       // Rate limit: 1 request per 5 seconds per user
       if (lastRequest && (now - lastRequest) < 5000) {
         return res.status(429).json({ message: 'Too many requests, please wait' });
       }
-      
+
       statsRequestCache.set(userId, now);
-      
+
       const products = await storage.getProducts();
       const orders = await storage.getOrders();
       // For now, we'll calculate from orders since we don't have direct user count method
@@ -448,23 +448,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let referralCode: string;
       let attempts = 0;
       const maxAttempts = 10;
-      
+
       do {
         // Create a more robust unique code: USER prefix + timestamp + random
         const userPrefix = req.user.username ? req.user.username.toUpperCase().slice(0, 3) : 'USR';
         const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
         const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
         referralCode = `${userPrefix}${timestamp}${randomPart}`;
-        
+
         // Check if code already exists
         const existingReferral = await storage.getReferralByCode(referralCode);
         if (!existingReferral) {
           break; // Code is unique, exit loop
         }
-        
+
         attempts++;
       } while (attempts < maxAttempts);
-      
+
       if (attempts >= maxAttempts) {
         return res.status(500).json({ message: "Unable to generate unique referral code. Please try again." });
       }
@@ -502,7 +502,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/referrals/validate", async (req, res) => {
     try {
       const { code } = req.body;
-      
+
       if (!code) {
         return res.status(400).json({ message: "Referral code is required" });
       }
@@ -537,7 +537,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/referrals/apply", authenticateToken, async (req: any, res) => {
     try {
       const { referralCode } = req.body;
-      
+
       if (!referralCode) {
         return res.status(400).json({ message: "Referral code is required" });
       }
@@ -667,7 +667,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { aiDealsService } = await import('./ai-deals-service');
       const deal = await aiDealsService.generatePersonalizedDeal(req.params.userId);
-      
+
       if (deal) {
         res.json(deal);
       } else {
@@ -808,20 +808,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Increment view count endpoint with rate limiting
   const viewTracker = new Map(); // Simple in-memory tracker
-  
+
   app.post("/api/blog/posts/:id/view", async (req, res) => {
     try {
       const postId = req.params.id;
       const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
       const trackingKey = `${clientIp}_${postId}`;
       const now = Date.now();
-      
+
       // Rate limit: Only allow one view per IP per post per 10 minutes
       const lastView = viewTracker.get(trackingKey);
       if (lastView && (now - lastView) < 600000) { // 10 minutes
         return res.json({ success: true, cached: true });
       }
-      
+
       const post = await storage.getBlogPost(postId);
       if (!post) {
         return res.status(404).json({ message: "Blog post not found" });
@@ -831,7 +831,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (post.status === 'published') {
         await storage.incrementBlogViewCount(post.id);
         viewTracker.set(trackingKey, now);
-        
+
         // Clean up old entries every 100 requests
         if (viewTracker.size > 1000) {
           for (const [key, timestamp] of viewTracker.entries()) {
@@ -894,7 +894,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.body) {
         return res.status(400).json({ message: "Request body is required" });
       }
-      
+
       if (typeof req.body === 'string') {
         try {
           req.body = JSON.parse(req.body);
@@ -902,13 +902,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(400).json({ message: "Invalid JSON in request body" });
         }
       }
-      
+
       if (typeof req.body !== 'object') {
         return res.status(400).json({ message: "Invalid request body format" });
       }
-      
+
       const { strategyId } = req.body;
-      
+
       // AI activation targeting actual inventory: 30 lbs flower + 15K pre-rolls
       const activationResults = {
         success: true,
@@ -1061,7 +1061,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai/generate-daily-deals", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const { targetRevenue, customerSegment, inventoryFocus } = req.body;
-      
+
       // Get current products for AI context
       const products = await storage.getProducts();
       const topProducts = products.slice(0, 10).map(p => ({
@@ -1153,7 +1153,7 @@ Format as JSON array with objects containing: dayOfWeek (0-6), title, descriptio
   app.post("/api/ai/generate-sales-strategy", async (req, res) => {
     try {
       const { targetRevenue, timeframe } = req.body;
-      
+
       // Generate AI strategy using Groq
       const aiPrompt = `Create a comprehensive THCA hemp sales strategy targeting $${targetRevenue} revenue in ${timeframe}.
 
@@ -1270,7 +1270,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const { promotionId, cartTotal, cartItems } = req.body;
       const [promotion] = await storage.getPromotionByDay(0); // This should be improved to get specific promotion
-      
+
       if (!promotion) {
         return res.status(404).json({ message: "Promotion not found" });
       }
@@ -1407,7 +1407,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       // Create blog post object for database
       const wordCount = Math.ceil(blogContent.content.length / 5);
       const readTime = Math.ceil(wordCount / 200);
-      
+
       const blogPost = {
         title: blogContent.title,
         slug: blogContent.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
@@ -1426,9 +1426,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       };
 
       const savedPost = await storage.createBlogPost(blogPost);
-      
+
       console.log(`✅ Complete blog post saved: ${wordCount} words`);
-      
+
       res.json({
         ...savedPost,
         message: "Complete blog post generated with multi-agent AI system",
@@ -1493,7 +1493,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       }
 
       console.log(`🚀 Starting bulk generation of ${count} blogs for user ${req.user.id}`);
-      
+
       // Generate blogs
       const blogs = await bulkBlogGenerator.generateBulkBlogs({
         count,
@@ -1506,10 +1506,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       // Save all blogs to database
       const savedResults = await bulkBlogGenerator.saveBulkBlogs(blogs);
-      
+
       const successCount = savedResults.filter(r => !r.error).length;
       const failCount = savedResults.filter(r => r.error).length;
-      
+
       res.json({
         success: true,
         message: `Bulk blog generation completed: ${successCount} successful, ${failCount} failed`,
@@ -1523,9 +1523,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           id: r.id || null
         }))
       });
-      
+
       console.log(`✅ Bulk generation complete: ${successCount}/${count} blogs saved successfully`);
-      
+
     } catch (error: any) {
       console.error('Bulk blog generation error:', error);
       res.status(500).json({ 
@@ -1543,7 +1543,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       const { targetKeywords } = req.body;
 
       const enhancedPost = await aiSEOService.enhanceBlogPostSEO(postId, targetKeywords);
-      
+
       res.json({
         success: true,
         message: 'Blog post SEO enhanced successfully',
@@ -1571,7 +1571,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       // Start background process
       aiSEOService.bulkEnhanceBlogSEO(postIds).catch(console.error);
-      
+
       res.json({
         success: true,
         message: `Started bulk SEO enhancement for ${postIds.length} posts`,
@@ -1589,7 +1589,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
       const strategy = await aiLinkPyramidService.buildIntelligentLinkPyramid();
-      
+
       res.json({
         success: true,
         message: 'Link pyramid strategy generated successfully',
@@ -1618,10 +1618,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
       const strategy = await aiLinkPyramidService.buildIntelligentLinkPyramid();
-      
+
       // Start background implementation
       aiLinkPyramidService.implementLinkPyramid(strategy).catch(console.error);
-      
+
       res.json({
         success: true,
         message: 'Link pyramid implementation started',
@@ -1642,7 +1642,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
       const healthReport = await aiLinkPyramidService.analyzePyramidHealth();
-      
+
       res.json({
         success: true,
         healthReport
@@ -1738,7 +1738,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.post("/api/shipping/validate-state", async (req, res) => {
     try {
       const { state } = req.body;
-      
+
       if (!state) {
         return res.status(400).json({ message: "State code is required" });
       }
@@ -1818,7 +1818,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const { promotionId } = req.body;
       const userId = req.user.id;
-      
+
       // Check if promotion exists and is valid for today
       const promotion = await storage.getDailyPromotion(promotionId);
       if (!promotion) {
@@ -1847,7 +1847,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.get("/api/returns", authenticateToken, async (req, res) => {
     try {
       const userId = req.user?.id;
-      
+
       // Mock return requests for now - in production, fetch from database
       const mockReturns = [
         {
@@ -1866,7 +1866,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           refundAmount: 45.00
         }
       ];
-      
+
       res.json(mockReturns);
     } catch (error: any) {
       console.error('Returns fetch error:', error);
@@ -1886,7 +1886,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       // In production, validate order exists, belongs to user, and has insurance
       // Mock insurance check - in production, check order.hasInsurance
       const orderHasInsurance = Math.random() > 0.3; // Mock 70% have insurance
-      
+
       if (!orderHasInsurance) {
         return res.status(400).json({ 
           message: "Returns are only available for orders with shipping insurance. This order was not insured and is not eligible for returns or refunds.",
@@ -1951,10 +1951,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const { processAdvancedSupportRequest } = await import("./support-ai");
       const supportResponse = processAdvancedSupportRequest(req.body);
-      
+
       // Log support interaction
       console.log(`[SUPPORT] User: ${req.body.userId || 'Anonymous'} | Category: ${supportResponse.category} | Priority: ${supportResponse.priority}`);
-      
+
       res.json(supportResponse);
     } catch (error: any) {
       console.error('Support AI error:', error);
@@ -1969,10 +1969,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.post("/api/support/feedback", async (req, res) => {
     try {
       const { messageId, satisfaction, ticketId } = req.body;
-      
+
       // Log feedback for improvement
       console.log(`[SUPPORT FEEDBACK] Message: ${messageId} | Satisfaction: ${satisfaction} | Ticket: ${ticketId}`);
-      
+
       // In a real app, this would save to database
       res.json({ success: true });
     } catch (error: any) {
@@ -2226,10 +2226,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.get('/crawler-welcome', (req, res) => {
     const userAgent = req.get('User-Agent') || '';
     const isBot = /bot|crawler|spider|scraper|crawling|facebookexternalhit|twitterbot|linkedinbot|googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|whatsapp/i.test(userAgent);
-    
+
     res.setHeader('X-Robots-Tag', 'index, follow, all');
     res.setHeader('Cache-Control', 'public, max-age=3600');
-    
+
     res.json({
       message: 'Welcome crawlers and bots!',
       site: 'mentally-chill.online',
@@ -2260,7 +2260,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
   // Set up global storage for seed functions
   (global as any).storage = storage;
-  
+
   const httpServer = createServer(app);
   return httpServer;
 }

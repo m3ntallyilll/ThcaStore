@@ -27,13 +27,21 @@ export default function Blog() {
   // Fetch published blog posts
   const { data: posts = [], isLoading, error } = useQuery({
     queryKey: ['/api/blog/posts'],
-    queryFn: () => apiRequest('/api/blog/posts').catch(() => [])
+    queryFn: () => apiRequest('/api/blog/posts').catch((err) => {
+      console.warn('Failed to load blog posts:', err.message);
+      return [];
+    }),
+    retry: 1
   });
 
   // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ['/api/blog/categories'],
-    queryFn: () => apiRequest('/api/blog/categories').catch(() => [])
+    queryFn: () => apiRequest('/api/blog/categories').catch((err) => {
+      console.warn('Failed to load blog categories:', err.message);
+      return [];
+    }),
+    retry: 1
   });
 
   // Filter posts based on search and category
