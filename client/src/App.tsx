@@ -57,6 +57,11 @@ import NotFound from "@/pages/not-found";
 // Hooks
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
+import { useDiscountPopup } from "@/hooks/use-discount-popup";
+
+// Discount Components  
+import { DiscountPopup } from "@/components/ui/discount-popup";
+import { FloatingDiscountBanner } from "@/components/ui/floating-discount-banner";
 
 function Router() {
   // Track page views when routes change
@@ -85,6 +90,7 @@ function AppContent() {
   const { checkAuth, user } = useAuth();
   const isAuthenticated = !!user;
   const { fetchCart } = useCart();
+  const { showPopup, currentDiscount, closePopup, applyDiscount, clearDiscount } = useDiscountPopup();
   const [location, setLocation] = useLocation();
 
   useEffect(() => {
@@ -130,6 +136,19 @@ function AppContent() {
       />
       <AISupport />
       <ToastProvider />
+      
+      {/* Discount Features */}
+      <DiscountPopup 
+        isOpen={showPopup}
+        onClose={closePopup}
+        onApplyDiscount={applyDiscount}
+      />
+      {currentDiscount && (
+        <FloatingDiscountBanner 
+          discount={currentDiscount}
+          onClear={clearDiscount}
+        />
+      )}
     </div>
   );
 }

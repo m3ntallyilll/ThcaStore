@@ -171,6 +171,50 @@ export function CartSidebar() {
               )}
             </div>
 
+            {/* Discount Section */}
+            {items.length > 0 && (
+              <div className="px-6 py-4 border-t border-gray-700">
+                {(() => {
+                  const discountCode = localStorage.getItem('activeDiscountCode');
+                  const discountPercent = localStorage.getItem('activeDiscountPercent');
+                  if (discountCode && discountPercent) {
+                    const discount = parseInt(discountPercent);
+                    const originalTotal = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
+                    const discountAmount = originalTotal * (discount / 100);
+                    const newTotal = originalTotal - discountAmount;
+                    
+                    return (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Subtotal:</span>
+                          <span className="line-through text-gray-400">${originalTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-emerald-400 font-semibold">
+                          <span>Discount ({discountCode}):</span>
+                          <span>-${discountAmount.toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-lg font-bold text-emerald-400">
+                          <span>Total:</span>
+                          <span>${newTotal.toFixed(2)}</span>
+                        </div>
+                        <div className="text-center text-xs text-emerald-300 bg-emerald-500/10 rounded px-2 py-1">
+                          🎉 You're saving ${discountAmount.toFixed(2)}!
+                        </div>
+                      </div>
+                    );
+                  }
+                  
+                  const total = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
+                  return (
+                    <div className="flex items-center justify-between text-lg font-bold">
+                      <span>Total:</span>
+                      <span>${total.toFixed(2)}</span>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
+
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t border-gray-700 p-6">
