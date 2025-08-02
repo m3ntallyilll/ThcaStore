@@ -70,9 +70,12 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={product.imageUrl}
+          src={product.imageUrl || 'https://via.placeholder.com/400x400/10b981/ffffff?text=Hemp+Product'}
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+          onError={(e) => {
+            e.currentTarget.src = 'https://via.placeholder.com/400x400/10b981/ffffff?text=Hemp+Product';
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
