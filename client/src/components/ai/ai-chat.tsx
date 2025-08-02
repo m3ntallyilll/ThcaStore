@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp, Settings, Package, Edit3 } from 'lucide-react';
+import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp, Settings, Package, Edit3, Volume2, VolumeX } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,15 +39,85 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(`session_${Date.now()}_${Math.random().toString(36).slice(2)}`);
+  const [isTTSEnabled, setIsTTSEnabled] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Initialize speech synthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      speechSynthesisRef.current = window.speechSynthesis;
+    }
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Text-to-Speech functions
+  const speakText = (text: string) => {
+    if (!speechSynthesisRef.current || !isTTSEnabled) return;
+
+    // Stop any current speech
+    speechSynthesisRef.current.cancel();
+
+    // Clean the text for better speech (remove markdown, emojis, etc.)
+    const cleanText = text
+      .replace(/[🌟🔍💰🏆❓🛠️📊🚛💼✅❌💎🎁]/g, '') // Remove emojis
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
+      .replace(/\*(.*?)\*/g, '$1') // Remove italic markdown
+      .replace(/`(.*?)`/g, '$1') // Remove code markdown
+      .replace(/#{1,6}\s/g, '') // Remove headers
+      .replace(/•/g, '') // Remove bullet points
+      .trim();
+
+    if (!cleanText) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    // Configure voice settings
+    utterance.rate = 0.9; // Slightly slower for clarity
+    utterance.pitch = 1.0;
+    utterance.volume = 0.8;
+
+    // Try to use a female voice for the AI assistant
+    const voices = speechSynthesisRef.current.getVoices();
+    const preferredVoice = voices.find(voice => 
+      voice.name.toLowerCase().includes('female') || 
+      voice.name.toLowerCase().includes('samantha') ||
+      voice.name.toLowerCase().includes('alex') ||
+      voice.gender === 'female'
+    ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+    
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    speechSynthesisRef.current.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if (speechSynthesisRef.current) {
+      speechSynthesisRef.current.cancel();
+      setIsSpeaking(false);
+    }
+  };
+
+  const toggleTTS = () => {
+    if (isTTSEnabled && isSpeaking) {
+      stopSpeaking();
+    }
+    setIsTTSEnabled(!isTTSEnabled);
+  };
 
   // Auto-open on first visit
   useEffect(() => {
@@ -59,6 +129,15 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
       return () => clearTimeout(timer);
     }
   }, [autoOpen, hasAutoOpened]);
+
+  // Cleanup speech synthesis on unmount
+  useEffect(() => {
+    return () => {
+      if (speechSynthesisRef.current) {
+        speechSynthesisRef.current.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
@@ -134,6 +213,12 @@ How can I help you today? I can:
       };
 
       setMessages(prev => [...prev, aiMessage]);
+
+      // Speak the AI response if TTS is enabled
+      if (isTTSEnabled && data.response) {
+        // Add a small delay to let the message render first
+        setTimeout(() => speakText(data.response), 300);
+      }
 
       // Handle action items
       if (data.actionItems) {
@@ -335,14 +420,40 @@ How can I help you today? I can:
                       <p className="text-sm opacity-90 font-medium">Your Personal Hemp Guide & Daily Deals Assistant</p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setIsOpen(false)}
-                    className="text-black hover:bg-black/10"
-                  >
-                    <X className="w-5 h-5" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={toggleTTS}
+                      className={`text-black hover:bg-black/10 transition-all ${
+                        isTTSEnabled ? 'bg-black/20' : ''
+                      } ${isSpeaking ? 'animate-pulse' : ''}`}
+                      title={isTTSEnabled ? (isSpeaking ? 'Speaking... Click to mute' : 'TTS enabled - Click to mute') : 'Click to enable text-to-speech'}
+                    >
+                      {isTTSEnabled ? (
+                        isSpeaking ? (
+                          <motion.div
+                            animate={{ scale: [1, 1.1, 1] }}
+                            transition={{ repeat: Infinity, duration: 1 }}
+                          >
+                            <Volume2 className="w-5 h-5" />
+                          </motion.div>
+                        ) : (
+                          <Volume2 className="w-5 h-5" />
+                        )
+                      ) : (
+                        <VolumeX className="w-5 h-5 opacity-60" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsOpen(false)}
+                      className="text-black hover:bg-black/10"
+                    >
+                      <X className="w-5 h-5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
@@ -429,15 +540,40 @@ How can I help you today? I can:
                         )}
 
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
-                          <span className="text-xs opacity-60">
-                            {msg.timestamp.toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                          </span>
-                          {!msg.isUser && msg.intent && (
-                            <Star className="w-3 h-3 text-gold" />
-                          )}
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs opacity-60">
+                              {msg.timestamp.toLocaleTimeString([], { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                              })}
+                            </span>
+                            {!msg.isUser && isSpeaking && (
+                              <motion.div
+                                animate={{ opacity: [0.5, 1, 0.5] }}
+                                transition={{ repeat: Infinity, duration: 1.5 }}
+                                className="flex items-center gap-1"
+                              >
+                                <Volume2 className="w-3 h-3 text-gold" />
+                                <span className="text-xs text-gold">Speaking...</span>
+                              </motion.div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {!msg.isUser && msg.response && isTTSEnabled && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => speakText(msg.response!)}
+                                className="h-6 px-2 text-xs hover:bg-white/10 text-gold hover:text-gold-400"
+                                disabled={isSpeaking}
+                              >
+                                <Volume2 className="w-3 h-3" />
+                              </Button>
+                            )}
+                            {!msg.isUser && msg.intent && (
+                              <Star className="w-3 h-3 text-gold" />
+                            )}
+                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -485,23 +621,42 @@ How can I help you today? I can:
                     </Button>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {['Today\'s deals', 'Best flower strains', 'My reward points', 'Daily promotions', 'Product recommendations'].map((suggestion) => (
+                  <div className="flex items-center justify-between mt-2 mb-1">
+                    <div className="flex flex-wrap gap-2">
+                      {['Today\'s deals', 'Best flower strains', 'My reward points'].slice(0, 3).map((suggestion) => (
+                        <Button
+                          key={suggestion}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setInputMessage(suggestion);
+                            setTimeout(sendMessage, 100);
+                          }}
+                          className="text-xs border-white/20 hover:bg-white/5 text-gray-300 bg-[#000000]"
+                          disabled={isLoading}
+                        >
+                          {suggestion}
+                        </Button>
+                      ))}
+                    </div>
+                    {isSpeaking && (
                       <Button
-                        key={suggestion}
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          setInputMessage(suggestion);
-                          setTimeout(sendMessage, 100);
-                        }}
-                        className="text-xs border-white/20 hover:bg-white/5 text-gray-300 bg-[#000000]"
-                        disabled={isLoading}
+                        onClick={stopSpeaking}
+                        className="text-xs border-red-400/30 hover:bg-red-400/10 text-red-400 bg-[#000000]"
                       >
-                        {suggestion}
+                        <VolumeX className="w-3 h-3 mr-1" />
+                        Stop
                       </Button>
-                    ))}
+                    )}
                   </div>
+                  
+                  {isTTSEnabled && (
+                    <div className="text-xs text-center text-gold/70 mb-2">
+                      🔊 Voice enabled - AI responses will be spoken aloud
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
