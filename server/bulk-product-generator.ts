@@ -126,7 +126,6 @@ THC: ${request.thcRange.min}-${request.thcRange.max}%
 
 Return JSON:
 {
-  "name": "Short product name",
   "description": "Brief description (50 words max)",
   "price": ${request.priceRange.min + Math.floor(Math.random() * (request.priceRange.max - request.priceRange.min))},
   "thcContent": ${request.thcRange.min + Math.floor(Math.random() * (request.thcRange.max - request.thcRange.min))},
@@ -149,12 +148,13 @@ Return JSON:
     const quantity = this.calculateQuantity(request.productType, request.strainType);
     const productWeight = this.calculateWeight(request.productType, request.preRollWeight);
 
+    // Always format product name with weight/size and strain
     const productName = request.isInfused ? 
       `${productWeight} ${strainName} Infused Pre-Roll` : 
-      `${productWeight} ${strainName} ${request.productType}`;
+      `${productWeight} ${strainName} ${request.productType === 'pre-roll' ? 'Pre-Roll' : 'Flower'}`;
 
     const product: InsertProduct = {
-      name: parsed.name || productName,
+      name: productName, // Always use formatted name with weight/size
       description: parsed.description || `Premium ${productWeight} ${strainName} ${request.isInfused ? 'infused ' : ''}${request.productType}`,
       price: (parsed.price || this.randomPriceInRange(request.priceRange)).toString(),
       category: request.productType === 'pre-roll' ? 'pre-rolls' : 'flower',
