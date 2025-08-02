@@ -19,20 +19,15 @@ async function fixProductImages() {
         let imageUrl;
         
         if (product.category === 'pre-rolls') {
-          const isInfused = product.name.toLowerCase().includes('infused');
-          if (isInfused) {
-            imageUrl = `https://source.unsplash.com/400x400/?cannabis,pre-roll,${imageId}`;
-          } else {
-            imageUrl = `https://source.unsplash.com/400x400/?hemp,joint,${imageId}`;
-          }
+          imageUrl = `https://picsum.photos/400/400?random=${imageId}&green`;
         } else if (product.category === 'flower') {
-          imageUrl = `https://source.unsplash.com/400x400/?cannabis,flower,bud,${imageId}`;
+          imageUrl = `https://picsum.photos/400/400?random=${imageId + 100}&nature`;
         } else if (product.category === 'concentrates') {
-          imageUrl = `https://source.unsplash.com/400x400/?cannabis,concentrate,${imageId}`;
+          imageUrl = `https://picsum.photos/400/400?random=${imageId + 200}&abstract`;
         } else if (product.category === 'edibles') {
-          imageUrl = `https://source.unsplash.com/400x400/?edible,gummy,${imageId}`;
+          imageUrl = `https://picsum.photos/400/400?random=${imageId + 300}&food`;
         } else {
-          imageUrl = `https://source.unsplash.com/400x400/?cannabis,product,${imageId}`;
+          imageUrl = `https://picsum.photos/400/400?random=${imageId + 400}`;
         }
 
         // Update product with working image URL

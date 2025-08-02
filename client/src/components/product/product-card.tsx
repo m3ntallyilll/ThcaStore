@@ -16,13 +16,13 @@ interface ProductCardProps {
 export function ProductCard({ product, onProductClick }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addToCart } = useCart();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!isAuthenticated) {
+    if (!user) {
       toast('Please login to add items to cart', 'warning');
       return;
     }
