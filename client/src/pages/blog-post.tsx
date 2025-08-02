@@ -30,21 +30,24 @@ export default function BlogPost() {
     enabled: !!postId
   });
 
-  // Increment view count
+  // Increment view count - only once per session
   const viewMutation = useMutation({
     mutationFn: () => apiRequest(`/api/blog/posts/${postId}/view`, {
       method: 'POST'
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/blog/posts', postId] });
-    }
+    })
   });
 
   useEffect(() => {
-    if (post && !viewMutation.isSuccess) {
-      viewMutation.mutate();
+    if (post && !viewMutation.isSuccess && !viewMutation.isPending) {
+      const sessionKey = `blog_view_${postId}`;
+      const hasViewed = sessionStorage.getItem(sessionKey);
+      
+      if (!hasViewed) {
+        viewMutation.mutate();
+        sessionStorage.setItem(sessionKey, 'true');
+      }
     }
-  }, [post, viewMutation]);
+  }, [post, postId]); // Remove viewMutation from dependencies to prevent loop
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

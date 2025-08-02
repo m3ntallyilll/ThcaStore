@@ -806,10 +806,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Increment view count endpoint
+  // Increment view count endpoint with rate limiting
+  const viewTracker = new Map(); // Simple in-memory tracker
+  
   app.post("/api/blog/posts/:id/view", async (req, res) => {
     try {
-      const post = await storage.getBlogPost(req.params.id);
+      const postId = req.params.id;
+      const clientIp = req.ip || req.connection.remoteAddress || 'unknown';
+      const trackingKey = `${clientIp}_${postId}`;
+      const now = Date.now();
+      
+      // Rate limit: Only allow one view per IP per post per 10 minutes
+      const lastView = viewTracker.get(trackingKey);
+      if (lastView && (now - lastView) < 600000) { // 10 minutes
+        return res.json({ success: true, cached: true });
+      }
+      
+      const post = await storage.getBlogPost(postId);
       if (!post) {
         return res.status(404).json({ message: "Blog post not found" });
       }
@@ -817,6 +830,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Only increment for published posts
       if (post.status === 'published') {
         await storage.incrementBlogViewCount(post.id);
+        viewTracker.set(trackingKey, now);
+        
+        // Clean up old entries every 100 requests
+        if (viewTracker.size > 1000) {
+          for (const [key, timestamp] of viewTracker.entries()) {
+            if (now - timestamp > 3600000) { // 1 hour
+              viewTracker.delete(key);
+            }
+          }
+        }
       }
 
       res.json({ success: true });
