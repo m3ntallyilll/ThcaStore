@@ -1,0 +1,63 @@
+Titles built as text tags should be labeled as headings for assistive technology
+Requirement:
+Elements that visually function as headings but are not coded with a heading tag should include a role="heading" attribute or be updated to use the correct heading tag
+
+10 Code snapshots of failed elements
+<span class="bg-gradient-to-r from-gold via-yellow-300 to-amber-400 bg-clip-text text-transparent">REVOLUTION</span>
+<p class="text-xl md:text-2xl mb-12 text-gray-200 max-w-4xl mx-auto leading-relaxed" style="opacity: 1; transform: none;">Experience premium hemp-derived THCA products from trusted growers.<span class="text-emerald-400 font-semibold"> Lab-tested puri...
+<span class="text-emerald-400 font-semibold"> Lab-tested purity.</span>
+<span class="text-gold font-semibold"> Legal hemp quality.</span>
+<span class="text-teal-400 font-semibold"> Extraordinary experiences.</span>
+<span class="relative z-10 flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ro...
+<p class="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed" style="opacity: 1;">Premium hemp sourcing meets modern technology. Every THCA product carefully selected for quality.</p>
+<p class="text-2xl text-gray-200 leading-relaxed" style="opacity: 1;">We're not just another hemp company. We're<span class="text-emerald-400 font-bold"> pioneers of a new era</span> – where cutting-edge science meets artisanal craftsmanship.</p>
+<span class="text-emerald-400 font-bold"> pioneers of a new era</span>
+<span class="text-gold font-semibold">molecular scientists</span>
+Want to see all the elements and full details? Get the free report to your email
+
+Ready to become inclusive?
+Make your website accessible for everyone with accessWidget
+
+Total Elements 12
+Failures
+12
+Successes
+0
+Who is affected by these issues?
+Vision Impaired
+Cognitive Disability
+Good Score
+Titles should have a consistent hierarchy
+
+
+Orientation
+Score: 75
+Good Score
+Interactive elements should be navigable using the keyboard
+
+
+Good Score
+Keyboard focus should have a noticeable outline
+
+
+
+Active popups should be tagged for assistive technology
+
+
+
+Bad Score
+Every page should include hidden links that allow skipping blocks
+Requirement:
+Each page should include hidden skip links that allow users (via keyboard or screen reader) to bypass certain blocks and navigate directly to main landmarks like the main content, menu, or footer.
+
+Want to see all the elements and full details? Get the free report to your email
+
+Total Elements 1
+Failures
+1
+Successes
+0
+Who is affected by these issues?
+Motor Impaired
+Vision Impaired
+Cognitive Disability

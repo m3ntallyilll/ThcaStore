@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { SkipLinks } from '@/components/accessibility/skip-links';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {

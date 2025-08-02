@@ -12,12 +12,12 @@ const useAnalytics = () => {
   
   // Track page views using Google Analytics
   const trackPageView = (url: string) => {
-    if (typeof window === 'undefined' || !window.gtag) return;
+    if (typeof window === 'undefined' || !(window as any).gtag) return;
     
     const measurementId = "G-J8CL11FFW2";
     if (!measurementId) return;
     
-    window.gtag('config', measurementId, {
+    (window as any).gtag('config', measurementId, {
       page_path: url
     });
   };
@@ -37,6 +37,7 @@ import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import { AIChat } from "@/components/ai/ai-chat";
 import { AISupport } from "@/components/support/ai-support";
+import { SkipLinks } from "@/components/accessibility/skip-links";
 
 // Pages
 import Home from "@/pages/home";
@@ -97,8 +98,9 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-dark-900 text-white">
+      <SkipLinks />
       <Navigation />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Router />
       </main>
       <Footer />

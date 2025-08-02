@@ -21,6 +21,7 @@ import {
 import { ProductCard } from '@/components/product/product-card';
 import { ProductModal } from '@/components/product/product-modal';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SkipLinks } from '@/components/accessibility/skip-links';
 import type { Product } from '@shared/schema';
 
 const categories = [
@@ -138,6 +139,14 @@ export default function Products() {
     setSelectedProduct(null);
   };
 
+  const pageSpecificLinks = [
+    { href: '#main-content', label: 'Skip to main content' },
+    { href: '#product-filters', label: 'Skip to product filters' },
+    { href: '#product-grid', label: 'Skip to product grid' },
+    { href: '#navigation', label: 'Skip to navigation' },
+    { href: '#footer', label: 'Skip to footer' },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-dark-900 to-dark-800 pt-16">
       {/* Hero Section */}
@@ -160,6 +169,7 @@ export default function Products() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {/* Search and Filter Bar */}
         <motion.div
+          id="product-filters"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -170,10 +180,12 @@ export default function Products() {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <Input
+                id="search"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 bg-white/10 border-white/20 focus:border-gold"
+                aria-label="Search products"
               />
             </div>
 
@@ -379,6 +391,7 @@ export default function Products() {
           </div>
         ) : (
           <motion.div
+            id="product-grid"
             layout
             className={`grid gap-8 ${
               viewMode === 'grid'
