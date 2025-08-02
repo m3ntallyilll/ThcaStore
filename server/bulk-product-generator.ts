@@ -204,12 +204,13 @@ Return JSON:
     }
   }
 
-  private calculateWeight(productType: string, preRollWeight?: string): string {
+  private calculateWeight(productType: string, preRollWeight?: string, flowerWeight?: string): string {
     if (productType === 'pre-roll') {
-      return preRollWeight || '1g';
-    } else {
-      const weights = ['1g', '3.5g', '7g', '14g', '28g'];
-      return weights[Math.floor(Math.random() * weights.length)];
+      // Industry standard pre-roll weights
+      return preRollWeight || ['1.1g', '1.25g', '1.45g', '1.5g'][Math.floor(Math.random() * 4)];
+    } else if (productType === 'flower') {
+      // Industry standard flower weights: gram, eighth, quarter, half, oz
+      return flowerWeight || ['1g', '3.5g', '7g', '14g', '28g'][Math.floor(Math.random() * 5)];
     }
   }
 
