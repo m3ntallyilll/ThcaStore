@@ -32,9 +32,17 @@ export default function BlogPost() {
 
   // Increment view count - only once per session
   const viewMutation = useMutation({
-    mutationFn: () => apiRequest(`/api/blog/posts/${postId}/view`, {
-      method: 'POST'
-    })
+    mutationFn: async () => {
+      try {
+        return await apiRequest(`/api/blog/posts/${postId}/view`, {
+          method: 'POST'
+        });
+      } catch (err: any) {
+        // Silently handle view count errors
+        return null;
+      }
+    },
+    retry: false
   });
 
   useEffect(() => {

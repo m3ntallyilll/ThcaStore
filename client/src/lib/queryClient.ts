@@ -111,6 +111,26 @@ export const queryClient = new QueryClient({
   },
 });
 
+// Global error handler for unhandled promise rejections
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    // Silently handle known auth errors
+    if (event.reason?.message?.includes('Authentication') || 
+        event.reason?.message?.includes('401') || 
+        event.reason?.message?.includes('403')) {
+      event.preventDefault();
+      return;
+    }
+    
+    // Log other errors for debugging but don't spam console
+    if (event.reason && typeof event.reason === 'object' && 
+        !event.reason.message?.includes('Network error')) {
+      console.warn('Unhandled promise rejection (handled):', event.reason.message || event.reason);
+      event.preventDefault();
+    }
+  });
+}
+
 const API_BASE = import.meta.env.VITE_API_URL || (
   typeof window !== 'undefined' && window.location.hostname !== 'localhost' 
     ? `${window.location.protocol}//${window.location.hostname}:5000`

@@ -27,21 +27,37 @@ export default function Blog() {
   // Fetch published blog posts
   const { data: posts = [], isLoading, error } = useQuery({
     queryKey: ['/api/blog/posts'],
-    queryFn: () => apiRequest('/api/blog/posts').catch((err) => {
-      console.warn('Failed to load blog posts:', err.message);
-      return [];
-    }),
-    retry: 1
+    queryFn: async () => {
+      try {
+        return await apiRequest('/api/blog/posts');
+      } catch (err: any) {
+        // Silently handle auth errors, only log actual issues
+        if (!err?.message?.includes('Authentication') && !err?.message?.includes('401')) {
+          console.warn('Failed to load blog posts:', err.message);
+        }
+        return [];
+      }
+    },
+    retry: false,
+    refetchOnWindowFocus: false
   });
 
   // Fetch categories
   const { data: categories = [] } = useQuery({
     queryKey: ['/api/blog/categories'],
-    queryFn: () => apiRequest('/api/blog/categories').catch((err) => {
-      console.warn('Failed to load blog categories:', err.message);
-      return [];
-    }),
-    retry: 1
+    queryFn: async () => {
+      try {
+        return await apiRequest('/api/blog/categories');
+      } catch (err: any) {
+        // Silently handle auth errors
+        if (!err?.message?.includes('Authentication') && !err?.message?.includes('401')) {
+          console.warn('Failed to load blog categories:', err.message);
+        }
+        return [];
+      }
+    },
+    retry: false,
+    refetchOnWindowFocus: false
   });
 
   // Filter posts based on search and category
