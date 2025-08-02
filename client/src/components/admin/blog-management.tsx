@@ -26,8 +26,10 @@ import {
   BookOpen,
   Send,
   Save,
-  Wand2
+  Wand2,
+  Zap
 } from 'lucide-react';
+import BulkBlogGenerator from './bulk-blog-generator';
 import type { BlogPost } from '@shared/schema';
 
 interface BlogFormData {
@@ -383,6 +385,9 @@ export function BlogManagement({ blogFormData }: BlogManagementProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Bulk Blog Generator */}
+      <BulkBlogGenerator />
 
       {/* Blog Posts Table */}
       <Card className="bg-dark-800 border-dark-700">

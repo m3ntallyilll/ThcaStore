@@ -1471,6 +1471,70 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Bulk Blog Generation Route
+  app.post("/api/admin/blog/ai/bulk-generate", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { bulkBlogGenerator } = await import('./bulk-blog-generator');
+      const { 
+        count = 10, 
+        baseCategory = 'education',
+        tone = 'educational',
+        length = 'medium',
+        targetAudience = 'hemp enthusiasts and new users',
+        includeCallToAction = true
+      } = req.body;
+
+      // Validate count
+      if (count > 20) {
+        return res.status(400).json({ 
+          success: false, 
+          message: 'Maximum 20 blogs can be generated at once to prevent API rate limits' 
+        });
+      }
+
+      console.log(`🚀 Starting bulk generation of ${count} blogs for user ${req.user.id}`);
+      
+      // Generate blogs
+      const blogs = await bulkBlogGenerator.generateBulkBlogs({
+        count,
+        baseCategory,
+        tone,
+        length,
+        targetAudience,
+        includeCallToAction
+      }, req.user.id);
+
+      // Save all blogs to database
+      const savedResults = await bulkBlogGenerator.saveBulkBlogs(blogs);
+      
+      const successCount = savedResults.filter(r => !r.error).length;
+      const failCount = savedResults.filter(r => r.error).length;
+      
+      res.json({
+        success: true,
+        message: `Bulk blog generation completed: ${successCount} successful, ${failCount} failed`,
+        generated: successCount,
+        failed: failCount,
+        totalRequested: count,
+        results: savedResults.map(r => ({
+          title: r.title,
+          success: !r.error,
+          error: r.error || null,
+          id: r.id || null
+        }))
+      });
+      
+      console.log(`✅ Bulk generation complete: ${successCount}/${count} blogs saved successfully`);
+      
+    } catch (error: any) {
+      console.error('Bulk blog generation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to generate bulk blogs'
+      });
+    }
+  });
+
   // AI SEO Enhancement Routes
   app.post("/api/admin/seo/enhance/:postId", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
