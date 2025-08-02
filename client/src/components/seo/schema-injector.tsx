@@ -212,16 +212,25 @@ function generateExcerpt(content: string, maxLength: number = 160): string {
   return truncated.substring(0, lastSpace) + '...';
 }
 
+interface FAQItem {
+  "@type": "Question";
+  name: string;
+  acceptedAnswer: {
+    "@type": "Answer";
+    text: string;
+  };
+}
+
 function generateFAQSchema(post: any) {
   const content = post.content.toLowerCase();
   const questionMatches = post.content.match(/<h[3-6][^>]*>([^<]*\?[^<]*)<\/h[3-6]>/gi);
   
   if (!questionMatches || questionMatches.length < 2) return;
 
-  const faqItems = [];
+  const faqItems: FAQItem[] = [];
   const contentSections = post.content.split(/<h[3-6][^>]*>/i);
   
-  questionMatches.forEach((question, index) => {
+  questionMatches.forEach((question: string, index: number) => {
     const cleanQuestion = question.replace(/<[^>]*>/g, '').trim();
     if (cleanQuestion.includes('?')) {
       // Find the corresponding answer in the next content section
