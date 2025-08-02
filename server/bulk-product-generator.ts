@@ -186,7 +186,7 @@ Return JSON:
 
   private calculateWeight(productType: string, preRollWeight?: string): string {
     if (productType === 'pre-roll') {
-      return preRollWeight || '1.1g';
+      return preRollWeight || '1g';
     } else {
       const weights = ['1g', '3.5g', '7g', '14g', '28g'];
       return weights[Math.floor(Math.random() * weights.length)];

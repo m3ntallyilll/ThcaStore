@@ -22,10 +22,10 @@ export const products = pgTable("products", {
   category: text("category").notNull(),
   imageUrl: text("image_url").notNull(),
   stock: integer("stock").notNull().default(0),
-  weight: decimal("weight", { precision: 8, scale: 2 }).default("0.10"), // Weight in pounds for shipping
+  weight: text("weight").default("1g"), // Weight as text (e.g., "1.1g", "1.25g")
   featured: boolean("featured").default(false),
   rating: decimal("rating", { precision: 2, scale: 1 }).default("0"),
-  thcaContent: decimal("thca_content", { precision: 5, scale: 2 }),
+  thcaContent: text("thca_content"), // THC percentage as text (e.g., "25%")
   strainType: text("strain_type"),
   effects: jsonb("effects").$type<string[]>(),
   createdAt: timestamp("created_at").defaultNow(),
