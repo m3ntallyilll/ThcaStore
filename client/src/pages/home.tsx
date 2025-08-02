@@ -290,7 +290,7 @@ export default function Home() {
                     </span>
                   </motion.h1>
                   
-                  <motion.div
+                  <motion.h2
                     className="text-2xl md:text-4xl font-light tracking-wider"
                     initial={{ opacity: 0, letterSpacing: "10px" }}
                     animate={{ opacity: 1, letterSpacing: "0.2em" }}
@@ -299,7 +299,7 @@ export default function Home() {
                     <span className="bg-gradient-to-r from-gold via-yellow-300 to-amber-400 bg-clip-text text-transparent">
                       REVOLUTION
                     </span>
-                  </motion.div>
+                  </motion.h2>
                 </motion.div>
 
                 {/* Live Statistics Display */}
@@ -443,15 +443,15 @@ export default function Home() {
                 Excellence
               </span>
             </motion.h2>
-            <motion.p 
-              className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed"
+            <motion.h3 
+              className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
               viewport={{ once: true }}
             >
               Premium hemp sourcing meets modern technology. Every THCA product carefully selected for quality.
-            </motion.p>
+            </motion.h3>
           </motion.div>
 
           {/* Interactive Feature Grid */}
@@ -716,7 +716,7 @@ export default function Home() {
                   viewport={{ once: true }}
                 >
                   We're not just another hemp company. We're 
-                  <span className="text-emerald-400 font-bold"> pioneers of a new era</span> – 
+                  <span className="text-emerald-400 font-bold" role="heading" aria-level="4"> pioneers of a new era</span> – 
                   where cutting-edge science meets artisanal craftsmanship.
                 </motion.p>
                 
@@ -727,9 +727,9 @@ export default function Home() {
                   transition={{ delay: 0.6, duration: 0.8 }}
                   viewport={{ once: true }}
                 >
-                  Our team of <span className="text-gold font-semibold">molecular scientists</span>, 
-                  <span className="text-teal-400 font-semibold"> master cultivators</span>, and 
-                  <span className="text-purple-400 font-semibold"> AI specialists</span> work in 
+                  Our team of <span className="text-gold font-semibold" role="heading" aria-level="5">molecular scientists</span>, 
+                  <span className="text-teal-400 font-semibold" role="heading" aria-level="5"> master cultivators</span>, and 
+                  <span className="text-purple-400 font-semibold" role="heading" aria-level="5"> AI specialists</span> work in 
                   perfect harmony to create products that transcend traditional boundaries.
                 </motion.p>
 
