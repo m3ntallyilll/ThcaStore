@@ -173,21 +173,21 @@ Return JSON:
     // Generate stable image URLs using strain name as seed for consistency
     const imageId = Math.abs(strainName.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) % 1000;
     
-    // Use different image categories based on product type
+    // Use Unsplash Source for reliable images
     if (productType === 'pre-roll') {
       if (isInfused) {
-        return `https://picsum.photos/seed/infused-${imageId}/400/400`;
+        return `https://source.unsplash.com/400x400/?cannabis,pre-roll,${imageId}`;
       } else {
-        return `https://picsum.photos/seed/preroll-${imageId}/400/400`;
+        return `https://source.unsplash.com/400x400/?hemp,joint,${imageId}`;
       }
     } else if (productType === 'flower') {
-      return `https://picsum.photos/seed/flower-${imageId}/400/400`;
+      return `https://source.unsplash.com/400x400/?cannabis,flower,bud,${imageId}`;
     } else if (productType === 'concentrate') {
-      return `https://picsum.photos/seed/concentrate-${imageId}/400/400`;
+      return `https://source.unsplash.com/400x400/?cannabis,concentrate,${imageId}`;
     } else if (productType === 'edible') {
-      return `https://picsum.photos/seed/edible-${imageId}/400/400`;
+      return `https://source.unsplash.com/400x400/?edible,gummy,${imageId}`;
     } else {
-      return `https://picsum.photos/seed/product-${imageId}/400/400`;
+      return `https://source.unsplash.com/400x400/?cannabis,product,${imageId}`;
     }
   }
 

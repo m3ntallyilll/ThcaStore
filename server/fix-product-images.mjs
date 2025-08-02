@@ -21,18 +21,18 @@ async function fixProductImages() {
         if (product.category === 'pre-rolls') {
           const isInfused = product.name.toLowerCase().includes('infused');
           if (isInfused) {
-            imageUrl = `https://picsum.photos/seed/infused-${imageId}/400/400`;
+            imageUrl = `https://source.unsplash.com/400x400/?cannabis,pre-roll,${imageId}`;
           } else {
-            imageUrl = `https://picsum.photos/seed/preroll-${imageId}/400/400`;
+            imageUrl = `https://source.unsplash.com/400x400/?hemp,joint,${imageId}`;
           }
         } else if (product.category === 'flower') {
-          imageUrl = `https://picsum.photos/seed/flower-${imageId}/400/400`;
+          imageUrl = `https://source.unsplash.com/400x400/?cannabis,flower,bud,${imageId}`;
         } else if (product.category === 'concentrates') {
-          imageUrl = `https://picsum.photos/seed/concentrate-${imageId}/400/400`;
+          imageUrl = `https://source.unsplash.com/400x400/?cannabis,concentrate,${imageId}`;
         } else if (product.category === 'edibles') {
-          imageUrl = `https://picsum.photos/seed/edible-${imageId}/400/400`;
+          imageUrl = `https://source.unsplash.com/400x400/?edible,gummy,${imageId}`;
         } else {
-          imageUrl = `https://picsum.photos/seed/product-${imageId}/400/400`;
+          imageUrl = `https://source.unsplash.com/400x400/?cannabis,product,${imageId}`;
         }
 
         // Update product with working image URL
