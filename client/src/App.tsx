@@ -161,9 +161,9 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
+      <TooltipProvider delayDuration={0}>
         <AppContent />
+        <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
   );
