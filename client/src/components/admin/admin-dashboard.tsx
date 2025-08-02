@@ -32,6 +32,7 @@ import { BlogManagement } from './blog-management';
 import { AIChat } from '@/components/ai/ai-chat';
 import AIDealsGenerator from './ai-deals-generator';
 import { AISEOManager } from './ai-seo-manager';
+import BulkProductGenerator from './bulk-product-generator';
 
 interface OrderWithDetails {
   id: string;
@@ -586,6 +587,9 @@ export function AdminDashboard() {
           {/* Products Table */}
           {activeSection === 'products' && (
             <div className="space-y-6">
+              {/* Bulk Product Generator */}
+              <BulkProductGenerator />
+              
               <Card className="glass">
                 <CardHeader>
                   <div className="flex items-center justify-between">

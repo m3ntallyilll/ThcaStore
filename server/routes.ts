@@ -1535,6 +1535,169 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Bulk Product Generation Route
+  app.post("/api/admin/products/ai/bulk-generate", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { bulkProductGenerator } = await import('./bulk-product-generator');
+      const { 
+        productType = 'pre-roll',
+        strainType = 'indica',
+        count = 100,
+        priceRange = { min: 8, max: 25 },
+        thcRange = { min: 18, max: 32 },
+        includeDeals = false,
+        includePackages = false
+      } = req.body;
+
+      // Validate count based on product type
+      const maxCount = productType === 'pre-roll' ? 10000 : 1000;
+      if (count > maxCount) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Maximum ${maxCount} ${productType} products can be generated at once` 
+        });
+      }
+
+      console.log(`🚀 Starting bulk generation of ${count} ${productType} products (${strainType})`);
+      
+      // Generate products
+      const products = await bulkProductGenerator.generateBulkProducts({
+        productType,
+        strainType,
+        count,
+        priceRange,
+        thcRange,
+        includeDeals,
+        includePackages
+      });
+
+      // Save all products to database
+      const savedResults = await bulkProductGenerator.saveBulkProducts(products);
+      
+      const successCount = savedResults.filter((r: any) => !r.error).length;
+      const failCount = savedResults.filter((r: any) => r.error).length;
+
+      // Generate deals and packages if requested
+      let dealsResults: any[] = [];
+      if (includeDeals || includePackages) {
+        try {
+          dealsResults = await bulkProductGenerator.generateDealsAndPackages(productType);
+        } catch (dealError) {
+          console.warn('Failed to generate deals:', dealError);
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: `Bulk product generation completed: ${successCount} successful, ${failCount} failed`,
+        generated: successCount,
+        failed: failCount,
+        totalRequested: count,
+        deals: dealsResults.length,
+        results: savedResults.map((r: any) => ({
+          name: r.name,
+          success: !r.error,
+          error: r.error || null,
+          id: r.id || null,
+          strainName: r.strainName || null,
+          price: r.price || null
+        }))
+      });
+      
+      console.log(`✅ Bulk product generation complete: ${successCount}/${count} products saved successfully`);
+      
+    } catch (error: any) {
+      console.error('Bulk product generation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to generate bulk products'
+      });
+    }
+  });
+
+  // Quick Inventory Setup Route (for massive inventory creation)
+  app.post("/api/admin/products/ai/quick-setup", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { bulkProductGenerator } = await import('./bulk-product-generator');
+      
+      console.log(`🚀 Starting MASSIVE inventory setup: 100,000 pre-rolls + 25 pounds flower`);
+      
+      const inventoryPlan = [
+        // 50,000 Indica Pre-rolls
+        { productType: 'pre-roll' as const, strainType: 'indica' as const, count: 5000, priceRange: { min: 8, max: 18 }, thcRange: { min: 18, max: 32 } },
+        // 50,000 Sativa Pre-rolls  
+        { productType: 'pre-roll' as const, strainType: 'sativa' as const, count: 5000, priceRange: { min: 8, max: 18 }, thcRange: { min: 16, max: 28 } },
+        // 10 pounds Sativa Flower
+        { productType: 'flower' as const, strainType: 'sativa' as const, count: 200, priceRange: { min: 25, max: 65 }, thcRange: { min: 18, max: 30 } },
+        // 10 pounds Indica Flower
+        { productType: 'flower' as const, strainType: 'indica' as const, count: 200, priceRange: { min: 25, max: 65 }, thcRange: { min: 20, max: 32 } },
+        // 5 pounds Hybrid Flower
+        { productType: 'flower' as const, strainType: 'hybrid' as const, count: 100, priceRange: { min: 30, max: 70 }, thcRange: { min: 19, max: 31 } }
+      ];
+
+      let totalGenerated = 0;
+      let totalFailed = 0;
+      const allResults: any[] = [];
+
+      for (const plan of inventoryPlan) {
+        try {
+          console.log(`📦 Generating ${plan.count} ${plan.strainType} ${plan.productType}s...`);
+          
+          const products = await bulkProductGenerator.generateBulkProducts(plan);
+          const savedResults = await bulkProductGenerator.saveBulkProducts(products);
+          
+          const successCount = savedResults.filter((r: any) => !r.error).length;
+          const failCount = savedResults.filter((r: any) => r.error).length;
+          
+          totalGenerated += successCount;
+          totalFailed += failCount;
+          
+          allResults.push({
+            type: `${plan.strainType} ${plan.productType}`,
+            requested: plan.count,
+            generated: successCount,
+            failed: failCount
+          });
+          
+          // Small delay between inventory batches
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+        } catch (batchError) {
+          console.error(`Failed batch for ${plan.strainType} ${plan.productType}:`, batchError);
+          allResults.push({
+            type: `${plan.strainType} ${plan.productType}`,
+            requested: plan.count,
+            generated: 0,
+            failed: plan.count,
+            error: (batchError as any)?.message
+          });
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: `MASSIVE inventory setup completed: ${totalGenerated} products created, ${totalFailed} failed`,
+        totalGenerated,
+        totalFailed,
+        inventoryBreakdown: allResults,
+        summary: {
+          preRollsCreated: allResults.filter(r => r.type.includes('pre-roll')).reduce((sum, r) => sum + r.generated, 0),
+          flowerProductsCreated: allResults.filter(r => r.type.includes('flower')).reduce((sum, r) => sum + r.generated, 0),
+          estimatedValue: `$${(totalGenerated * 35).toLocaleString()}` // Average $35 per product
+        }
+      });
+      
+      console.log(`🎉 MASSIVE inventory setup complete: ${totalGenerated} total products created!`);
+      
+    } catch (error: any) {
+      console.error('Quick inventory setup error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to create massive inventory'
+      });
+    }
+  });
+
   // AI SEO Enhancement Routes
   app.post("/api/admin/seo/enhance/:postId", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
