@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import type { AdminStats } from '@/lib/types';
 import type { Product } from '@shared/schema';
 import { BlogManagement } from './blog-management';
@@ -33,6 +33,7 @@ import { AIChat } from '@/components/ai/ai-chat';
 import AIDealsGenerator from './ai-deals-generator';
 import { AISEOManager } from './ai-seo-manager';
 import BulkProductGenerator from './bulk-product-generator';
+import { ProductVariantManager } from './product-variant-manager';
 
 interface OrderWithDetails {
   id: string;
@@ -71,6 +72,8 @@ export function AdminDashboard() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [blogFormData, setBlogFormData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showVariantManager, setShowVariantManager] = useState(false);
 
   // Fetch admin stats with optimized polling
   const { data: stats } = useQuery<AdminStats>({
@@ -590,6 +593,42 @@ export function AdminDashboard() {
               {/* Bulk Product Generator */}
               <BulkProductGenerator />
               
+              {/* Bulk Variant Update */}
+              <Card className="glass border-emerald-500/20">
+                <CardHeader>
+                  <CardTitle className="text-emerald-400">Product Variant Enhancement</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-300 mb-2">Add size/weight variants to existing products with industry-standard pricing</p>
+                      <p className="text-sm text-gray-400">Flower: 1g, 3.5g, 7g, 14g, 28g • Pre-rolls: 1.1g, 1.25g, 1.45g, 1.5g • Concentrates & Edibles</p>
+                    </div>
+                    <Button 
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                      onClick={async () => {
+                        try {
+                          setIsLoading(true);
+                          const result = await apiRequest('/api/admin/products/bulk-update-variants', {
+                            method: 'POST'
+                          });
+                          toast(result.message, 'success');
+                          queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+                        } catch (error) {
+                          toast('Failed to update product variants', 'error');
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                      disabled={isLoading}
+                    >
+                      <Package className="w-4 h-4 mr-2" />
+                      {isLoading ? 'Updating...' : 'Add Variants to All Products'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
               <Card className="glass">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -613,8 +652,8 @@ export function AdminDashboard() {
                         <tr>
                           <th className="text-left p-4 font-semibold">Product</th>
                           <th className="text-left p-4 font-semibold">Category</th>
-                          <th className="text-left p-4 font-semibold">Price</th>
-                          <th className="text-left p-4 font-semibold">Stock</th>
+                          <th className="text-left p-4 font-semibold">Price Range</th>
+                          <th className="text-left p-4 font-semibold">Variants</th>
                           <th className="text-left p-4 font-semibold">Status</th>
                           <th className="text-left p-4 font-semibold">Actions</th>
                         </tr>
@@ -635,9 +674,34 @@ export function AdminDashboard() {
                                 </div>
                               </div>
                             </td>
-                            <td className="p-4 text-gray-400 capitalize">{product.category}</td>
-                            <td className="p-4 font-semibold">${product.price}</td>
-                            <td className="p-4">{product.stock} units</td>
+                            <td className="p-4 text-gray-400 capitalize">
+                              {product.category}
+                              {product.subcategory && (
+                                <span className="ml-2 text-xs bg-gray-600 px-2 py-1 rounded">
+                                  {product.subcategory}
+                                </span>
+                              )}
+                            </td>
+                            <td className="p-4 font-semibold">
+                              {product.priceRange && product.priceRange.min !== product.priceRange.max ? (
+                                <span>${product.priceRange.min} - ${product.priceRange.max}</span>
+                              ) : (
+                                <span>${product.price}</span>
+                              )}
+                            </td>
+                            <td className="p-4">
+                              {product.variants && product.variants.length > 0 ? (
+                                <div className="flex flex-wrap gap-1">
+                                  {product.variants.map((variant, index) => (
+                                    <Badge key={index} variant={variant.isDefault ? 'default' : 'outline'} className="text-xs">
+                                      {variant.weight}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              ) : (
+                                <span className="text-gray-400 text-sm">No variants</span>
+                              )}
+                            </td>
                             <td className="p-4">
                               <Badge
                                 className={
@@ -658,9 +722,24 @@ export function AdminDashboard() {
                                   onClick={() => {
                                     setSelectedProduct(product);
                                     setIsProductDialogOpen(true);
+                                    setShowVariantManager(false);
                                   }}
+                                  title="Edit Product"
                                 >
                                   <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="text-emerald-400 hover:text-emerald-300"
+                                  onClick={() => {
+                                    setSelectedProduct(product);
+                                    setShowVariantManager(true);
+                                    setIsProductDialogOpen(true);
+                                  }}
+                                  title="Manage Variants"
+                                >
+                                  <Package className="w-4 h-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
@@ -685,23 +764,34 @@ export function AdminDashboard() {
 
               {/* Product Edit/Create Dialog */}
               <Dialog open={isProductDialogOpen} onOpenChange={setIsProductDialogOpen}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>
-                      {selectedProduct ? 'Edit Product' : 'Create New Product'}
+                      {showVariantManager ? 'Manage Product Variants' : selectedProduct ? 'Edit Product' : 'Create New Product'}
                     </DialogTitle>
                   </DialogHeader>
-                  <ProductForm
-                    product={selectedProduct}
-                    onSubmit={(productData) => {
-                      if (selectedProduct) {
-                        updateProductMutation.mutate({ id: selectedProduct.id, productData });
-                      } else {
-                        createProductMutation.mutate(productData);
-                      }
-                    }}
-                    isLoading={createProductMutation.isPending || updateProductMutation.isPending}
-                  />
+                  
+                  {showVariantManager && selectedProduct ? (
+                    <ProductVariantManager
+                      product={selectedProduct}
+                      onProductUpdate={(updatedProduct) => {
+                        setSelectedProduct(updatedProduct);
+                        queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+                      }}
+                    />
+                  ) : (
+                    <ProductForm
+                      product={selectedProduct}
+                      onSubmit={(productData) => {
+                        if (selectedProduct) {
+                          updateProductMutation.mutate({ id: selectedProduct.id, productData });
+                        } else {
+                          createProductMutation.mutate(productData);
+                        }
+                      }}
+                      isLoading={createProductMutation.isPending || updateProductMutation.isPending}
+                    />
+                  )}
                 </DialogContent>
               </Dialog>
 

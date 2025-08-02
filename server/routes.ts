@@ -216,6 +216,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk update products with variants
+  app.post("/api/admin/products/bulk-update-variants", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      console.log('🚀 Starting bulk variant update...');
+      
+      const CATEGORY_VARIANTS = {
+        flower: {
+          weights: ['1g', '3.5g', '7g', '14g', '28g'],
+          priceMultipliers: { '1g': 1, '3.5g': 3.2, '7g': 6, '14g': 11, '28g': 20 }
+        },
+        prerolls: {
+          weights: ['1.1g', '1.25g', '1.45g', '1.5g'],
+          priceMultipliers: { '1.1g': 1, '1.25g': 1.15, '1.45g': 1.3, '1.5g': 1.4 }
+        },
+        concentrates: {
+          weights: ['0.5g', '1g', '2g'],
+          priceMultipliers: { '0.5g': 1, '1g': 1.8, '2g': 3.4 }
+        },
+        edibles: {
+          weights: ['100mg', '250mg', '500mg', '1000mg'],
+          priceMultipliers: { '100mg': 1, '250mg': 1.6, '500mg': 3, '1000mg': 5.5 }
+        }
+      };
+
+      function generateVariants(basePrice: number, category: string, stock: number) {
+        const categoryData = CATEGORY_VARIANTS[category as keyof typeof CATEGORY_VARIANTS];
+        if (!categoryData) return [];
+        
+        return categoryData.weights.map((weight, index) => ({
+          id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2)}`,
+          weight,
+          price: Math.round(basePrice * categoryData.priceMultipliers[weight as keyof typeof categoryData.priceMultipliers] * 100) / 100,
+          stock: Math.floor(stock * (0.7 + Math.random() * 0.6)),
+          isDefault: index === 0
+        }));
+      }
+
+      function determineSubcategory(name: string, category: string) {
+        const nameLower = name.toLowerCase();
+        switch (category) {
+          case 'flower':
+            if (nameLower.includes('indica')) return 'indica';
+            if (nameLower.includes('sativa')) return 'sativa';
+            return 'hybrid';
+          case 'prerolls':
+            if (nameLower.includes('pack')) return 'pack';
+            if (nameLower.includes('infused')) return 'infused';
+            return 'single';
+          case 'concentrates':
+            if (nameLower.includes('wax')) return 'wax';
+            if (nameLower.includes('shatter')) return 'shatter';
+            if (nameLower.includes('live resin')) return 'live_resin';
+            return 'wax';
+          case 'edibles':
+            if (nameLower.includes('gummies')) return 'gummies';
+            if (nameLower.includes('chocolate')) return 'chocolates';
+            return 'gummies';
+          default:
+            return null;
+        }
+      }
+
+      function determinePotency(thcaContent?: string) {
+        if (!thcaContent) return 'Medium';
+        const percentage = parseFloat(thcaContent.replace('%', ''));
+        if (percentage >= 25) return 'High';
+        if (percentage >= 18) return 'Medium';
+        return 'Low';
+      }
+
+      const products = await storage.getProducts();
+      let updatedCount = 0;
+
+      for (const product of products) {
+        // Skip if already has variants
+        if (product.variants && product.variants.length > 0) continue;
+        
+        const basePrice = parseFloat(product.price);
+        const variants = generateVariants(basePrice, product.category, product.stock);
+        const subcategory = determineSubcategory(product.name, product.category);
+        const potency = determinePotency(product.thcaContent);
+        
+        if (variants.length > 0) {
+          const prices = variants.map(v => v.price);
+          const priceRange = { min: Math.min(...prices), max: Math.max(...prices) };
+          
+          await storage.updateProduct(product.id, {
+            variants,
+            subcategory,
+            potency,
+            priceRange
+          });
+          
+          updatedCount++;
+        }
+      }
+
+      console.log(`✅ Updated ${updatedCount} products with variants`);
+      res.json({ 
+        success: true, 
+        updatedCount,
+        message: `Successfully updated ${updatedCount} products with size/weight variants` 
+      });
+      
+    } catch (error: any) {
+      console.error('Bulk update error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Cart routes
   app.get("/api/cart", authenticateToken, async (req: any, res) => {
     try {

@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Star, ShoppingCart } from 'lucide-react';
+import { Heart, Star, ShoppingCart, Package, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/components/ui/toast-provider';
-import type { Product } from '@shared/schema';
+import { ProductVariantSelector } from './product-variant-selector';
+import type { Product, ProductVariant } from '@shared/schema';
 
 interface ProductCardProps {
   product: Product;
@@ -15,9 +16,25 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onProductClick }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
+  const [showVariants, setShowVariants] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
+
+  // Get product variants or create default variant
+  const variants = product.variants && product.variants.length > 0 
+    ? product.variants 
+    : [{
+        id: `${product.id}-default`,
+        weight: product.weight || '1g',
+        price: parseFloat(product.price),
+        stock: product.stock,
+        isDefault: true
+      }];
+
+  const currentVariant = selectedVariant || variants.find(v => v.isDefault) || variants[0];
+  const priceRange = product.priceRange || { min: parseFloat(product.price), max: parseFloat(product.price) };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -27,9 +44,15 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
       return;
     }
 
+    if (currentVariant.stock === 0) {
+      toast('This variant is out of stock', 'warning');
+      return;
+    }
+
     try {
+      // For now, use the product ID. In a full implementation, you'd pass variant info
       await addToCart(product.id);
-      toast('Product added to cart!', 'success');
+      toast(`${currentVariant.weight} ${product.name} added to cart!`, 'success');
     } catch (error) {
       toast('Failed to add product to cart', 'error');
     }
@@ -47,15 +70,30 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'flower':
-        return 'bg-hemp text-white';
+        return 'bg-emerald-500 text-white';
+      case 'prerolls':
+        return 'bg-blue-500 text-white';
       case 'concentrates':
-        return 'bg-glow-green-500 text-black';
+        return 'bg-amber-500 text-black';
       case 'edibles':
         return 'bg-purple-500 text-white';
       case 'accessories':
-        return 'bg-blue-500 text-white';
-      default:
         return 'bg-gray-500 text-white';
+      default:
+        return 'bg-gray-600 text-white';
+    }
+  };
+
+  const getSubcategoryIcon = (category: string, subcategory?: string) => {
+    switch (category) {
+      case 'flower':
+        return <Package className="w-4 h-4" />;
+      case 'prerolls':
+        return <Zap className="w-4 h-4" />;
+      case 'concentrates':
+        return <Star className="w-4 h-4" />;
+      default:
+        return <Package className="w-4 h-4" />;
     }
   };
 
@@ -81,12 +119,27 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         <div className="absolute top-4 left-4 flex flex-col gap-2">
-          <Badge className={`${getCategoryColor(product.category)} text-sm font-semibold`}>
+          <Badge className={`${getCategoryColor(product.category)} text-sm font-semibold flex items-center gap-1`}>
+            {getSubcategoryIcon(product.category, product.subcategory)}
             {product.featured ? 'Premium' : product.category}
           </Badge>
+          {product.subcategory && (
+            <Badge className="bg-black/60 text-white text-xs">
+              {product.subcategory}
+            </Badge>
+          )}
           <Badge className="bg-white/90 text-black font-bold text-sm">
-            {product.weight}
+            {currentVariant.weight}
           </Badge>
+          {product.potency && (
+            <Badge className={`text-xs ${
+              product.potency === 'High' ? 'bg-red-500 text-white' :
+              product.potency === 'Medium' ? 'bg-yellow-500 text-black' :
+              'bg-green-500 text-white'
+            }`}>
+              {product.potency}
+            </Badge>
+          )}
         </div>
         
         <Button
@@ -110,27 +163,64 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         </p>
         
         <div className="flex items-center justify-between mb-2">
-          <span className="text-2xl font-bold text-glow-green-400 glow-effect">
-            ${product.price}
-          </span>
-          <div className="flex items-center text-glow-green-400">
+          <div>
+            {priceRange.min === priceRange.max ? (
+              <span className="text-2xl font-bold text-emerald-400">
+                ${currentVariant.price}
+              </span>
+            ) : (
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-emerald-400">
+                  ${currentVariant.price}
+                </span>
+                <span className="text-xs text-gray-400">
+                  ${priceRange.min} - ${priceRange.max}
+                </span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center text-emerald-400">
             <Star className="w-4 h-4 fill-current mr-1" />
             <span className="text-sm">{product.rating}</span>
           </div>
         </div>
         
+        {/* Variant Selector for products with multiple sizes */}
+        {variants.length > 1 && (
+          <div className="mb-4">
+            <ProductVariantSelector
+              variants={variants}
+              onVariantChange={setSelectedVariant}
+              selectedVariant={currentVariant}
+            />
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-4">
           <div className="text-center">
             <p className="text-xs text-gray-400 uppercase tracking-wide">Weight</p>
-            <p className="text-lg font-bold text-glow-green-400">{product.weight}</p>
+            <p className="text-lg font-bold text-emerald-400">{currentVariant.weight}</p>
           </div>
+          {product.thcaContent && (
+            <div className="text-center">
+              <p className="text-xs text-gray-400 uppercase tracking-wide">THCA</p>
+              <p className="text-lg font-bold text-emerald-400">{product.thcaContent}</p>
+            </div>
+          )}
+          {product.strainType && (
+            <div className="text-center">
+              <p className="text-xs text-gray-400 uppercase tracking-wide">Type</p>
+              <p className="text-sm font-semibold text-white capitalize">{product.strainType}</p>
+            </div>
+          )}
           <div className="text-center">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">THCA</p>
-            <p className="text-lg font-bold text-glow-green-400">{product.thcaContent}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs text-gray-400 uppercase tracking-wide">Type</p>
-            <p className="text-sm font-semibold text-white capitalize">{product.strainType}</p>
+            <p className="text-xs text-gray-400 uppercase tracking-wide">Stock</p>
+            <p className={`text-sm font-semibold ${
+              currentVariant.stock === 0 ? 'text-red-400' :
+              currentVariant.stock <= 5 ? 'text-yellow-400' : 'text-emerald-400'
+            }`}>
+              {currentVariant.stock === 0 ? 'Out' : currentVariant.stock}
+            </p>
           </div>
         </div>
         
@@ -142,10 +232,15 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         
         <Button
           onClick={handleAddToCart}
-          className="w-full button-glow text-black py-3 rounded-xl font-semibold transition-all duration-300"
+          disabled={currentVariant.stock === 0}
+          className={`w-full py-3 rounded-xl font-semibold transition-all duration-300 ${
+            currentVariant.stock === 0 
+              ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+              : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white'
+          }`}
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
-          Add to Cart
+          {currentVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </Button>
       </div>
     </motion.div>

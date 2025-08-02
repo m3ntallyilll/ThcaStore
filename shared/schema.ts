@@ -28,6 +28,11 @@ export const products = pgTable("products", {
   thcaContent: text("thca_content"), // THC percentage as text (e.g., "25%")
   strainType: text("strain_type"),
   effects: jsonb("effects").$type<string[]>(),
+  // New fields for enhanced product variants
+  variants: jsonb("variants").$type<ProductVariant[]>().default([]), // Size/weight variants with pricing
+  subcategory: text("subcategory"), // Enhanced categorization (indica, sativa, hybrid for flower)
+  potency: text("potency"), // Low, Medium, High
+  priceRange: jsonb("price_range").$type<{ min: number; max: number }>(), // Price range for variants
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -110,6 +115,43 @@ export const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 });
+
+// Product variant type for size/weight options
+export type ProductVariant = {
+  id: string;
+  weight: string;
+  price: number;
+  stock: number;
+  isDefault?: boolean;
+};
+
+// Enhanced category definitions
+export const PRODUCT_CATEGORIES = {
+  flower: {
+    name: 'Flower',
+    subcategories: ['indica', 'sativa', 'hybrid'],
+    weights: ['1g', '3.5g', '7g', '14g', '28g'],
+    priceRanges: { '1g': [8, 15], '3.5g': [25, 50], '7g': [45, 90], '14g': [80, 160], '28g': [150, 300] }
+  },
+  prerolls: {
+    name: 'Pre-Rolls',
+    subcategories: ['single', 'pack', 'infused'],
+    weights: ['1.1g', '1.25g', '1.45g', '1.5g'],
+    priceRanges: { '1.1g': [6, 12], '1.25g': [7, 14], '1.45g': [8, 16], '1.5g': [9, 18] }
+  },
+  concentrates: {
+    name: 'Concentrates',
+    subcategories: ['wax', 'shatter', 'live_resin', 'rosin'],
+    weights: ['0.5g', '1g', '2g'],
+    priceRanges: { '0.5g': [25, 50], '1g': [45, 90], '2g': [80, 160] }
+  },
+  edibles: {
+    name: 'Edibles',
+    subcategories: ['gummies', 'chocolates', 'beverages', 'baked_goods'],
+    weights: ['100mg', '250mg', '500mg', '1000mg'],
+    priceRanges: { '100mg': [15, 30], '250mg': [25, 50], '500mg': [40, 80], '1000mg': [70, 140] }
+  }
+} as const;
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
