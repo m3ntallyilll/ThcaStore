@@ -38,15 +38,15 @@ export class AIAssistant {
     try {
       // Check if Groq is available
       if (!groq) {
-        return this.getFallbackResponse(message, context);
+        return await this.getFallbackResponse(message, context);
       }
 
       // Get user context and active offers
       const activeOffers = await this.getActiveOffers(context.userTier?.name);
-      const products = await this.getProducts();
+      const productsData = await this.getProducts();
 
       // Create system prompt with context
-      const systemPrompt = this.buildSystemPrompt(context, activeOffers, products, userContext);
+      const systemPrompt = this.buildSystemPrompt(context, activeOffers, productsData, userContext);
 
       // Use Groq with message prefilling for structured response
       const completion = await groq.chat.completions.create({
@@ -103,39 +103,98 @@ export class AIAssistant {
 
     } catch (error) {
       console.error('AI Assistant Error:', error);
-      return this.getFallbackResponse(message, context);
+      return await this.getFallbackResponse(message, context);
     }
   }
 
-  private getFallbackResponse(message: string, context: AIAssistantContext) {
+  private async getEnhancedFallbackResponse(message: string, context: AIAssistantContext, products: any[]) {
     const lowerMessage = message.toLowerCase();
+
+    // Get product recommendations
+    const recommendedProducts = await this.analyzeForProductRecommendations(message, products, context);
+    const recommendedProductDetails = products.filter(p => recommendedProducts.includes(p.id));
 
     // Simple intent detection for fallback
     let intent = "general_assistance";
     let response = "Hi! I'm here to help you with our premium THCA products. What can I assist you with today?";
-    let recommendedProducts: string[] = [];
+    let actionItems: any[] = [];
 
     if (lowerMessage.includes("product") || lowerMessage.includes("buy") || lowerMessage.includes("shop")) {
       intent = "product_recommendation";
-      response = "I'd be happy to help you find the perfect THCA products! Our selection includes premium flower, concentrates, and edibles. What type of product interests you most?";
+      response = `I'd be happy to help you find the perfect THCA products! Based on your interest, I recommend checking out these popular items:\n\n`;
+
+      recommendedProductDetails.forEach(product => {
+        response += `🌿 **${product.name}** - $${product.price}\n${product.description.substring(0, 100)}...\n\n`;
+      });
+
+      response += "Would you like to add any of these to your cart or learn more about them?";
+
+      actionItems.push({
+        type: "show_products",
+        data: { productIds: recommendedProducts }
+      });
+
     } else if (lowerMessage.includes("reward") || lowerMessage.includes("point")) {
       intent = "rewards_inquiry";
       response = context.userId 
-        ? `Great question about rewards! You currently have ${context.userRewards?.totalPoints || 0} points. You can earn more points with every purchase and referral!`
-        : "Our rewards program lets you earn points with every purchase! Sign up to start earning points you can redeem for discounts.";
+        ? `Great question about rewards! You currently have ${context.userRewards?.totalPoints || 0} points. Check out these products to earn more points:\n\n`
+        : "Our rewards program lets you earn points with every purchase! Sign up to start earning points. Here are some great products to get you started:\n\n";
+
+      recommendedProductDetails.forEach(product => {
+        const pointsEarned = Math.floor(parseFloat(product.price) * (context.userTier?.multiplier || 1));
+        response += `🌿 **${product.name}** - Earn ${pointsEarned} points ($${product.price})\n`;
+      });
+
+      actionItems.push({
+        type: "show_products", 
+        data: { productIds: recommendedProducts }
+      });
+
     } else if (lowerMessage.includes("price") || lowerMessage.includes("cost") || lowerMessage.includes("$")) {
       intent = "price_inquiry";
-      response = "Our THCA products are competitively priced with frequent special offers! Check out our products page to see current prices and any active promotions.";
+      response = "Our THCA products are competitively priced with frequent special offers! Here are some great value options:\n\n";
+
+      recommendedProductDetails.forEach(product => {
+        response += `🌿 **${product.name}** - $${product.price} (${product.category})\n`;
+      });
+
+      response += "\nPlus you earn reward points on every purchase!";
+
+      actionItems.push({
+        type: "show_products",
+        data: { productIds: recommendedProducts }
+      });
+
+    } else {
+      // General greeting with product recommendations
+      response = `Hi! I'm here to help you find the perfect THCA products. Based on our most popular items, I recommend:\n\n`;
+
+      recommendedProductDetails.forEach(product => {
+        response += `🌿 **${product.name}** - $${product.price}\n${product.description.substring(0, 80)}...\n\n`;
+      });
+
+      response += "What type of THCA product are you interested in today?";
+
+      actionItems.push({
+        type: "show_products",
+        data: { productIds: recommendedProducts }
+      });
     }
 
     return {
       response,
       intent,
-      sentiment: "positive",
+      sentiment: "positive", 
       recommendedProducts,
       suggestedOffers: [],
-      actionItems: []
+      actionItems
     };
+  }
+
+  private async getFallbackResponse(message: string, context: AIAssistantContext) {
+    const products = await this.getProducts();
+    // This is now a simple wrapper that calls the enhanced version
+    return this.getEnhancedFallbackResponse(message, context, products);
   }
 
   private buildSystemPrompt(
@@ -387,6 +446,12 @@ Generate offers that would entice this customer to make another purchase. Includ
     }
 
     return offers;
+  }
+
+  // Add product analysis and recommendation logic here. This is a placeholder.
+  private async analyzeForProductRecommendations(message: string, products: any[], context:AIAssistantContext): Promise<string[]> {
+    // Simple logic: Recommend the first 3 products.
+    return products.slice(0, 3).map(p => p.id);
   }
 }
 
