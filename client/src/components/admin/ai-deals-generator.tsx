@@ -132,6 +132,7 @@ export default function AIDealsGenerator() {
                       onChange={(e) => setGenerationData(prev => ({ ...prev, targetAudience: e.target.value }))}
                       placeholder="e.g., new customers, high-value buyers"
                       className="bg-dark-700 border-dark-600 text-white"
+                      aria-label="Target Audience"
                     />
                   </div>
                   

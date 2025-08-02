@@ -977,52 +977,62 @@ export default function Home() {
                   <form onSubmit={handleContactSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2">First Name *</label>
+                        <label htmlFor="firstName" className="block text-sm font-medium mb-2">First Name *</label>
                         <Input 
+                          id="firstName"
                           value={contactForm.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
                           placeholder="Your first name"
                           className="glass border-glow-green-500/30 focus:border-glow-green-400"
                           required
+                          aria-label="First Name"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Last Name</label>
+                        <label htmlFor="lastName" className="block text-sm font-medium mb-2">Last Name</label>
                         <Input 
+                          id="lastName"
                           value={contactForm.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
                           placeholder="Your last name"
                           className="glass border-glow-green-500/30 focus:border-glow-green-400"
+                          aria-label="Last Name"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Email *</label>
+                      <label htmlFor="email" className="block text-sm font-medium mb-2">Email *</label>
                       <Input 
+                        id="email"
                         type="email"
                         value={contactForm.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
                         placeholder="your@email.com"
                         className="glass border-glow-green-500/30 focus:border-glow-green-400"
                         required
+                        aria-label="Email Address"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Subject</label>
+                      <label htmlFor="subject" className="block text-sm font-medium mb-2">Subject</label>
                       <Input 
+                        id="subject"
                         value={contactForm.subject}
                         onChange={(e) => handleInputChange('subject', e.target.value)}
                         placeholder="How can we help?"
                         className="glass border-glow-green-500/30 focus:border-glow-green-400"
+                        aria-label="Subject"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Message *</label>
+                      <label htmlFor="message" className="block text-sm font-medium mb-2">Message *</label>
                       <Textarea 
+                        id="message"
                         value={contactForm.message}
                         onChange={(e) => handleInputChange('message', e.target.value)}
                         placeholder="Tell us about your inquiry..."
                         rows={5}
+                        aria-label="Message"
                         className="glass border-glow-green-500/30 focus:border-glow-green-400 resize-none"
                         required
                       />
