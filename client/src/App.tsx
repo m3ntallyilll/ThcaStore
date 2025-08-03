@@ -62,6 +62,7 @@ import { useDiscountPopup } from "@/hooks/use-discount-popup";
 // Discount Components  
 import { DiscountPopup } from "@/components/ui/discount-popup";
 import { FloatingDiscountBanner } from "@/components/ui/floating-discount-banner";
+import { SmokeBackground } from "@/components/ui/smoke-background";
 
 function Router() {
   // Track page views when routes change
@@ -122,13 +123,16 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-900 text-white">
-      <SkipLinks />
-      <Navigation />
-      <main id="main-content" tabIndex={-1}>
-        <Router />
-      </main>
-      <Footer />
+    <div className="min-h-screen bg-black text-white relative">
+      <SmokeBackground />
+      <div className="relative z-10">
+        <SkipLinks />
+        <Navigation />
+        <main id="main-content" tabIndex={-1}>
+          <Router />
+        </main>
+        <Footer />
+      </div>
       <CartSidebar />
       <AIChat 
         autoOpen={true} 
