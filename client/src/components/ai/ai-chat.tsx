@@ -449,9 +449,10 @@ How can I help you today? I can:
                       variant="ghost"
                       size="icon"
                       onClick={() => setIsOpen(false)}
-                      className="text-black hover:bg-black/10"
+                      className="text-black hover:bg-black/20 hover:scale-110 transition-all duration-200"
+                      title="Close chat"
                     >
-                      <X className="w-5 h-5" />
+                      <X className="w-5 h-5 font-bold" />
                     </Button>
                   </div>
                 </div>
