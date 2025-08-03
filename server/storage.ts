@@ -152,7 +152,7 @@ export class MemStorage implements IStorage {
         description: "Premium Sour Diesel flower infused with THCA diamonds for maximum potency and flavor.",
         price: "15.99",
         category: "prerolls",
-        imageUrl: "https://images.unsplash.com/photo-1566041510394-cf7c8fe21800?w=400",
+        imageUrl: `/api/placeholder/400/400`,
         stock: 25,
         weight: "1.25g",
         featured: true,
@@ -172,7 +172,7 @@ export class MemStorage implements IStorage {
         description: "Sweet Purple Koolaid strain infused with THCA diamonds for a flavorful and potent experience.",
         price: "17.99",
         category: "prerolls",
-        imageUrl: "https://images.unsplash.com/photo-1566041492973-9248fe49ce88?w=400",
+        imageUrl: `/api/placeholder/400/400`,
         stock: 20,
         weight: "1.45g",
         featured: true,
@@ -192,7 +192,7 @@ export class MemStorage implements IStorage {
         description: "Zesty Sour Lemon Diesel strain with citrus terpenes and energizing effects.",
         price: "12.99",
         category: "prerolls",
-        imageUrl: "https://images.unsplash.com/photo-1566041438030-0f0e7e0b0b0b?w=400",
+        imageUrl: `/api/placeholder/400/400`,
         stock: 30,
         weight: "1.25g",
         featured: false,
@@ -212,7 +212,7 @@ export class MemStorage implements IStorage {
         description: "Premium Too Tall strain known for its towering effects and smooth smoke.",
         price: "13.99",
         category: "prerolls",
-        imageUrl: "https://images.unsplash.com/photo-1566041438885-ce6b8d4a0f0f?w=400",
+        imageUrl: `/api/placeholder/400/400`,
         stock: 22,
         weight: "1.25g",
         featured: false,
@@ -232,7 +232,7 @@ export class MemStorage implements IStorage {
         description: "Sweet and fruity Runtz strain with candy-like flavors and balanced effects.",
         price: "16.99",
         category: "prerolls",
-        imageUrl: "https://images.unsplash.com/photo-1566041513885-84c8f4a0f0f0?w=400",
+        imageUrl: `/api/placeholder/400/400`,
         stock: 18,
         weight: "1.45g",
         featured: true,
@@ -348,7 +348,7 @@ export class MemStorage implements IStorage {
           description: strain.description,
           price: price,
           category: "flower",
-          imageUrl: `https://images.unsplash.com/photo-${1560718547000 + strainIndex * 1000}?w=400`,
+          imageUrl: `/api/placeholder/400/400`,
           stock: Math.floor(Math.random() * 20) + 10,
           weight: weightOption.weight,
           featured: strain.subcategory === 'infused' || weightOption.weight === '3.5g',
@@ -362,6 +362,90 @@ export class MemStorage implements IStorage {
           priceRange: { min: parseFloat(price) - 5, max: parseFloat(price) + 5 },
           createdAt: new Date(),
         });
+      });
+    });
+
+    // Pre-roll packs (2s, 3s, 4s, 5s, 6s, 7s, 8s, 9s, 10s, 15s)
+    const packSizes = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15];
+    const preRollStrains = ['Sour Diesel Infused', 'Purple Koolaid Infused', 'Sour Lemon Diesel', 'Too Tall', 'Runtz'];
+    
+    preRollStrains.forEach((strain, strainIndex) => {
+      packSizes.forEach((packSize, packIndex) => {
+        const basePrice = strain.includes('Infused') ? 16 : 13;
+        const discountRate = packSize >= 10 ? 0.15 : packSize >= 5 ? 0.10 : 0.05;
+        const totalPrice = (basePrice * packSize * (1 - discountRate)).toFixed(2);
+        
+        sampleProducts.push({
+          id: `pack-${strainIndex}-${packIndex}`,
+          name: `${strain} Pre-Roll Pack (${packSize}x)`,
+          description: `Pack of ${packSize} premium ${strain} pre-rolls with ${Math.round(discountRate * 100)}% bulk discount.`,
+          price: totalPrice,
+          category: "prerolls",
+          imageUrl: `/api/placeholder/400/400`,
+          stock: Math.floor(Math.random() * 15) + 5,
+          weight: `${packSize}x1.25g`,
+          featured: packSize === 5 || packSize === 10,
+          rating: (4.6 + Math.random() * 0.4).toFixed(1),
+          thcaContent: strain.includes('Infused') ? '32.0' : '28.0',
+          strainType: strain.includes('Purple') ? 'Indica' : strain.includes('Runtz') ? 'Hybrid' : 'Sativa',
+          effects: strain.includes('Infused') ? ['potent', 'premium', 'bulk'] : ['energizing', 'bulk', 'value'] as string[],
+          variants: null,
+          subcategory: 'pack',
+          potency: strain.includes('Infused') ? 'High' : 'Medium',
+          priceRange: { min: parseFloat(totalPrice) - 10, max: parseFloat(totalPrice) + 10 },
+          createdAt: new Date(),
+        });
+      });
+    });
+
+    // Mixed variety packs (3 grams + 3 pre-rolls)
+    const varietyPacks = [
+      {
+        name: "Indica Variety Pack",
+        description: "3 different indica flower grams (Grape Popsicle, Purple Koolaid, Wedding Cake) + 3 mixed pre-rolls",
+        strains: ["Grape Popsicle", "Purple Koolaid", "Wedding Cake"],
+        price: "89.99"
+      },
+      {
+        name: "Sativa Variety Pack", 
+        description: "3 different sativa flower grams (Sour Diesel, Sour Lemon Diesel, Sour Diesel Popcorn) + 3 sativa pre-rolls",
+        strains: ["Sour Diesel", "Sour Lemon Diesel", "Sour Diesel Popcorn"],
+        price: "79.99"
+      },
+      {
+        name: "Hybrid Variety Pack",
+        description: "3 different hybrid flower grams (Girl Scout Cookies, Runtz x Peppermint, Wedding Cake) + 3 hybrid pre-rolls",
+        strains: ["Girl Scout Cookies", "Runtz x Peppermint", "Wedding Cake"],
+        price: "84.99"
+      },
+      {
+        name: "Premium Variety Pack",
+        description: "3 premium infused flower grams + 3 infused pre-rolls featuring our top-shelf selections",
+        strains: ["Purple Koolaid Infused", "Mixed Premium", "Top Shelf"],
+        price: "129.99"
+      }
+    ];
+
+    varietyPacks.forEach((pack, packIndex) => {
+      sampleProducts.push({
+        id: `variety-${packIndex}`,
+        name: pack.name,
+        description: pack.description,
+        price: pack.price,
+        category: "variety-packs",
+        imageUrl: `/api/placeholder/400/400`,
+        stock: Math.floor(Math.random() * 10) + 3,
+        weight: "3g + 3 pre-rolls",
+        featured: pack.name.includes('Premium'),
+        rating: (4.7 + Math.random() * 0.3).toFixed(1),
+        thcaContent: pack.name.includes('Premium') ? '35.0' : '28.5',
+        strainType: pack.name.includes('Indica') ? 'Indica' : pack.name.includes('Sativa') ? 'Sativa' : 'Hybrid',
+        effects: ['variety', 'mixed', 'sampler'] as string[],
+        variants: null,
+        subcategory: 'variety',
+        potency: pack.name.includes('Premium') ? 'High' : 'Medium',
+        priceRange: { min: parseFloat(pack.price) - 15, max: parseFloat(pack.price) + 15 },
+        createdAt: new Date(),
       });
     });
 
