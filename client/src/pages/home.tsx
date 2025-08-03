@@ -716,7 +716,7 @@ export default function Home() {
                   viewport={{ once: true }}
                 >
                   We're not just another hemp company. We're 
-                  <span className="text-emerald-400 font-bold" role="heading" aria-level="4"> pioneers of a new era</span> – 
+                  <span className="text-emerald-400 font-bold" role="heading" aria-level={4}> pioneers of a new era</span> – 
                   where cutting-edge science meets artisanal craftsmanship.
                 </motion.p>
                 
@@ -727,9 +727,9 @@ export default function Home() {
                   transition={{ delay: 0.6, duration: 0.8 }}
                   viewport={{ once: true }}
                 >
-                  Our team of <span className="text-gold font-semibold" role="heading" aria-level="5">molecular scientists</span>, 
-                  <span className="text-teal-400 font-semibold" role="heading" aria-level="5"> master cultivators</span>, and 
-                  <span className="text-purple-400 font-semibold" role="heading" aria-level="5"> AI specialists</span> work in 
+                  Our team of <span className="text-gold font-semibold" role="heading" aria-level={5}>molecular scientists</span>, 
+                  <span className="text-teal-400 font-semibold" role="heading" aria-level={5}> master cultivators</span>, and 
+                  <span className="text-purple-400 font-semibold" role="heading" aria-level={5}> AI specialists</span> work in 
                   perfect harmony to create products that transcend traditional boundaries.
                 </motion.p>
 
