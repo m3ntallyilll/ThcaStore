@@ -329,8 +329,7 @@ export class MemStorage implements IStorage {
       { weight: "3.5g", basePrice: 35, label: "Eighth" },
       { weight: "7g", basePrice: 65, label: "Quarter" },
       { weight: "14g", basePrice: 120, label: "Half" },
-      { weight: "28g", basePrice: 220, label: "Ounce" },
-      { weight: "112g", basePrice: 800, label: "Quarter Pound" },
+      { weight: "112g", basePrice: 800, label: "QP" },
       { weight: "448g", basePrice: 2800, label: "Pound" }
     ];
 
