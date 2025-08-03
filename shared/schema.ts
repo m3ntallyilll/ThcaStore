@@ -683,11 +683,4 @@ export const insertPromoCodeSchema = createInsertSchema(promoCodes);
 export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
 export type PromoCode = typeof promoCodes.$inferSelect;
 
-// Product variant interface for enhanced product management
-export interface ProductVariant {
-  id: string;
-  weight: string;
-  price: number;
-  stock: number;
-  isDefault?: boolean;
-}
+

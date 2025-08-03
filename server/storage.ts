@@ -160,6 +160,10 @@ export class MemStorage implements IStorage {
         thcaContent: "28.5",
         strainType: "Sativa Dominant",
         effects: ["euphoric", "creative", "uplifting"] as string[],
+        variants: null,
+        subcategory: "sativa",
+        potency: "High",
+        priceRange: { min: 75, max: 105 },
         createdAt: new Date(),
       },
       {
@@ -176,6 +180,10 @@ export class MemStorage implements IStorage {
         thcaContent: "99.2",
         strainType: "Hybrid",
         effects: ["relaxing", "potent", "flavorful"] as string[],
+        variants: null,
+        subcategory: "live_resin",
+        potency: "High",
+        priceRange: { min: 130, max: 170 },
         createdAt: new Date(),
       },
       {
@@ -190,8 +198,12 @@ export class MemStorage implements IStorage {
         featured: false,
         rating: "4.7",
         thcaContent: "10.0",
-        strainType: "N/A",
+        strainType: null,
         effects: ["long-lasting", "precise", "tasty"] as string[],
+        variants: null,
+        subcategory: "gummies",
+        potency: "Medium",
+        priceRange: { min: 40, max: 60 },
         createdAt: new Date(),
       },
       {
@@ -208,6 +220,10 @@ export class MemStorage implements IStorage {
         thcaContent: null,
         strainType: null,
         effects: [] as string[],
+        variants: null,
+        subcategory: "grinders",
+        potency: null,
+        priceRange: { min: 70, max: 90 },
         createdAt: new Date(),
       }
     ];
@@ -273,6 +289,10 @@ export class MemStorage implements IStorage {
       thcaContent: insertProduct.thcaContent ?? null,
       strainType: insertProduct.strainType ?? null,
       effects: insertProduct.effects && Array.isArray(insertProduct.effects) ? insertProduct.effects as string[] : null,
+      variants: insertProduct.variants ?? null,
+      subcategory: insertProduct.subcategory ?? null,
+      potency: insertProduct.potency ?? null,
+      priceRange: insertProduct.priceRange ?? null,
       createdAt: new Date() 
     };
     this.products.set(id, product);
@@ -392,6 +412,9 @@ export class MemStorage implements IStorage {
       shippingCost: insertOrder.shippingCost || "0.00",
       shippingMethod: insertOrder.shippingMethod || "standard",
       trackingNumber: insertOrder.trackingNumber || null,
+      estimatedDelivery: insertOrder.estimatedDelivery || null,
+      totalWeight: insertOrder.totalWeight || null,
+      shippingPhone: insertOrder.shippingPhone || null,
       paymentStatus: insertOrder.paymentStatus || "pending",
       shippingAddress: insertOrder.shippingAddress || "",
       createdAt: new Date() 
@@ -642,8 +665,8 @@ export class MemStorage implements IStorage {
     return Array.from(this.dailyPromotions.values());
   }
 
-  async getPromotionByDay(day: string): Promise<any> {
-    return Array.from(this.dailyPromotions.values()).find((p: any) => p.date === day);
+  async getPromotionByDay(dayOfWeek: number): Promise<any[]> {
+    return Array.from(this.dailyPromotions.values()).filter((p: any) => p.dayOfWeek === dayOfWeek);
   }
 
   async getDailyPromotionsByDay(dayOfWeek: number): Promise<any[]> {
@@ -685,6 +708,47 @@ export class MemStorage implements IStorage {
       promotion.currentUses = (promotion.currentUses || 0) + 1;
       this.dailyPromotions.set(promotionId, promotion);
     }
+  }
+
+  // Promo Code methods
+  async getPromoCodes(): Promise<any[]> {
+    return Array.from(this.promoCodes.values());
+  }
+
+  async getPromoCodeByCode(code: string): Promise<any | undefined> {
+    return Array.from(this.promoCodes.values()).find((p: any) => p.code === code);
+  }
+
+  async createPromoCode(promoCode: any): Promise<any> {
+    const id = randomUUID();
+    const newPromoCode = { ...promoCode, id, createdAt: new Date() };
+    this.promoCodes.set(id, newPromoCode);
+    return newPromoCode;
+  }
+
+  async updatePromoCodeUsage(id: string): Promise<any | undefined> {
+    const promoCode = this.promoCodes.get(id);
+    if (!promoCode) return undefined;
+    promoCode.currentUses = (promoCode.currentUses || 0) + 1;
+    this.promoCodes.set(id, promoCode);
+    return promoCode;
+  }
+
+  async validatePromoCode(code: string): Promise<{ valid: boolean; promoCode?: any; error?: string }> {
+    const promoCode = await this.getPromoCodeByCode(code);
+    if (!promoCode) {
+      return { valid: false, error: 'Promo code not found' };
+    }
+    if (!promoCode.isActive) {
+      return { valid: false, error: 'Promo code is not active' };
+    }
+    if (promoCode.expiresAt && new Date() > new Date(promoCode.expiresAt)) {
+      return { valid: false, error: 'Promo code has expired' };
+    }
+    if (promoCode.maxUses && promoCode.currentUses >= promoCode.maxUses) {
+      return { valid: false, error: 'Promo code usage limit reached' };
+    }
+    return { valid: true, promoCode };
   }
 }
 
