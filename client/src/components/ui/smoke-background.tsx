@@ -6,20 +6,9 @@ interface SmokeBackgroundProps {
 
 export function SmokeBackground({ className = '' }: SmokeBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    console.log('SmokeBackground mounted');
-    const iframe = iframeRef.current;
-    if (iframe) {
-      console.log('iframe found, setting up...');
-      iframe.onload = () => {
-        console.log('iframe loaded successfully');
-      };
-      iframe.onerror = (e) => {
-        console.error('iframe error:', e);
-      };
-    }
+    console.log('SmokeBackground mounted - Pure CSS version');
   }, []);
 
   return (
@@ -54,23 +43,20 @@ export function SmokeBackground({ className = '' }: SmokeBackgroundProps) {
           Smoke Background Active
         </div>
         
-        {/* YouTube Video Background */}
-        <div className="absolute inset-0 w-full h-full opacity-30">
-          <iframe
-            ref={iframeRef}
-            src="https://www.youtube.com/embed/x37iFVV4hBw?autoplay=1&loop=1&mute=1&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1&playlist=x37iFVV4hBw&start=0"
-            className="w-full h-full"
-            style={{
-              border: 'none',
-              transform: 'scale(1.1)',
-              transformOrigin: 'center center',
-              filter: 'contrast(1.2) brightness(0.7) saturate(0.5)',
-              mixBlendMode: 'screen'
-            }}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            title="Smoke Background"
-          />
-        </div>
+        {/* Enhanced Pure CSS Smoke Background */}
+        <div 
+          className="absolute inset-0 w-full h-full opacity-40"
+          style={{
+            background: `
+              radial-gradient(ellipse at 10% 20%, rgba(255,255,255,0.25) 0%, transparent 50%),
+              radial-gradient(ellipse at 90% 80%, rgba(255,255,255,0.20) 0%, transparent 60%),
+              radial-gradient(ellipse at 30% 90%, rgba(255,255,255,0.18) 0%, transparent 45%),
+              radial-gradient(ellipse at 70% 10%, rgba(255,255,255,0.22) 0%, transparent 55%)
+            `,
+            filter: 'blur(6px)',
+            mixBlendMode: 'screen'
+          }}
+        />
 
         {/* Animated smoke overlays */}
         <div className="smoke-layer-1" />
