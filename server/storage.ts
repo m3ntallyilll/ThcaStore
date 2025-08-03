@@ -152,7 +152,7 @@ export class MemStorage implements IStorage {
         description: "Premium Sour Diesel flower infused with THCA diamonds for maximum potency and flavor.",
         price: "15.99",
         category: "prerolls",
-        imageUrl: `/api/placeholder/400/400`,
+        imageUrl: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format`,
         stock: 25,
         weight: "1.25g",
         featured: true,
@@ -172,7 +172,7 @@ export class MemStorage implements IStorage {
         description: "Sweet Purple Koolaid strain infused with THCA diamonds for a flavorful and potent experience.",
         price: "17.99",
         category: "prerolls",
-        imageUrl: `/api/placeholder/400/400`,
+        imageUrl: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`,
         stock: 20,
         weight: "1.45g",
         featured: true,
@@ -192,7 +192,7 @@ export class MemStorage implements IStorage {
         description: "Zesty Sour Lemon Diesel strain with citrus terpenes and energizing effects.",
         price: "12.99",
         category: "prerolls",
-        imageUrl: `/api/placeholder/400/400`,
+        imageUrl: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`,
         stock: 30,
         weight: "1.25g",
         featured: false,
@@ -212,7 +212,7 @@ export class MemStorage implements IStorage {
         description: "Premium Too Tall strain known for its towering effects and smooth smoke.",
         price: "13.99",
         category: "prerolls",
-        imageUrl: `/api/placeholder/400/400`,
+        imageUrl: `https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format`,
         stock: 22,
         weight: "1.25g",
         featured: false,
@@ -232,7 +232,7 @@ export class MemStorage implements IStorage {
         description: "Sweet and fruity Runtz strain with candy-like flavors and balanced effects.",
         price: "16.99",
         category: "prerolls",
-        imageUrl: `/api/placeholder/400/400`,
+        imageUrl: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`,
         stock: 18,
         weight: "1.45g",
         featured: true,
@@ -342,13 +342,22 @@ export class MemStorage implements IStorage {
         const priceMultiplier = strain.subcategory === 'infused' ? 1.5 : strain.subcategory === 'popcorn' ? 0.8 : 1.0;
         const price = (weightOption.basePrice * priceMultiplier).toFixed(2);
         
+        const flowerImageUrl = strain.name.includes('Grape') ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Purple Koolaid') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Sour Diesel') && strain.name.includes('Popcorn') ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Sour Diesel') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Sour Lemon') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Wedding Cake') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Girl Scout') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
+                             'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format';
+        
         sampleProducts.push({
           id: `fl-${strainIndex}-${weightIndex}`,
           name: `${strain.name} - ${weightOption.label}`,
           description: strain.description,
           price: price,
           category: "flower",
-          imageUrl: `/api/placeholder/400/400`,
+          imageUrl: flowerImageUrl,
           stock: Math.floor(Math.random() * 20) + 10,
           weight: weightOption.weight,
           featured: strain.subcategory === 'infused' || weightOption.weight === '3.5g',
@@ -375,13 +384,19 @@ export class MemStorage implements IStorage {
         const discountRate = packSize >= 10 ? 0.15 : packSize >= 5 ? 0.10 : 0.05;
         const totalPrice = (basePrice * packSize * (1 - discountRate)).toFixed(2);
         
+        const packImageUrl = strain.includes('Sour Diesel') ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format' :
+                             strain.includes('Purple Koolaid') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             strain.includes('Lemon') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             strain.includes('Too Tall') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
+                             'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format';
+        
         sampleProducts.push({
           id: `pack-${strainIndex}-${packIndex}`,
           name: `${strain} Pre-Roll Pack (${packSize}x)`,
           description: `Pack of ${packSize} premium ${strain} pre-rolls with ${Math.round(discountRate * 100)}% bulk discount.`,
           price: totalPrice,
           category: "prerolls",
-          imageUrl: `/api/placeholder/400/400`,
+          imageUrl: packImageUrl,
           stock: Math.floor(Math.random() * 15) + 5,
           weight: `${packSize}x1.25g`,
           featured: packSize === 5 || packSize === 10,
@@ -427,13 +442,18 @@ export class MemStorage implements IStorage {
     ];
 
     varietyPacks.forEach((pack, packIndex) => {
+      const varietyImageUrl = pack.name.includes('Indica') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             pack.name.includes('Sativa') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
+                             pack.name.includes('Hybrid') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format';
+      
       sampleProducts.push({
         id: `variety-${packIndex}`,
         name: pack.name,
         description: pack.description,
         price: pack.price,
         category: "variety-packs",
-        imageUrl: `/api/placeholder/400/400`,
+        imageUrl: varietyImageUrl,
         stock: Math.floor(Math.random() * 10) + 3,
         weight: "3g + 3 pre-rolls",
         featured: pack.name.includes('Premium'),
