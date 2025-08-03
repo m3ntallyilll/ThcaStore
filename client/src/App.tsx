@@ -125,7 +125,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-black text-white relative">
       <SmokeBackground />
-      <div className="relative z-10">
+      <div className="relative z-10 bg-black/20 backdrop-blur-[1px]">
         <SkipLinks />
         <Navigation />
         <main id="main-content" tabIndex={-1}>
