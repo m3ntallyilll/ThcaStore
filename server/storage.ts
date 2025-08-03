@@ -144,89 +144,226 @@ export class MemStorage implements IStorage {
   }
 
   private initializeSampleData() {
-    // Sample products
-    const sampleProducts: Product[] = [
+    // Pre-rolls
+    const preRolls = [
       {
-        id: "1",
-        name: "Purple Haze THCA",
-        description: "Premium indoor-grown THCA flower with exceptional terpene profile and rich purple hues. Known for its euphoric and creative effects.",
-        price: "89.99",
-        category: "flower",
-        imageUrl: "https://images.unsplash.com/photo-1560718547-8c2234c7d1c4?w=400",
-        stock: 23,
-        weight: "0.22",
+        id: "pr-sour-diesel-infused",
+        name: "Sour Diesel Infused Pre-Roll",
+        description: "Premium Sour Diesel flower infused with THCA diamonds for maximum potency and flavor.",
+        price: "15.99",
+        category: "prerolls",
+        imageUrl: "https://images.unsplash.com/photo-1566041510394-cf7c8fe21800?w=400",
+        stock: 25,
+        weight: "1.25g",
         featured: true,
         rating: "4.8",
-        thcaContent: "28.5",
-        strainType: "Sativa Dominant",
-        effects: ["euphoric", "creative", "uplifting"] as string[],
+        thcaContent: "32.5",
+        strainType: "Sativa",
+        effects: ["energizing", "uplifting", "focused"] as string[],
         variants: null,
-        subcategory: "sativa",
+        subcategory: "infused",
         potency: "High",
-        priceRange: { min: 75, max: 105 },
+        priceRange: { min: 15, max: 16 },
         createdAt: new Date(),
       },
       {
-        id: "2",
-        name: "Live Resin Diamond",
-        description: "99% pure THCA diamonds with full-spectrum terpenes preserved through our proprietary extraction process.",
-        price: "149.99",
-        category: "concentrates",
-        imageUrl: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=400",
-        stock: 12,
-        weight: "0.03",
+        id: "pr-purple-koolaid-infused",
+        name: "Purple Koolaid Infused Pre-Roll",
+        description: "Sweet Purple Koolaid strain infused with THCA diamonds for a flavorful and potent experience.",
+        price: "17.99",
+        category: "prerolls",
+        imageUrl: "https://images.unsplash.com/photo-1566041492973-9248fe49ce88?w=400",
+        stock: 20,
+        weight: "1.45g",
         featured: true,
         rating: "4.9",
-        thcaContent: "99.2",
-        strainType: "Hybrid",
-        effects: ["relaxing", "potent", "flavorful"] as string[],
+        thcaContent: "34.2",
+        strainType: "Indica",
+        effects: ["relaxing", "euphoric", "sweet"] as string[],
         variants: null,
-        subcategory: "live_resin",
+        subcategory: "infused",
         potency: "High",
-        priceRange: { min: 130, max: 170 },
+        priceRange: { min: 17, max: 18 },
         createdAt: new Date(),
       },
       {
-        id: "3",
-        name: "THCA Gummies",
-        description: "Precisely dosed THCA gummies with natural fruit flavors. Each gummy contains 10mg of THCA for consistent effects.",
-        price: "49.99",
-        category: "edibles",
-        imageUrl: "https://images.unsplash.com/photo-1582735689369-4fe89db7114c?w=400",
-        stock: 45,
-        weight: "0.006",
+        id: "pr-sour-lemon-diesel",
+        name: "Sour Lemon Diesel Pre-Roll",
+        description: "Zesty Sour Lemon Diesel strain with citrus terpenes and energizing effects.",
+        price: "12.99",
+        category: "prerolls",
+        imageUrl: "https://images.unsplash.com/photo-1566041438030-0f0e7e0b0b0b?w=400",
+        stock: 30,
+        weight: "1.25g",
         featured: false,
         rating: "4.7",
-        thcaContent: "10.0",
-        strainType: null,
-        effects: ["long-lasting", "precise", "tasty"] as string[],
+        thcaContent: "28.8",
+        strainType: "Sativa",
+        effects: ["energizing", "citrusy", "creative"] as string[],
         variants: null,
-        subcategory: "gummies",
+        subcategory: "single",
         potency: "Medium",
-        priceRange: { min: 40, max: 60 },
+        priceRange: { min: 12, max: 13 },
         createdAt: new Date(),
       },
       {
-        id: "4",
-        name: "Premium Grinder",
-        description: "Precision-machined aluminum grinder with kief catcher and magnetic closure. Perfect for preparing your THCA flower.",
-        price: "79.99",
-        category: "accessories",
-        imageUrl: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=400",
-        stock: 18,
-        weight: "0.25",
+        id: "pr-too-tall",
+        name: "Too Tall Pre-Roll",
+        description: "Premium Too Tall strain known for its towering effects and smooth smoke.",
+        price: "13.99",
+        category: "prerolls",
+        imageUrl: "https://images.unsplash.com/photo-1566041438885-ce6b8d4a0f0f?w=400",
+        stock: 22,
+        weight: "1.25g",
         featured: false,
         rating: "4.6",
-        thcaContent: null,
-        strainType: null,
-        effects: [] as string[],
+        thcaContent: "29.3",
+        strainType: "Hybrid",
+        effects: ["balanced", "smooth", "mellow"] as string[],
         variants: null,
-        subcategory: "grinders",
-        potency: null,
-        priceRange: { min: 70, max: 90 },
+        subcategory: "single",
+        potency: "Medium",
+        priceRange: { min: 13, max: 14 },
+        createdAt: new Date(),
+      },
+      {
+        id: "pr-runtz",
+        name: "Runtz Pre-Roll",
+        description: "Sweet and fruity Runtz strain with candy-like flavors and balanced effects.",
+        price: "16.99",
+        category: "prerolls",
+        imageUrl: "https://images.unsplash.com/photo-1566041513885-84c8f4a0f0f0?w=400",
+        stock: 18,
+        weight: "1.45g",
+        featured: true,
+        rating: "4.8",
+        thcaContent: "31.7",
+        strainType: "Hybrid",
+        effects: ["sweet", "fruity", "euphoric"] as string[],
+        variants: null,
+        subcategory: "single",
+        potency: "High",
+        priceRange: { min: 16, max: 17 },
         createdAt: new Date(),
       }
     ];
+
+    // Flower strains with multiple weights
+    const flowerStrains = [
+      {
+        name: "Grape Popsicle",
+        description: "Sweet grape flavors with relaxing effects and beautiful purple hues.",
+        strainType: "Indica",
+        thcaContent: "26.8",
+        effects: ["relaxing", "sweet", "grape"],
+        subcategory: "indica",
+        potency: "Medium"
+      },
+      {
+        name: "Purple Koolaid Infused with THCA Diamonds",
+        description: "Premium Purple Koolaid flower infused with pure THCA diamonds for maximum potency.",
+        strainType: "Indica",
+        thcaContent: "38.5",
+        effects: ["potent", "relaxing", "sweet"],
+        subcategory: "infused",
+        potency: "High"
+      },
+      {
+        name: "Sour Diesel",
+        description: "Classic energizing sativa with diesel fuel aroma and uplifting effects.",
+        strainType: "Sativa",
+        thcaContent: "27.3",
+        effects: ["energizing", "diesel", "uplifting"],
+        subcategory: "sativa",
+        potency: "Medium"
+      },
+      {
+        name: "Sour Lemon Diesel",
+        description: "Citrusy sativa blend with sour lemon flavors and energizing properties.",
+        strainType: "Sativa",
+        thcaContent: "28.9",
+        effects: ["citrusy", "energizing", "sour"],
+        subcategory: "sativa",
+        potency: "Medium"
+      },
+      {
+        name: "Sour Diesel Popcorn Buds",
+        description: "Premium Sour Diesel popcorn buds offering the same quality at a better value.",
+        strainType: "Sativa",
+        thcaContent: "26.1",
+        effects: ["energizing", "diesel", "value"],
+        subcategory: "popcorn",
+        potency: "Medium"
+      },
+      {
+        name: "Wedding Cake",
+        description: "Sweet and earthy hybrid with vanilla and cake-like flavors.",
+        strainType: "Hybrid",
+        thcaContent: "29.7",
+        effects: ["sweet", "relaxing", "vanilla"],
+        subcategory: "hybrid",
+        potency: "High"
+      },
+      {
+        name: "Girl Scout Cookies",
+        description: "Popular hybrid with sweet and earthy flavors and balanced effects.",
+        strainType: "Hybrid",
+        thcaContent: "28.4",
+        effects: ["sweet", "balanced", "earthy"],
+        subcategory: "hybrid",
+        potency: "Medium"
+      },
+      {
+        name: "Runtz x Peppermint",
+        description: "Unique cross combining sweet Runtz with refreshing peppermint flavors.",
+        strainType: "Hybrid",
+        thcaContent: "30.2",
+        effects: ["sweet", "minty", "refreshing"],
+        subcategory: "hybrid",
+        potency: "High"
+      }
+    ];
+
+    const weights = [
+      { weight: "1g", basePrice: 12, label: "Gram" },
+      { weight: "3.5g", basePrice: 35, label: "Eighth" },
+      { weight: "7g", basePrice: 65, label: "Quarter" },
+      { weight: "14g", basePrice: 120, label: "Half" },
+      { weight: "28g", basePrice: 220, label: "Ounce" },
+      { weight: "112g", basePrice: 800, label: "Quarter Pound" },
+      { weight: "448g", basePrice: 2800, label: "Pound" }
+    ];
+
+    const sampleProducts: Product[] = [...preRolls];
+
+    // Generate flower products for each strain and weight combination
+    flowerStrains.forEach((strain, strainIndex) => {
+      weights.forEach((weightOption, weightIndex) => {
+        const priceMultiplier = strain.subcategory === 'infused' ? 1.5 : strain.subcategory === 'popcorn' ? 0.8 : 1.0;
+        const price = (weightOption.basePrice * priceMultiplier).toFixed(2);
+        
+        sampleProducts.push({
+          id: `fl-${strainIndex}-${weightIndex}`,
+          name: `${strain.name} - ${weightOption.label}`,
+          description: strain.description,
+          price: price,
+          category: "flower",
+          imageUrl: `https://images.unsplash.com/photo-${1560718547000 + strainIndex * 1000}?w=400`,
+          stock: Math.floor(Math.random() * 20) + 10,
+          weight: weightOption.weight,
+          featured: strain.subcategory === 'infused' || weightOption.weight === '3.5g',
+          rating: (4.5 + Math.random() * 0.5).toFixed(1),
+          thcaContent: strain.thcaContent,
+          strainType: strain.strainType,
+          effects: strain.effects as string[],
+          variants: null,
+          subcategory: strain.subcategory,
+          potency: strain.potency,
+          priceRange: { min: parseFloat(price) - 5, max: parseFloat(price) + 5 },
+          createdAt: new Date(),
+        });
+      });
+    });
 
     sampleProducts.forEach(product => {
       this.products.set(product.id, product);
