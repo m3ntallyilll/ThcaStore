@@ -2601,29 +2601,47 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   });
 
   // Stripe Payment Routes
-  app.post("/api/create-payment-intent", async (req, res) => {
+  // Create Checkout Session for Stripe hosted checkout page
+  app.post("/api/create-checkout-session", async (req, res) => {
     if (!stripe) {
       return res.status(500).json({ message: "Stripe not configured" });
     }
 
     try {
-      const { items, subtotal, shippingCost } = req.body;
-      const total = Math.round((subtotal + (shippingCost || 0)) * 100); // Convert to cents
+      const { items } = req.body;
+      
+      // Convert cart items to Stripe line items
+      const lineItems = items.map((item: any) => ({
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: item.product.name,
+            description: item.product.description,
+            images: item.product.imageUrl ? [item.product.imageUrl] : [],
+          },
+          unit_amount: Math.round(parseFloat(item.product.price) * 100), // Convert to cents
+        },
+        quantity: item.quantity,
+      }));
 
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: total,
-        currency: "usd",
-        metadata: {
-          itemCount: items?.length || 0,
-          subtotal: subtotal.toString(),
-          shippingCost: (shippingCost || 0).toString()
-        }
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: `${req.headers.origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.origin}/cart`,
+        shipping_address_collection: {
+          allowed_countries: ['US'],
+        },
+        phone_number_collection: {
+          enabled: true,
+        },
       });
 
-      res.json({ clientSecret: paymentIntent.client_secret });
+      res.json({ url: session.url, sessionId: session.id });
     } catch (error: any) {
-      console.error('Payment intent error:', error);
-      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+      console.error('Checkout session error:', error);
+      res.status(500).json({ message: "Error creating checkout session: " + error.message });
     }
   });
 
