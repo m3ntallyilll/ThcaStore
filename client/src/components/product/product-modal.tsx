@@ -24,14 +24,15 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   if (!product) return null;
 
   const handleAddToCart = async () => {
-    if (!user) {
-      toast({
-        title: "Login required",
-        description: "Please login to add items to cart",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Remove login requirement - cart works for guests too
+    // if (!user) {
+    //   toast({
+    //     title: "Login required",
+    //     description: "Please login to add items to cart",
+    //     variant: "destructive"
+    //   });
+    //   return;
+    // }
 
     try {
       await addToCart(product.id, quantity);

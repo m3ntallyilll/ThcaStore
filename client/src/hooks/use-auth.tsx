@@ -71,33 +71,35 @@ export const useAuth = create<AuthState>()(
       checkAuth: async () => {
         const token = localStorage.getItem('authToken');
         if (!token) {
-            set({ user: null, token: null });
-            return;
+          set({ user: null, token: null });
+          return;
         }
 
+        set({ isLoading: true });
         try {
-          const user = await apiRequest('/api/auth/me', {
+          const data = await apiRequest('/api/auth/me', {
             method: 'GET'
           });
-          set({ user, token });
+          
+          set({ 
+            user: data, 
+            token,
+            isLoading: false 
+          });
         } catch (error: any) {
-          // Only clear token if it's actually invalid (401/403 errors)
-          if (error.message.includes('401') || error.message.includes('403') || error.message.includes('expired') || error.message.includes('invalid') || error.message.includes('Authentication')) {
-            localStorage.removeItem('authToken');
-            set({ user: null, token: null });
-          } else {
-            // For network errors or other issues, keep the auth state but log warning
-            console.warn('Auth check failed (keeping auth state):', error.message);
-          }
+          // Token is invalid, clear it
+          localStorage.removeItem('authToken');
+          set({ 
+            user: null, 
+            token: null, 
+            isLoading: false 
+          });
         }
-      },
+      }
     }),
     {
-      name: 'auth-store',
-      partialize: (state) => ({ 
-        user: state.user, 
-        token: state.token 
-      }),
+      name: 'auth-storage',
+      partialize: (state) => ({ user: state.user, token: state.token })
     }
   )
 );

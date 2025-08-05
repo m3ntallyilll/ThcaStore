@@ -39,14 +39,15 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!user) {
-      toast({
-        title: "Login required",
-        description: "Please login to add items to cart",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Remove login requirement - cart works for guests too
+    // if (!user) {
+    //   toast({
+    //     title: "Login required",
+    //     description: "Please login to add items to cart",
+    //     variant: "destructive"
+    //   });
+    //   return;
+    // }
 
     if (currentVariant.stock === 0) {
       toast({

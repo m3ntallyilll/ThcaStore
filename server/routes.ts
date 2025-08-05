@@ -195,7 +195,7 @@ const authenticateToken = async (req: any, res: any, next: any) => {
     // Try to get user, but handle missing users gracefully
     let user;
     try {
-      user = await storage.getUser(decoded.userId);
+      user = await storage.getUserById(decoded.userId);
     } catch (userError) {
       console.error('User lookup error:', userError);
       return res.status(401).json({ message: 'User account not found' });
