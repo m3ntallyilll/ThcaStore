@@ -65,6 +65,7 @@ import { useDiscountPopup } from "@/hooks/use-discount-popup";
 import { DiscountPopup } from "@/components/ui/discount-popup";
 import { FloatingDiscountBanner } from "@/components/ui/floating-discount-banner";
 import { SmokeBackground } from "@/components/ui/smoke-background";
+import { RecommendationTrigger } from "@/components/recommendations/recommendation-trigger";
 
 function Router() {
   // Track page views when routes change
@@ -146,37 +147,39 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white relative">
-      <SmokeBackground />
-      <div className="relative z-10 bg-black/20 backdrop-blur-[1px]">
-        <SkipLinks />
-        <Navigation />
-        <main id="main-content" tabIndex={-1}>
-          <Router />
-        </main>
-        <Footer />
-      </div>
-      <CartSidebar />
-      <AIChat 
-        autoOpen={true} 
-        onProductRecommendation={handleProductRecommendation}
-      />
-      <AISupport />
-      <ToastProvider />
-      
-      {/* Discount Features */}
-      <DiscountPopup 
-        isOpen={showPopup}
-        onClose={closePopup}
-        onApplyDiscount={applyDiscount}
-      />
-      {currentDiscount && (
-        <FloatingDiscountBanner 
-          discount={currentDiscount}
-          onClear={clearDiscount}
+    <RecommendationTrigger>
+      <div className="min-h-screen bg-black text-white relative">
+        <SmokeBackground />
+        <div className="relative z-10 bg-black/20 backdrop-blur-[1px]">
+          <SkipLinks />
+          <Navigation />
+          <main id="main-content" tabIndex={-1}>
+            <Router />
+          </main>
+          <Footer />
+        </div>
+        <CartSidebar />
+        <AIChat 
+          autoOpen={true} 
+          onProductRecommendation={handleProductRecommendation}
         />
-      )}
-    </div>
+        <AISupport />
+        <ToastProvider />
+        
+        {/* Discount Features */}
+        <DiscountPopup 
+          isOpen={showPopup}
+          onClose={closePopup}
+          onApplyDiscount={applyDiscount}
+        />
+        {currentDiscount && (
+          <FloatingDiscountBanner 
+            discount={currentDiscount}
+            onClear={clearDiscount}
+          />
+        )}
+      </div>
+    </RecommendationTrigger>
   );
 }
 

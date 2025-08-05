@@ -547,6 +547,132 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+// AI Recommendation Helper Functions
+function generatePersonalizedRecommendations(products: any[], viewedProductIds: string[], preferences: any) {
+  const viewedProducts = products.filter(p => viewedProductIds.includes(p.id));
+  const unviewedProducts = products.filter(p => !viewedProductIds.includes(p.id));
+  
+  if (viewedProducts.length === 0) {
+    return shuffleArray(unviewedProducts.filter(p => p.featured)).slice(0, 6);
+  }
+  
+  // Extract categories and strain types from viewed products
+  const viewedCategories = new Set(viewedProducts.map(p => p.category));
+  const viewedStrainTypes = new Set(viewedProducts.map(p => p.strainType));
+  
+  // Score products based on similarity to viewed products
+  const scored = unviewedProducts.map(product => {
+    let score = 0;
+    
+    // Category preference (40% weight)
+    if (viewedCategories.has(product.category)) score += 40;
+    
+    // Strain type preference (30% weight)
+    if (viewedStrainTypes.has(product.strainType)) score += 30;
+    
+    // Price range preference (20% weight)
+    const avgViewedPrice = viewedProducts.reduce((sum, p) => sum + parseFloat(p.price), 0) / viewedProducts.length;
+    const priceDistance = Math.abs(parseFloat(product.price) - avgViewedPrice);
+    const maxPrice = Math.max(...products.map(p => parseFloat(p.price)));
+    score += (1 - priceDistance / maxPrice) * 20;
+    
+    // Rating boost (10% weight)
+    score += parseFloat(product.rating || '0') * 2;
+    
+    return { ...product, score };
+  });
+  
+  return scored.sort((a, b) => b.score - a.score).slice(0, 6);
+}
+
+function generateTrendingRecommendations(products: any[]) {
+  return products
+    .filter(p => p.featured || parseFloat(p.rating || '0') >= 4.5)
+    .sort((a, b) => parseFloat(b.rating || '0') - parseFloat(a.rating || '0'))
+    .slice(0, 6);
+}
+
+function generateSimilarRecommendations(products: any[], currentProductId?: string, viewedProductIds: string[] = []) {
+  if (!currentProductId) {
+    return generateTrendingRecommendations(products);
+  }
+  
+  const currentProduct = products.find(p => p.id === currentProductId);
+  if (!currentProduct) {
+    return generateTrendingRecommendations(products);
+  }
+  
+  const otherProducts = products.filter(p => p.id !== currentProductId);
+  
+  const scored = otherProducts.map(product => {
+    let score = 0;
+    
+    // Same category (40% weight)
+    if (product.category === currentProduct.category) score += 40;
+    
+    // Same strain type (30% weight)
+    if (product.strainType === currentProduct.strainType) score += 30;
+    
+    // Similar price range (20% weight)
+    const priceDistance = Math.abs(parseFloat(product.price) - parseFloat(currentProduct.price));
+    const maxPrice = Math.max(...products.map(p => parseFloat(p.price)));
+    score += (1 - priceDistance / maxPrice) * 20;
+    
+    // Similar effects (10% weight)
+    const currentEffects = new Set(currentProduct.effects || []);
+    const productEffects = new Set(product.effects || []);
+    const commonEffects = [...currentEffects].filter(effect => productEffects.has(effect));
+    score += (commonEffects.length / Math.max(currentEffects.size, 1)) * 10;
+    
+    return { ...product, score };
+  });
+  
+  return scored.sort((a, b) => b.score - a.score).slice(0, 6);
+}
+
+function generateComplementaryRecommendations(products: any[], cartProductIds: string[]) {
+  if (cartProductIds.length === 0) {
+    return generateTrendingRecommendations(products);
+  }
+  
+  const cartProducts = products.filter(p => cartProductIds.includes(p.id));
+  const otherProducts = products.filter(p => !cartProductIds.includes(p.id));
+  
+  // Extract cart characteristics
+  const cartCategories = new Set(cartProducts.map(p => p.category));
+  const cartStrainTypes = new Set(cartProducts.map(p => p.strainType));
+  
+  const scored = otherProducts.map(product => {
+    let score = 0;
+    
+    // Complementary categories (50% weight)
+    if (cartCategories.has('flower') && product.category === 'prerolls') score += 50;
+    if (cartCategories.has('prerolls') && product.category === 'flower') score += 50;
+    if (cartCategories.has('flower') && product.category === 'variety-packs') score += 40;
+    if (!cartCategories.has(product.category)) score += 20; // Diversity bonus
+    
+    // Different strain types for variety (30% weight)
+    if (!cartStrainTypes.has(product.strainType)) score += 30;
+    
+    // Higher tier products (20% weight)
+    if (parseFloat(product.thcaContent || '0') > 28) score += 20;
+    if (product.featured) score += 10;
+    
+    return { ...product, score };
+  });
+  
+  return scored.sort((a, b) => b.score - a.score).slice(0, 6);
+}
+
+function shuffleArray(array: any[]) {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
   // Generate balanced product catalog
   app.post("/api/admin/generate-balanced-catalog", authenticateToken, requireAdmin, async (req: any, res) => {
     try {

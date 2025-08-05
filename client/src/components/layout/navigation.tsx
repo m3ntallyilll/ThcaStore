@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
-import { User, ShoppingCart, Settings, Menu, X } from 'lucide-react';
+import { User, ShoppingCart, Settings, Menu, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
@@ -80,6 +80,20 @@ export function Navigation() {
                   Login
                 </Button>
               )}
+
+              {/* AI Recommendations Button */}
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  const event = new CustomEvent('show_recommendations');
+                  window.dispatchEvent(event);
+                }}
+                className="relative hover:text-purple-400 transition-colors duration-300 hidden sm:flex"
+                data-testid="button-recommendations"
+              >
+                <Sparkles className="w-5 h-5 mr-1" />
+                <span className="text-sm">AI Picks</span>
+              </Button>
 
               <Link href="/cart">
                 <Button

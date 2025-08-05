@@ -65,6 +65,13 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         title: "Added to cart",
         description: `${currentVariant.weight} ${product.name} added to cart!`
       });
+      
+      // Trigger recommendation popup after adding to cart
+      const event = new CustomEvent('cart_item_added', {
+        detail: { productId: product.id, variant: currentVariant }
+      });
+      window.dispatchEvent(event);
+      
     } catch (error) {
       toast({
         title: "Error",
