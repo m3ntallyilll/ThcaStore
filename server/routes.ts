@@ -2139,7 +2139,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   });
 
   // AI Blog Generation Routes
-  app.post("/api/admin/blog/ai/generate", authenticateToken, requireAdmin, async (req: any, res) => {
+  app.post("/api/blog/ai/generate", async (req: any, res) => {
     try {
       const { blogAIStreamingService } = await import('./blog-ai-streaming-service');
       const { topic, category, keywords, tone, length, targetAudience, includeCallToAction, targetLocation, locationKeywords } = req.body;
@@ -2175,7 +2175,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         metaTitle: blogContent.title,
         metaDescription: `Comprehensive guide to ${topic}. Expert insights, practical tips, and everything you need to know.`,
         keywords: keywords || [topic, 'THCA', 'hemp', 'hemp'],
-        authorId: req.user.id,
+        authorId: 'anonymous', // Default to anonymous for public generation
         category,
         tags: keywords || [],
         status: 'published' as const,
@@ -2214,7 +2214,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
-  app.get("/api/admin/blog/ai/ideas", authenticateToken, requireAdmin, async (req: any, res) => {
+  app.get("/api/blog/ai/ideas", async (req: any, res) => {
     try {
       const { blogAIService } = await import('./blog-ai-service');
       const { category, count } = req.query;
@@ -2231,7 +2231,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   });
 
   // Bulk Blog Generation Route
-  app.post("/api/admin/blog/ai/bulk-generate", authenticateToken, requireAdmin, async (req: any, res) => {
+  app.post("/api/blog/ai/bulk-generate", async (req: any, res) => {
     try {
       const { bulkBlogGenerator } = await import('./bulk-blog-generator');
       const { 
@@ -2251,7 +2251,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         });
       }
 
-      console.log(`🚀 Starting bulk generation of ${count} blogs for user ${req.user.id}`);
+      console.log(`🚀 Starting bulk generation of ${count} blogs for anonymous user`);
 
       // Generate blogs
       const blogs = await bulkBlogGenerator.generateBulkBlogs({
@@ -2261,7 +2261,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         length,
         targetAudience,
         includeCallToAction
-      }, req.user.id);
+      }, 'anonymous');
 
       // Save all blogs to database
       const savedResults = await bulkBlogGenerator.saveBulkBlogs(blogs);
