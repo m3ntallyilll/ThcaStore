@@ -387,7 +387,7 @@ const CheckoutForm = ({
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-semibold">Order Total</span>
                 <span className="text-2xl font-bold text-green-600">
-                  ${(total + (shippingCost.cost || 0)).toFixed(2)}
+                  ${(total + shippingCost.cost).toFixed(2)}
                 </span>
               </div>
               <div className="space-y-2 text-sm text-gray-600">
@@ -397,7 +397,7 @@ const CheckoutForm = ({
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping:</span>
-                  <span>{shippingCost.isFree ? 'FREE' : `$${(shippingCost.cost || 0).toFixed(2)}`}</span>
+                  <span>{shippingCost.isFree ? 'FREE' : `$${shippingCost.cost.toFixed(2)}`}</span>
                 </div>
               </div>
             </div>
@@ -470,7 +470,7 @@ const CheckoutForm = ({
               ) : (
                 <>
                   <Shield className="mr-2 h-5 w-5" />
-                  Complete Order - ${(total + (shippingCost.cost || 0)).toFixed(2)}
+                  Complete Order - ${(total + shippingCost.cost).toFixed(2)}
                 </>
               )}
             </Button>

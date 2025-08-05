@@ -39,27 +39,44 @@ const CartPaymentForm = ({
     setIsLoading(true);
 
     if (!stripe || !elements) {
+      console.error('Stripe not loaded yet');
       setIsLoading(false);
       return;
     }
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/order-confirmation`,
-      },
-    });
-
-    if (error) {
-      toast({
-        title: "Payment Failed",
-        description: error.message || "There was an issue processing your payment. Please try again.",
-        variant: "destructive",
+    try {
+      console.log('Starting payment confirmation...');
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${window.location.origin}/order-confirmation`,
+        },
       });
-    } else {
+
+      if (error) {
+        console.error('Payment error:', error);
+        toast({
+          title: "Payment Failed",
+          description: error.message || "There was an issue processing your payment. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        console.log('Payment successful, redirecting...');
+        toast({
+          title: "Payment Successful", 
+          description: "Thank you for your purchase! Redirecting to confirmation...",
+        });
+        // Clear cart on successful payment
+        setTimeout(() => {
+          setLocation('/order-confirmation');
+        }, 1000);
+      }
+    } catch (err) {
+      console.error('Payment submission error:', err);
       toast({
-        title: "Payment Successful",
-        description: "Thank you for your purchase! You'll receive a confirmation email shortly.",
+        title: "Payment Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
       });
     }
 
@@ -76,6 +93,9 @@ const CartPaymentForm = ({
               defaultCollapsed: false,
               radios: false,
               spacedAccordionItems: true
+            },
+            fields: {
+              billingDetails: 'auto'
             }
           }}
         />
@@ -88,14 +108,19 @@ const CartPaymentForm = ({
 
       <Button 
         type="submit" 
-        disabled={!stripe || isLoading}
-        className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+        disabled={!stripe || !elements || isLoading}
+        className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
         data-testid="button-complete-order-cart"
       >
         {isLoading ? (
           <>
             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
             Processing Payment...
+          </>
+        ) : !stripe || !elements ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Loading Payment Form...
           </>
         ) : (
           <>
@@ -332,6 +357,7 @@ export default function Cart() {
     const createPaymentIntent = async () => {
       if (showPaymentForm && items.length > 0) {
         try {
+          console.log('Creating payment intent for cart items:', items.length);
           const data = await apiRequest("/api/create-payment-intent", { 
             method: "POST",
             body: {
@@ -340,10 +366,14 @@ export default function Cart() {
               shippingCost: 0
             }
           });
+          console.log('Payment intent created:', data.clientSecret ? 'Success' : 'Failed');
           setClientSecret(data.clientSecret);
         } catch (error) {
           console.error('Error creating payment intent:', error);
+          setClientSecret(''); // Reset on error
         }
+      } else if (!showPaymentForm) {
+        setClientSecret(''); // Reset when hiding form
       }
     };
 
@@ -397,6 +427,7 @@ export default function Cart() {
       return;
     }
 
+    console.log('Showing payment form, items count:', items.length);
     setShowPaymentForm(true);
   };
 
@@ -607,16 +638,14 @@ export default function Cart() {
                       <p className="text-sm text-gray-600 mb-4">Complete your purchase securely</p>
                     </div>
 
-                    {clientSecret && (
+                    {clientSecret ? (
                       <Elements stripe={stripePromise} options={{ clientSecret }}>
                         <CartPaymentForm 
                           total={getTotal()} 
                           onPaymentReady={setClientSecret}
                         />
                       </Elements>
-                    )}
-
-                    {!clientSecret && (
+                    ) : (
                       <div className="flex items-center justify-center py-4">
                         <Loader2 className="w-6 h-6 animate-spin text-primary" />
                         <span className="ml-2 text-sm text-muted-foreground">Preparing secure payment...</span>
