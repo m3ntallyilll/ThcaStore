@@ -123,7 +123,7 @@ function AppContent() {
       
       // If still not found, try partial name match
       if (!productElement) {
-        const allProductElements = document.querySelectorAll('[data-product-name]');
+        const allProductElements = Array.from(document.querySelectorAll('[data-product-name]'));
         for (const element of allProductElements) {
           const productName = element.getAttribute('data-product-name');
           if (productName && productName.toLowerCase().includes(productIdentifier.toLowerCase())) {

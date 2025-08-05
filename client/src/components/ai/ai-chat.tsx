@@ -135,6 +135,29 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
     }
   }, [autoOpen, hasAutoOpened]);
 
+  // Listen for cart events from the cart component
+  useEffect(() => {
+    const handleCartEvent = (event: CustomEvent) => {
+      if (event.detail) {
+        setIsOpen(true);
+        // Add the message and trigger AI response
+        if (event.detail.message) {
+          setInputMessage(event.detail.message);
+          // Trigger the send message after setting input
+          setTimeout(() => {
+            sendMessage();
+          }, 100);
+        }
+      }
+    };
+
+    window.addEventListener('openAIChat', handleCartEvent as EventListener);
+    
+    return () => {
+      window.removeEventListener('openAIChat', handleCartEvent as EventListener);
+    };
+  }, []);
+
   // Cleanup speech synthesis on unmount
   useEffect(() => {
     return () => {
