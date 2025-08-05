@@ -685,7 +685,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cart routes
+  // Cart routes - Allow guest access for adding items
   app.get("/api/cart", authenticateToken, async (req: any, res) => {
     try {
       const cartItems = await storage.getCartItems(req.user.id);
@@ -695,17 +695,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/cart", authenticateToken, async (req: any, res) => {
+  // Modified cart POST to allow guest users or authenticated users
+  app.post("/api/cart", async (req: any, res) => {
     try {
+      let userId = req.body.userId;
+      
+      // Check if user is authenticated
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, JWT_SECRET) as any;
+          const user = await storage.getUser(decoded.userId);
+          if (user) {
+            userId = user.id; // Use authenticated user ID
+          }
+        } catch (error) {
+          // Token invalid, continue as guest
+        }
+      }
+      
+      // If no userId provided and not authenticated, use special guest user
+      if (!userId) {        
+        // Check if shared guest user exists, create if not
+        let guestUser = await storage.getUserByEmail('guest@anonymous.temp');
+        if (!guestUser) {
+          try {
+            console.log('Creating anonymous guest user...');
+            guestUser = await storage.createUser({
+              email: 'guest@anonymous.temp',
+              password: await bcrypt.hash('guest', 10),
+              firstName: 'Anonymous',
+              lastName: 'Guest',
+              username: 'anonymous-guest',
+              isAdmin: false
+            });
+            console.log('Guest user created:', guestUser.id);
+          } catch (error) {
+            console.error('Failed to create guest user:', error);
+            return res.status(500).json({ message: 'Unable to create guest session' });
+          }
+        }
+        
+        userId = guestUser.id;
+      }
+
       const cartItemData = insertCartItemSchema.parse({
         ...req.body,
-        userId: req.user.id,
+        userId: userId,
       });
 
       const cartItem = await storage.addToCart(cartItemData);
-      res.status(201).json(cartItem);
+      res.status(201).json({ ...cartItem, guestSession: !token });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Guest cart GET route - allows retrieving cart without authentication
+  app.get("/api/cart/guest/:guestId", async (req: any, res) => {
+    try {
+      const guestId = req.params.guestId;
+      // Allow both UUID format and guest_ format for flexibility
+      if (!guestId || (guestId.length < 10)) {
+        return res.status(400).json({ message: "Invalid guest session" });
+      }
+      
+      const cartItems = await storage.getCartItems(guestId);
+      res.json(cartItems);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 
