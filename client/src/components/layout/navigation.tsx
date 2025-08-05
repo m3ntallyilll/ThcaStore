@@ -81,18 +81,20 @@ export function Navigation() {
                 </Button>
               )}
 
-              <Button
-                variant="ghost"
-                onClick={toggleCart}
-                className="relative hover:text-glow-green-400 transition-colors duration-300"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-glow-green-500 text-black rounded-full w-5 h-5 text-xs flex items-center justify-center font-semibold glow-effect">
-                    {totalItems}
-                  </span>
-                )}
-              </Button>
+              <Link href="/cart">
+                <Button
+                  variant="ghost"
+                  className="relative hover:text-glow-green-400 transition-colors duration-300"
+                  data-testid="button-cart"
+                >
+                  <ShoppingCart className="w-5 h-5" />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-glow-green-500 text-black rounded-full w-5 h-5 text-xs flex items-center justify-center font-semibold glow-effect">
+                      {totalItems}
+                    </span>
+                  )}
+                </Button>
+              </Link>
 
               {user?.isAdmin && (
                 <Link href="/admin">

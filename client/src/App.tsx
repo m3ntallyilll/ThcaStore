@@ -42,6 +42,7 @@ import { SkipLinks } from "@/components/accessibility/skip-links";
 // Pages
 import Home from "@/pages/home";
 import Products from "@/pages/products";
+import Cart from "@/pages/cart";
 import Checkout from './pages/checkout';
 import Admin from "@/pages/admin";
 import Rewards from "@/pages/rewards";
@@ -72,6 +73,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
+      <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/rewards" component={Rewards} />
       <Route path="/blog/:id" component={BlogPost} />

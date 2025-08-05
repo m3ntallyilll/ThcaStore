@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
+import { useLocation } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,7 +36,8 @@ interface AIChatProps {
 export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUpdate, onBlogCreation, autoOpen = false }: AIChatProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { addToCart } = useCart();
+  const { addToCart, removeFromCart, clearCart, items: cartItems } = useCart();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
@@ -94,8 +96,7 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
     const preferredVoice = voices.find(voice => 
       voice.name.toLowerCase().includes('female') || 
       voice.name.toLowerCase().includes('samantha') ||
-      voice.name.toLowerCase().includes('alex') ||
-      voice.gender === 'female'
+      voice.name.toLowerCase().includes('alex')
     ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
     
     if (preferredVoice) {
