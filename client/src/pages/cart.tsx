@@ -4,12 +4,109 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Minus, Plus, Trash2, ShoppingCart, CreditCard, ArrowLeft, MessageCircle, Sparkles, Gift, Package } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingCart, CreditCard, ArrowLeft, MessageCircle, Sparkles, Gift, Package, Shield, Loader2 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { CartItemWithProduct } from '@/lib/types';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { apiRequest } from '@/lib/queryClient';
+
+// Load Stripe
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
+}
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+// Cart Payment Form Component
+const CartPaymentForm = ({ 
+  total, 
+  onPaymentReady 
+}: { 
+  total: number; 
+  onPaymentReady: (clientSecret: string) => void; 
+}) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    if (!stripe || !elements) {
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/order-confirmation`,
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Payment Failed",
+        description: error.message || "There was an issue processing your payment. Please try again.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Payment Successful",
+        description: "Thank you for your purchase! You'll receive a confirmation email shortly.",
+      });
+    }
+
+    setIsLoading(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="border-2 border-green-200 rounded-lg p-4 bg-white shadow-sm">
+        <PaymentElement 
+          options={{
+            layout: {
+              type: 'tabs',
+              defaultCollapsed: false,
+              radios: false,
+              spacedAccordionItems: true
+            }
+          }}
+        />
+      </div>
+      
+      <div className="flex items-center justify-center gap-2 text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+        <Shield className="w-4 h-4" />
+        <span>🔒 256-bit SSL encryption • PCI DSS compliant • Powered by Stripe</span>
+      </div>
+
+      <Button 
+        type="submit" 
+        disabled={!stripe || isLoading}
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+        data-testid="button-complete-order-cart"
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            Processing Payment...
+          </>
+        ) : (
+          <>
+            <Shield className="mr-2 h-5 w-5" />
+            Complete Order - ${total.toFixed(2)}
+          </>
+        )}
+      </Button>
+    </form>
+  );
+};
 
 // Enhanced Cart Item Component for AI Assistant Integration
 const CartItemCard = ({ 
@@ -222,11 +319,36 @@ export default function Cart() {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [clientSecret, setClientSecret] = useState("");
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   // Fetch cart on component mount
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
+
+  // Create payment intent when user wants to show payment form
+  useEffect(() => {
+    const createPaymentIntent = async () => {
+      if (showPaymentForm && items.length > 0) {
+        try {
+          const data = await apiRequest("/api/create-payment-intent", { 
+            method: "POST",
+            body: {
+              items,
+              subtotal: getSubtotal(),
+              shippingCost: 0
+            }
+          });
+          setClientSecret(data.clientSecret);
+        } catch (error) {
+          console.error('Error creating payment intent:', error);
+        }
+      }
+    };
+
+    createPaymentIntent();
+  }, [showPaymentForm, items, getSubtotal]);
 
   const handleQuantityUpdate = async (itemId: string, newQuantity: number) => {
     setIsUpdating(true);
@@ -275,7 +397,7 @@ export default function Cart() {
       return;
     }
 
-    setLocation('/checkout');
+    setShowPaymentForm(true);
   };
 
   const handleClearCart = async () => {
@@ -452,26 +574,64 @@ export default function Cart() {
                   </span>
                 </div>
 
-                <Button 
-                  onClick={handleCheckout}
-                  className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 text-lg font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
-                  data-testid="button-checkout"
-                  size="lg"
-                >
-                  <CreditCard className="w-6 h-6" />
-                  Secure Checkout
-                </Button>
+                {!showPaymentForm ? (
+                  <>
+                    <Button 
+                      onClick={handleCheckout}
+                      className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 text-lg font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
+                      data-testid="button-checkout"
+                      size="lg"
+                    >
+                      <CreditCard className="w-6 h-6" />
+                      Proceed to Checkout
+                    </Button>
 
-                <div className="space-y-2 text-center">
-                  <p className="text-xs text-muted-foreground">
-                    🔒 Secure checkout powered by Stripe
-                  </p>
-                  <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
-                    <span>✓ SSL Encrypted</span>
-                    <span>✓ Age Verified</span>
-                    <span>✓ Discreet Shipping</span>
+                    <div className="space-y-2 text-center">
+                      <p className="text-xs text-muted-foreground">
+                        🔒 Secure checkout powered by Stripe
+                      </p>
+                      <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
+                        <span>✓ SSL Encrypted</span>
+                        <span>✓ Age Verified</span>
+                        <span>✓ Discreet Shipping</span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <h3 className="font-semibold text-lg mb-2 flex items-center justify-center gap-2">
+                        <Shield className="w-5 h-5 text-green-600" />
+                        Enter Card Information
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-4">Complete your purchase securely</p>
+                    </div>
+
+                    {clientSecret && (
+                      <Elements stripe={stripePromise} options={{ clientSecret }}>
+                        <CartPaymentForm 
+                          total={getTotal()} 
+                          onPaymentReady={setClientSecret}
+                        />
+                      </Elements>
+                    )}
+
+                    {!clientSecret && (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        <span className="ml-2 text-sm text-muted-foreground">Preparing secure payment...</span>
+                      </div>
+                    )}
+
+                    <Button 
+                      onClick={() => setShowPaymentForm(false)}
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Back to Cart Summary
+                    </Button>
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </div>
