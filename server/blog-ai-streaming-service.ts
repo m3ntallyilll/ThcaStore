@@ -135,7 +135,7 @@ Return ONLY a JSON object:
 }`;
 
     const completion = await groq!.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: `Create a compelling introduction for: ${request.topic}. Make it comprehensive and engaging.` }
@@ -192,7 +192,7 @@ Keywords to include: ${request.keywords?.join(', ') || 'THCA, hemp, hemp, premiu
 Return ONLY the HTML content for this section, no JSON wrapper needed.`;
 
       const completion = await groq!.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "llama-3.1-8b-instant",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Write the "${sectionTopic}" section for ${request.topic}. Make it comprehensive and detailed.` }
@@ -234,7 +234,7 @@ Keywords: ${request.keywords?.join(', ') || 'THCA, hemp, hemp'}
 Return ONLY the HTML content for the complete FAQ section.`;
 
     const completion = await groq!.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: `Create comprehensive FAQ for ${request.topic}. Cover all important questions readers would have.` }
@@ -273,7 +273,7 @@ Target audience: ${request.targetAudience || 'hemp enthusiasts'}
 Return ONLY the HTML content for the conclusion section.`;
 
     const completion = await groq!.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: `Write a compelling conclusion for ${request.topic}. Make it actionable and memorable.` }
