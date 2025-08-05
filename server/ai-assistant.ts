@@ -5,7 +5,8 @@ import {
   products, 
   aiInteractions, 
   userRewards, 
-  orders 
+  orders,
+  cartItems
 } from '@shared/schema';
 import { eq, and, gte, desc, lte } from 'drizzle-orm';
 
@@ -44,9 +45,19 @@ export class AIAssistant {
       // Get user context and active offers
       const activeOffers = await this.getActiveOffers(context.userTier?.name);
       const productsData = await this.getProducts();
+      
+      // Get current cart items if user is authenticated
+      let cartItems: any[] = [];
+      if (context.userId) {
+        try {
+          cartItems = await this.getUserCartItems(context.userId);
+        } catch (error) {
+          console.warn('Failed to fetch cart items:', error);
+        }
+      }
 
       // Create system prompt with context
-      const systemPrompt = this.buildSystemPrompt(context, activeOffers, productsData, userContext);
+      const systemPrompt = this.buildSystemPrompt(context, activeOffers, productsData, userContext, cartItems);
 
       // Use Groq with message prefilling for structured response
       const completion = await groq.chat.completions.create({
@@ -201,7 +212,8 @@ export class AIAssistant {
     context: AIAssistantContext, 
     activeOffers: any[], 
     products: any[],
-    userContext?: { username: string; email: string; isAdmin: boolean; }
+    userContext?: { username: string; email: string; isAdmin: boolean; },
+    cartItems?: any[]
   ): string {
     const userProfile = context.userId ? `
 User Profile:
@@ -220,6 +232,18 @@ ${activeOffers.map(offer => `- ${offer.name}: ${offer.description} (${offer.valu
     const productsContext = `
 Available Products:
 ${products.slice(0, 10).map(p => `- ${p.name}: $${p.price} (${p.category}) - ${p.description.substring(0, 100)}...`).join('\n')}
+`;
+
+    const cartContext = cartItems && cartItems.length > 0 ? `
+Current Cart Status:
+- Total Items: ${cartItems.length}
+- Cart Contents: ${cartItems.map(item => `${item.quantity}x ${item.product?.name || 'Product'} ($${item.product?.price || '0.00'})`).join(', ')}
+- Cart Total: $${cartItems.reduce((total, item) => total + (parseFloat(item.product?.price || '0') * item.quantity), 0).toFixed(2)}
+
+IMPORTANT: User has items in cart! When they ask about checkout, acknowledge their cart contents.
+` : `
+Current Cart Status: Empty
+IMPORTANT: User's cart is empty. When they ask about checkout, encourage them to add products first.
 `;
 
     const adminCapabilities = userContext?.isAdmin ? `
@@ -274,6 +298,7 @@ When users request blog creation or writing assistance, respond with actionItems
     return `You are THCA Store's ${userContext?.isAdmin ? 'elite AI admin assistant' : 'elite AI sales assistant'}, powered by advanced intelligence to ${userContext?.isAdmin ? 'manage store operations efficiently' : 'maximize customer satisfaction and sales conversion'}. Your mission is to ${userContext?.isAdmin ? 'help admins run a successful hemp business' : 'increase sales by providing exceptional, personalized service'}.
 
 ${userProfile}
+${cartContext}
 ${offersContext}
 ${productsContext}
 ${adminCapabilities}
@@ -335,6 +360,21 @@ Remember: Every interaction should move toward a sale while providing genuine va
 
   private async getProducts(): Promise<any[]> {
     return await db.select().from(products).limit(20);
+  }
+
+  private async getUserCartItems(userId: string): Promise<any[]> {
+    return await db
+      .select({
+        id: cartItems.id,
+        userId: cartItems.userId,
+        productId: cartItems.productId,
+        quantity: cartItems.quantity,
+        createdAt: cartItems.createdAt,
+        product: products
+      })
+      .from(cartItems)
+      .leftJoin(products, eq(cartItems.productId, products.id))
+      .where(eq(cartItems.userId, userId));
   }
 
   private async logInteraction(interaction: any): Promise<void> {
