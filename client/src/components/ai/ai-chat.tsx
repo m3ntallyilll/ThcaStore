@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp, Settings, Package, Edit3, Volume2, VolumeX } from 'lucide-react';
+import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp, Settings, Package, Edit3, Volume2, VolumeX, ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,7 +36,7 @@ interface AIChatProps {
 export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUpdate, onBlogCreation, autoOpen = false }: AIChatProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { addToCart, removeFromCart, clearCart, items: cartItems } = useCart();
+  const { addToCart, removeFromCart, clearCart, items: cartItems, fetchCart } = useCart();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -616,6 +616,20 @@ How can I help you today? I can:
                           </div>
                         )}
 
+                        {/* Checkout Button - Show when cart is mentioned or checkout action is triggered */}
+                        {msg.actionItems && msg.actionItems.some((action: any) => action.type === 'navigate_to_checkout') && (
+                          <div className="mt-3">
+                            <Button
+                              onClick={() => setLocation('/checkout')}
+                              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold shadow-lg hover:shadow-green-500/25 transition-all duration-300"
+                              data-testid="button-ai-checkout"
+                            >
+                              <ShoppingCart className="w-4 h-4 mr-2" />
+                              Proceed to Checkout
+                            </Button>
+                          </div>
+                        )}
+
                         <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/10">
                           <div className="flex items-center gap-2">
                             <span className="text-xs opacity-60">
@@ -680,6 +694,28 @@ How can I help you today? I can:
 
                 {/* Input */}
                 <div className="p-4 border-t border-white/10">
+                  {/* Cart Status and Checkout Button */}
+                  {cartItems.length > 0 && (
+                    <div className="mb-3 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ShoppingCart className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-green-400">
+                            {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in cart
+                          </span>
+                        </div>
+                        <Button
+                          onClick={() => setLocation('/checkout')}
+                          size="sm"
+                          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold"
+                          data-testid="button-ai-checkout-header"
+                        >
+                          Checkout
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex gap-2">
                     <Input
                       value={inputMessage}
