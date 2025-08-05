@@ -1,0 +1,304 @@
+{
+  "timestamp": "2025-08-05T23:19:34.368Z",
+  "total_blogs": 73,
+  "pyramid_structure": {
+    "tier1_count": 0,
+    "tier2_count": 23,
+    "tier3_count": 50
+  },
+  "linking_recommendations": [
+    {
+      "from": "thca-therapeutic-dosing-personalized-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-and-holistic-health-integrative-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-neurological-support-brain-protection-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-drug-interactions-important-considerations-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-senior-health-age-appropriate-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-women-s-health-specialized-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-safety-profile-side-effects-and-precautions-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-and-cognitive-function-brain-health-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-chronic-conditions-long-term-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-and-aging-healthy-longevity-support-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-exercise-recovery-athletic-performance-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-immune-system-wellness-support-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-digestive-health-gut-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-and-mental-health-therapeutic-potential-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "q-is-thca-psychoactive",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-anxiety-relief-natural-wellness-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "1-studies-on-thca-s-sedative-effects",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-anti-inflammatory-properties-health-benefits-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-for-pain-management-clinical-evidence-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-vape-products-complete-product-guide-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-legal-framework-thca-compliance-guide-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "understanding-thca-certificates-of-analysis-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "1-raw-hemp-bud-consumption",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-industry-standards-for-thca-products-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "1-solvent-based-extraction-methods",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-research-latest-scientific-discoveries-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "1-temperature",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "what-is-thca",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "quality-control-in-thca-manufacturing-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-genetics-thca-rich-strain-development-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "unlock-the-full-potential-of-thca-with-optimal-bioavailability",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-processing-creating-premium-thca-products-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-and-the-endocannabinoid-system-scientific-overview-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "understanding-thca-potency-and-purity-standards-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-storage-preserving-quality-and-potency-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-cultivation-from-seed-to-thca-product-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-decarboxylation-science-behind-activation-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-terpenes-and-thca-entourage-effect-explained-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "1-start-with-thca-rich-products",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-dosage-guide-safe-usage-for-beginners-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "lab-testing-thca-products-what-to-look-for-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "hemp-flower-vs-thca-concentrates-which-is-better-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "understanding-hemp-derived-thca-legal-scientific-guide-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-vs-thc-complete-scientific-comparison-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-benefits-evidence-based-health-research-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-vs-cbd-key-differences-explained-complete-guide-for-beginners",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "unlocking-the-potential-of-thca-a-beginner-s-guide-to-hemp-s-most-potent-compound-complete-guide-for-weed-smokers-420-users-420-friendly",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    },
+    {
+      "from": "thca-benefits-for-beginners-complete-guide-for-new-users",
+      "to": "thca-product-innovation-future-hemp-technologies-complete-guide-for-hemp-enthusiasts-and-beginners",
+      "anchor_text": "Learn more about THCA Product Innovation",
+      "type": "tier3_to_tier2"
+    }
+  ],
+  "seo_optimization": {
+    "internal_links_per_post": -2,
+    "anchor_text_strategy": "keyword_focused",
+    "link_distribution": "pyramid_weighted"
+  }
+}

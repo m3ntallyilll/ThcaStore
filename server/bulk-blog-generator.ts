@@ -112,7 +112,7 @@ Return ONLY a JSON array with this exact structure:
 Make each title compelling, SEO-friendly, and unique. Include relevant keywords for hemp, THCA, and related terms.`;
 
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile", // the newest model is "llama-3.3-70b-versatile" which was released December 2024
+      model: "llama-3.1-8b-instant", // the newest model is "llama-3.1-8b-instant" which was released December 2024
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.9,
@@ -181,7 +181,7 @@ Important guidelines:
 - Include scientific backing where appropriate`;
 
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile", // the newest model is "llama-3.3-70b-versatile" which was released December 2024
+      model: "llama-3.1-8b-instant", // the newest model is "llama-3.1-8b-instant" which was released December 2024
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.7,
