@@ -2175,7 +2175,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         metaTitle: blogContent.title,
         metaDescription: `Comprehensive guide to ${topic}. Expert insights, practical tips, and everything you need to know.`,
         keywords: keywords || [topic, 'THCA', 'hemp', 'hemp'],
-        authorId: 'anonymous', // Default to anonymous for public generation
+        authorId: '120659fb-4bd7-404e-94d2-9686f6557178', // Use admin user for AI-generated posts
         category,
         tags: keywords || [],
         status: 'published' as const,
@@ -2251,7 +2251,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         });
       }
 
-      console.log(`🚀 Starting bulk generation of ${count} blogs for anonymous user`);
+      console.log(`🚀 Starting bulk generation of ${count} blogs for system user`);
 
       // Generate blogs
       const blogs = await bulkBlogGenerator.generateBulkBlogs({
@@ -2261,7 +2261,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         length,
         targetAudience,
         includeCallToAction
-      }, 'anonymous');
+      }, '120659fb-4bd7-404e-94d2-9686f6557178');
 
       // Save all blogs to database
       const savedResults = await bulkBlogGenerator.saveBulkBlogs(blogs);

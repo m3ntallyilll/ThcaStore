@@ -1,5 +1,4 @@
 import Groq from 'groq-sdk';
-import { groqToolsService } from './groq-tools-service';
 
 const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
@@ -29,38 +28,83 @@ export class BlogAIStreamingService {
     }
 
     try {
-      console.log(`🚀 Starting tool-enhanced multi-agent blog generation for: ${request.topic}`);
+      console.log(`🚀 Starting direct blog generation for: ${request.topic}`);
       
-      // First, enhance content strategy with tools
-      const toolResult = await groqToolsService.enhanceBlogContentGeneration(request);
-      console.log(`📊 Tool-enhanced research completed for: ${request.topic}`);
+      // Generate blog post directly without any tool dependencies
+      const blogContent = await this.generateDirectBlogPost(request);
       
-      // Multi-agent parallel generation for maximum coverage with tool insights
-      const [
-        introSection,
-        mainSections,
-        faqSection,
-        conclusionSection
-      ] = await Promise.all([
-        this.generateIntroductionAgent(request, toolResult),
-        this.generateMainContentAgent(request, toolResult),
-        this.generateFAQAgent(request, toolResult),
-        this.generateConclusionAgent(request, toolResult)
-      ]);
-
-      // Combine all sections into comprehensive blog post
-      const fullContent = this.assembleBlogPost(introSection, mainSections, faqSection, conclusionSection, request);
+      console.log(`✅ Blog post generated: ${blogContent.content.length} characters, Title: ${blogContent.title}`);
       
-      console.log(`✅ Tool-enhanced blog generated: ${fullContent.content.length} characters`);
-      
-      return {
-        title: introSection.title,
-        content: fullContent.content
-      };
+      return blogContent;
     } catch (error) {
-      console.error('Error in tool-enhanced multi-agent blog generation:', error);
-      throw new Error('Failed to generate complete blog post. Please try again.');
+      console.error('Error in direct blog generation:', error);
+      // Provide more specific error information for debugging
+      throw new Error(`Blog generation failed: ${error.message || 'Unknown error'}`);
     }
+  }
+
+  private async generateDirectBlogPost(request: BlogGenerationRequest): Promise<{ title: string; content: string }> {
+    const lengthGuide = {
+      short: "800-1200 words",
+      medium: "1500-2500 words", 
+      long: "3000-5000 words"
+    };
+
+    const targetLength = lengthGuide[request.length || 'medium'];
+    const locationContext = request.targetLocation ? 
+      `Include information specific to ${request.targetLocation}, including local laws and shipping considerations.` : '';
+
+    const systemPrompt = `You are an expert THCA and hemp content writer. Write a comprehensive, SEO-optimized blog post about "${request.topic}" that:
+
+1. Is ${targetLength} long with proper structure and headings
+2. Uses an ${request.tone || 'educational'} tone appropriate for ${request.targetAudience || 'hemp enthusiasts'}
+3. Includes proper HTML formatting with <h2>, <h3>, <p>, <ul>, <li> tags
+4. Focuses on accurate, helpful information about THCA and hemp products
+5. ${request.includeCallToAction ? 'Includes a natural call-to-action encouraging readers to explore THCA products' : ''}
+6. ${locationContext}
+7. Incorporates these keywords naturally: ${request.keywords?.join(', ') || 'THCA, hemp, benefits'}
+
+Structure the blog post with:
+- Compelling introduction that hooks the reader
+- 4-6 main sections with descriptive H2 headings  
+- FAQ section with 3-5 common questions
+- Strong conclusion that summarizes key points
+- Use bullet points and numbered lists where appropriate
+
+Write in a professional, trustworthy voice that builds authority and educates readers about THCA and hemp products.`;
+
+    const userPrompt = `Write a complete blog post about: ${request.topic}
+
+Category: ${request.category}
+Target Audience: ${request.targetAudience}
+Tone: ${request.tone}
+Length: ${request.length} (${targetLength})
+Keywords: ${request.keywords?.join(', ') || 'THCA, hemp, benefits'}
+${request.targetLocation ? `Location Focus: ${request.targetLocation}` : ''}
+
+Generate the complete blog post with proper HTML formatting and SEO optimization.`;
+
+    const response = await groq.chat.completions.create({
+      model: "llama-3.1-8b-instant",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      max_completion_tokens: 4096,
+      temperature: 0.7
+    });
+
+    const content = response.choices[0].message.content || '';
+    
+    // Extract title from content or generate one
+    const titleMatch = content.match(/<h1[^>]*>(.*?)<\/h1>/i) || content.match(/^#\s*(.*?)$/m);
+    const title = titleMatch ? titleMatch[1].replace(/<[^>]*>/g, '').trim() : 
+      `${request.topic} - Complete Guide for ${request.targetAudience || 'Hemp Enthusiasts'}`;
+
+    return {
+      title,
+      content: content.replace(/<h1[^>]*>.*?<\/h1>/i, '').trim() // Remove h1 if present since title is separate
+    };
   }
 
   private async generateIntroductionAgent(request: BlogGenerationRequest, toolResult?: any): Promise<BlogSection> {
