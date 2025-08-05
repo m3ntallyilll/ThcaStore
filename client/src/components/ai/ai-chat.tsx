@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/use-auth';
+import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
 import { useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChatMessage {
   id: string;
@@ -33,6 +35,8 @@ interface AIChatProps {
 export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUpdate, onBlogCreation, autoOpen = false }: AIChatProps) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [hasAutoOpened, setHasAutoOpened] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
