@@ -81,13 +81,13 @@ export const useAuth = create<AuthState>()(
           });
           set({ user, token });
         } catch (error: any) {
-          // Only clear token if it's actually invalid
-          if (error.message.includes('401') || error.message.includes('expired') || error.message.includes('invalid')) {
+          // Only clear token if it's actually invalid (401/403 errors)
+          if (error.message.includes('401') || error.message.includes('403') || error.message.includes('expired') || error.message.includes('invalid') || error.message.includes('Authentication')) {
             localStorage.removeItem('authToken');
             set({ user: null, token: null });
           } else {
-            // For other errors, just log but don't clear auth state
-            console.warn('Auth check failed (non-auth error):', error.message);
+            // For network errors or other issues, keep the auth state but log warning
+            console.warn('Auth check failed (keeping auth state):', error.message);
           }
         }
       },

@@ -50,7 +50,7 @@ export async function apiRequest(
       throw new Error('Authentication required - please log in again');
     }
     // Only log significant errors, avoid spam
-    if (error && typeof error === 'object' && Object.keys(error).length > 0 && !error.message?.includes('Authentication')) {
+    if (error && typeof error === 'object' && Object.keys(error).length > 0 && !(error as any).message?.includes('Authentication')) {
       console.error('API Request Error:', error);
     }
     throw error;
