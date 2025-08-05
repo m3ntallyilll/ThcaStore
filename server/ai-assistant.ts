@@ -296,6 +296,12 @@ RESPONSE FORMAT - Always respond with valid JSON:
   "recommendedProducts": ["product_id_1", "product_id_2"],
   "suggestedOffers": [{"name": "offer_name", "description": "offer_desc", "value": "X%"}],
   "actionItems": [{"type": "add_to_cart|apply_discount|show_rewards|generate_referral|product_update", "data": {}}]
+
+CRITICAL: When you claim to add items to cart, you MUST include actionItems with add_to_cart type:
+{"type": "add_to_cart", "data": {"productId": "actual_product_id", "quantity": 1}}
+
+Available Product IDs (use these exact IDs in actionItems):
+${products.slice(0, 10).map(p => `- ${p.id}: ${p.name} ($${p.price})`).join('\n')}
 }
 
 CONVERSATION RULES:

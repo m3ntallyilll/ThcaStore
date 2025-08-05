@@ -105,13 +105,32 @@ function AppContent() {
   }, [isAuthenticated]);
 
   // Handle AI product recommendations by linking to actual products
-  const handleProductRecommendation = (productId: string) => {
+  const handleProductRecommendation = (productIdentifier: string) => {
     // Navigate to products page with the product highlighted
     setLocation('/products');
     
-    // Scroll to product after navigation (wait for page to load)
+    // Scroll to product after navigation (wait for page to load) 
     setTimeout(() => {
-      const productElement = document.querySelector(`[data-product-id="${productId}"]`);
+      // Try by product ID first, then by product name
+      let productElement = document.querySelector(`[data-product-id="${productIdentifier}"]`);
+      
+      // If not found by ID, try to find by product name
+      if (!productElement) {
+        productElement = document.querySelector(`[data-product-name="${productIdentifier}"]`);
+      }
+      
+      // If still not found, try partial name match
+      if (!productElement) {
+        const allProductElements = document.querySelectorAll('[data-product-name]');
+        for (const element of allProductElements) {
+          const productName = element.getAttribute('data-product-name');
+          if (productName && productName.toLowerCase().includes(productIdentifier.toLowerCase())) {
+            productElement = element;
+            break;
+          }
+        }
+      }
+      
       if (productElement) {
         productElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         productElement.classList.add('ring-2', 'ring-gold', 'ring-opacity-75');

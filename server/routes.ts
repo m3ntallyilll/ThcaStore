@@ -1256,6 +1256,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         req.body.userContext
       );
 
+      // Process actionItems if they exist
+      if (response.actionItems && response.actionItems.length > 0) {
+        for (const action of response.actionItems) {
+          try {
+            if (action.type === 'add_to_cart' && action.data && (action.data.productId || action.data.product_id) && userId) {
+              // Actually add the item to the cart
+              const quantity = action.data.quantity || 1;
+              let productId = action.data.productId || action.data.product_id;
+              
+              // If it's a product name, find the actual product ID
+              if (productId && typeof productId === 'string' && !productId.includes('-')) {
+                const products = await storage.getProducts();
+                const product = products.find(p => p.name === productId);
+                if (product) {
+                  productId = product.id;
+                }
+              }
+              
+              const cartItemData = {
+                userId,
+                productId,
+                quantity
+              };
+              await storage.addToCart(cartItemData);
+              console.log(`AI Assistant added product ${productId} to cart for user ${userId}`);
+            }
+          } catch (actionError) {
+            console.error('Failed to process action:', action.type, actionError);
+          }
+        }
+      }
+
       res.json(response);
     } catch (error: any) {
       console.error('AI Chat Error:', error);

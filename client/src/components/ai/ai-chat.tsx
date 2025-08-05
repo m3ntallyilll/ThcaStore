@@ -297,6 +297,24 @@ How can I help you today? I can:
                 }
               }
               break;
+
+            case 'add_to_cart':
+              // Cart addition is handled on the server side, just show confirmation
+              try {
+                queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+                
+                const successMessage: ChatMessage = {
+                  id: `cart_success_${Date.now()}`,
+                  message: '',
+                  response: `✅ Item added to cart! Your cart has been updated.`,
+                  timestamp: new Date(),
+                  isUser: false
+                };
+                setMessages(prev => [...prev, successMessage]);
+              } catch (error) {
+                console.error('Failed to refresh cart:', error);
+              }
+              break;
           }
         });
       }
@@ -503,15 +521,19 @@ How can I help you today? I can:
                               💎 Recommended Products:
                             </p>
                             <div className="space-y-1">
-                              {msg.recommendedProducts.map((productId, index) => (
+                              {msg.recommendedProducts.map((productName, index) => (
                                 <Button
                                   key={index}
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => onProductRecommendation?.(productId)}
-                                  className="text-xs border-hemp/30 hover:bg-hemp/10 bg-[#000000]"
+                                  onClick={() => {
+                                    // Use the product name directly - the handler will find the product
+                                    onProductRecommendation?.(productName);
+                                  }}
+                                  className="text-xs border-glow-green-400/30 hover:bg-glow-green-400/10 bg-black/50 text-glow-green-400 hover:text-glow-green-300 transition-colors"
+                                  data-testid={`button-view-product-${index}`}
                                 >
-                                  View Product #{productId.slice(-4)}
+                                  View {productName} 🔍
                                 </Button>
                               ))}
                             </div>
