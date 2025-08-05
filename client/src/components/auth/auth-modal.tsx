@@ -83,15 +83,17 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
           onClick={onClose}
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="glass-dark rounded-2xl p-8 w-full max-w-md mx-auto"
+            className="bg-gray-900/95 backdrop-blur-md border border-gray-700 rounded-2xl p-8 w-full max-w-md mx-auto relative z-[10000]"
             onClick={(e) => e.stopPropagation()}
+            style={{ position: 'relative' }}
           >
             <div className="text-center mb-6">
               <h3 className="text-2xl font-display font-bold mb-2">
@@ -110,7 +112,7 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
                     id="email"
                     type="email"
                     placeholder="your@email.com"
-                    className="bg-white/10 border-white/20 focus:border-gold"
+                    className="bg-white/10 border-gray-600 focus:border-glow-green-400 text-white"
                     {...loginForm.register('email')}
                   />
                   {loginForm.formState.errors.email && (
@@ -125,7 +127,7 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
                     id="password"
                     type="password"
                     placeholder="••••••••"
-                    className="bg-white/10 border-white/20 focus:border-gold"
+                    className="bg-white/10 border-gray-600 focus:border-glow-green-400 text-white"
                     {...loginForm.register('password')}
                   />
                   {loginForm.formState.errors.password && (
@@ -141,14 +143,14 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
                       Remember me
                     </Label>
                   </div>
-                  <a href="#" className="text-sm text-gold hover:text-gold-300 transition-colors">
+                  <a href="#" className="text-sm text-glow-green-400 hover:text-glow-green-300 transition-colors">
                     Forgot password?
                   </a>
                 </div>
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-gold/30 transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-glow-green-500 to-glow-green-600 text-black py-3 rounded-xl font-semibold hover:shadow-lg hover:shadow-glow-green-500/30 transition-all duration-300"
                 >
                   {isLoading ? 'Signing In...' : 'Sign In'}
                 </Button>
