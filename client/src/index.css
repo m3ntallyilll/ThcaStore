@@ -2,6 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Stripe Elements Styling Fix */
+.StripeElement {
+  background-color: white !important;
+  padding: 12px !important;
+  border: 1px solid #d1d5db !important;
+  border-radius: 8px !important;
+  color: #1f2937 !important;
+}
+
+.StripeElement--focus {
+  border-color: #16a34a !important;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.1) !important;
+}
+
+.StripeElement--invalid {
+  border-color: #dc2626 !important;
+}
+
+.StripeElement iframe {
+  background-color: white !important;
+}
+
+/* Ensure PaymentElement visibility */
+.stripe-payment-element {
+  background-color: white !important;
+  color: #1f2937 !important;
+}
+
+.stripe-payment-element input {
+  background-color: white !important;
+  color: #1f2937 !important;
+}
+
+.stripe-payment-element .Input {
+  background-color: white !important;
+  color: #1f2937 !important;
+  border: 1px solid #d1d5db !important;
+}
+
 :root {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(20, 14.3%, 4.1%);
