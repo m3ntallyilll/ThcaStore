@@ -686,9 +686,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cart routes - Allow guest access for adding items
-  app.get("/api/cart", authenticateToken, async (req: any, res) => {
+  app.get("/api/cart", async (req: any, res) => {
     try {
-      const cartItems = await storage.getCartItems(req.user.id);
+      // Check if user is authenticated
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      let userId = null;
+      
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, JWT_SECRET) as any;
+          const user = await storage.getUser(decoded.userId);
+          if (user) {
+            userId = user.id;
+          }
+        } catch (error) {
+          // Token invalid, continue as guest
+        }
+      }
+      
+      // Use guest session ID from header if not authenticated
+      if (!userId) {
+        const guestId = req.headers['x-guest-id'] as string;
+        if (guestId) {
+          userId = guestId;
+        } else {
+          // Return empty cart for new guest users
+          return res.json([]);
+        }
+      }
+      
+      const cartItems = await storage.getCartItems(userId);
       res.json(cartItems);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -747,7 +775,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const cartItem = await storage.addToCart(cartItemData);
-      res.status(201).json({ ...cartItem, guestSession: !token });
+      res.status(201).json({ ...cartItem, guestSession: !token, userId });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -769,7 +797,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/cart/:id", authenticateToken, async (req: any, res) => {
+  app.put("/api/cart/:id", async (req: any, res) => {
     try {
       const { quantity } = req.body;
       const cartItem = await storage.updateCartItem(req.params.id, quantity);
@@ -782,7 +810,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/cart/:id", authenticateToken, async (req: any, res) => {
+  app.delete("/api/cart/:id", async (req: any, res) => {
     try {
       const deleted = await storage.removeCartItem(req.params.id);
       if (!deleted) {

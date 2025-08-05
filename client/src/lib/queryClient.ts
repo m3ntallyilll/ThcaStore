@@ -16,10 +16,13 @@ export async function apiRequest(
 ): Promise<any> {
   const { method = 'GET', body } = options;
   const token = localStorage.getItem('authToken');
+  const guestId = localStorage.getItem('guestId');
   const headers: any = {};
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+  } else if (guestId) {
+    headers['X-Guest-Id'] = guestId;
   }
 
   if (body) {

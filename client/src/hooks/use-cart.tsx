@@ -25,14 +25,9 @@ export const useCart = create<CartState>((set, get) => ({
   isLoading: false,
 
   fetchCart: async () => {
-    const { user, token } = useAuth.getState();
-    if (!user || !token) {
-      set({ items: [] });
-      return;
-    }
-
     set({ isLoading: true });
     try {
+      // API request will handle both authenticated and guest users
       const items = await apiRequest('/api/cart');
       set({ items: items || [] });
     } catch (error) {
@@ -49,6 +44,11 @@ export const useCart = create<CartState>((set, get) => ({
         method: 'POST', 
         body: { productId, quantity } 
       });
+      
+      // If guest session, store guest ID
+      if (result.guestSession && result.userId) {
+        localStorage.setItem('guestId', result.userId);
+      }
       
       // Update cart items immediately for better UX
       await get().fetchCart();

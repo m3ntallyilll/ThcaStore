@@ -266,15 +266,6 @@ export default function Cart() {
   };
 
   const handleCheckout = () => {
-    if (!user) {
-      toast({
-        title: "Login Required",
-        description: "Please login to proceed with checkout",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (items.length === 0) {
       toast({
         title: "Empty Cart",
