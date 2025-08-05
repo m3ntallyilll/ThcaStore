@@ -22,7 +22,7 @@ export async function apiRequest(
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   } else if (guestId) {
-    headers['X-Guest-Id'] = guestId;
+    headers['X-Guest-ID'] = guestId;
   }
 
   if (body) {
