@@ -372,24 +372,47 @@ const CheckoutForm = ({
         </Card>
       </div>
 
-      {/* Payment */}
+      {/* Payment - Integrated with Order Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Shield className="h-5 w-5" />
-            Payment
+            Complete Your Order
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Payment Element with enhanced styling */}
+            {/* Order Total */}
+            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-lg font-semibold">Order Total</span>
+                <span className="text-2xl font-bold text-green-600">
+                  ${(total + (shippingCost?.cost || 0)).toFixed(2)}
+                </span>
+              </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex justify-between">
+                  <span>Subtotal:</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Shipping:</span>
+                  <span>{shippingCost?.isFree ? 'FREE' : `$${(shippingCost?.cost || 0).toFixed(2)}`}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card Information Section */}
             <div className="space-y-4">
-              <div className="text-sm text-gray-600 mb-4">
-                <p className="font-medium mb-2">Secure Payment Information</p>
-                <p className="text-xs">Your payment information is encrypted and secure. We accept all major credit and debit cards.</p>
+              <div className="text-sm text-gray-700">
+                <h3 className="font-semibold text-lg mb-2 flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-green-600" />
+                  Enter Card Information
+                </h3>
+                <p className="text-gray-600 mb-4">Your payment information is encrypted and secure. We accept all major credit and debit cards.</p>
               </div>
               
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border-2 border-green-200 rounded-lg p-6 bg-white shadow-sm">
                 <PaymentElement 
                   options={{
                     layout: {
@@ -417,16 +440,16 @@ const CheckoutForm = ({
                 />
               </div>
               
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center justify-center gap-2 text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
                 <Shield className="w-4 h-4" />
-                <span>256-bit SSL encryption • PCI DSS compliant • Powered by Stripe</span>
+                <span>🔒 256-bit SSL encryption • PCI DSS compliant • Powered by Stripe</span>
               </div>
             </div>
 
             <Button 
               type="submit" 
               disabled={!stripe || isLoading || !!stateError || !shippingAddress.state}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-semibold"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
               data-testid="button-complete-order"
             >
               {isLoading ? (
@@ -435,11 +458,20 @@ const CheckoutForm = ({
                   Processing Payment...
                 </>
               ) : stateError ? (
-                'Cannot ship to selected state'
+                <>
+                  <Shield className="mr-2 h-5 w-5" />
+                  Cannot ship to selected state
+                </>
               ) : !shippingAddress.state ? (
-                'Select a state to continue'
+                <>
+                  <Shield className="mr-2 h-5 w-5" />
+                  Select a state to continue
+                </>
               ) : (
-                `Complete Order - $${(total + shippingCost?.cost || 0).toFixed(2)}`
+                <>
+                  <Shield className="mr-2 h-5 w-5" />
+                  Complete Order - ${(total + (shippingCost?.cost || 0)).toFixed(2)}
+                </>
               )}
             </Button>
           </form>
