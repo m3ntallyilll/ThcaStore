@@ -63,9 +63,9 @@ export default function BulkBlogGenerator() {
 
   const bulkGenerationMutation = useMutation({
     mutationFn: (data: BulkGenerationRequest) => 
-      apiRequest('/api/admin/blog/ai/bulk-generate', {
+      apiRequest('/api/blog/ai/bulk-generate', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: data
       }),
     onSuccess: (data: BulkGenerationResult) => {
       setResults(data);

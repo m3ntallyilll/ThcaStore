@@ -128,8 +128,8 @@ export function BlogManagement({ blogFormData }: BlogManagementProps) {
 
   // Fetch blog ideas
   const { data: blogIdeas = [], refetch: refetchIdeas } = useQuery({
-    queryKey: ['/api/admin/blog/ai/ideas'],
-    queryFn: () => apiRequest('/api/admin/blog/ai/ideas?category=education&count=5')
+    queryKey: ['/api/blog/ai/ideas'],
+    queryFn: () => apiRequest('/api/blog/ai/ideas?category=education&count=5')
       .then(data => data.ideas || []),
     enabled: false
   });
@@ -181,7 +181,7 @@ export function BlogManagement({ blogFormData }: BlogManagementProps) {
   // AI blog generation mutation
   const generateBlogMutation = useMutation({
     mutationFn: (data: any) => 
-      apiRequest('/api/admin/blog/ai/generate', { method: 'POST', body: data }),
+      apiRequest('/api/blog/ai/generate', { method: 'POST', body: data }),
     onSuccess: (newPost) => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/blog/posts'] });
       setIsAIDialogOpen(false);
