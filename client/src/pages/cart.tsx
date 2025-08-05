@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { Minus, Plus, Trash2, ShoppingCart, CreditCard, ArrowLeft, MessageCircle
 import { Link, useLocation } from 'wouter';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import type { CartItemWithProduct } from '@/lib/types';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -20,7 +20,7 @@ if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
 }
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
-// Cart Payment Form Component
+// Cart Payment Form Component with Card Saving
 const CartPaymentForm = ({ 
   total, 
   onPaymentReady 
@@ -31,8 +31,11 @@ const CartPaymentForm = ({
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { clearCart } = useCart();
   const [, setLocation] = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+  const [saveCard, setSaveCard] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +105,22 @@ const CartPaymentForm = ({
         />
       </div>
       
+      {/* Card Saving Option for Authenticated Users */}
+      {user && (
+        <div className="flex items-center space-x-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <input
+            type="checkbox"
+            id="save-card"
+            checked={saveCard}
+            onChange={(e) => setSaveCard(e.target.checked)}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label htmlFor="save-card" className="text-sm text-gray-700 cursor-pointer">
+            Save card information for faster checkout next time
+          </label>
+        </div>
+      )}
+      
       <div className="flex items-center justify-center gap-2 text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
         <Shield className="w-4 h-4" />
         <span>🔒 256-bit SSL encryption • PCI DSS compliant • Powered by Stripe</span>
@@ -135,17 +154,15 @@ const CartPaymentForm = ({
 };
 
 // Enhanced Cart Item Component for AI Assistant Integration
-const CartItemCard = ({ 
-  item, 
-  onUpdateQuantity, 
-  onRemove, 
-  isUpdating 
-}: {
-  item: CartItemWithProduct;
-  onUpdateQuantity: (itemId: string, quantity: number) => Promise<void>;
-  onRemove: (itemId: string) => Promise<void>;
-  isUpdating: boolean;
-}) => {
+const CartItemCard = React.forwardRef<
+  HTMLDivElement,
+  {
+    item: CartItemWithProduct;
+    onUpdateQuantity: (itemId: string, quantity: number) => Promise<void>;
+    onRemove: (itemId: string) => Promise<void>;
+    isUpdating: boolean;
+  }
+>(({ item, onUpdateQuantity, onRemove, isUpdating }, ref) => {
   const [localQuantity, setLocalQuantity] = useState(item.quantity);
   const [isRemoving, setIsRemoving] = useState(false);
 
@@ -180,6 +197,7 @@ const CartItemCard = ({
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -100, height: 0 }}
@@ -282,7 +300,9 @@ const CartItemCard = ({
       </div>
     </motion.div>
   );
-};
+});
+
+CartItemCard.displayName = 'CartItemCard';
 
 // AI Assistant Integration Helper
 const AIAssistantHelper = ({ 
@@ -353,10 +373,10 @@ export default function Cart() {
     fetchCart();
   }, [fetchCart]);
 
-  // Create payment intent when user wants to show payment form
+  // Create payment intent automatically when cart has items
   useEffect(() => {
     const createPaymentIntent = async () => {
-      if (showPaymentForm && items.length > 0) {
+      if (items.length > 0) {
         try {
           console.log('Creating payment intent for cart items:', items.length);
           const data = await apiRequest("/api/create-payment-intent", { 
@@ -364,7 +384,8 @@ export default function Cart() {
             body: {
               items,
               subtotal: getSubtotal(),
-              shippingCost: 0
+              shippingCost: 0,
+              setupFutureUsage: user ? 'on_session' : undefined // Enable card saving for logged-in users
             }
           });
           console.log('Payment intent created:', data.clientSecret ? 'Success' : 'Failed');
@@ -373,13 +394,13 @@ export default function Cart() {
           console.error('Error creating payment intent:', error);
           setClientSecret(''); // Reset on error
         }
-      } else if (!showPaymentForm) {
-        setClientSecret(''); // Reset when hiding form
+      } else {
+        setClientSecret(''); // Reset when cart is empty
       }
     };
 
     createPaymentIntent();
-  }, [showPaymentForm, items, getSubtotal]);
+  }, [items, getSubtotal, user]);
 
   const handleQuantityUpdate = async (itemId: string, newQuantity: number) => {
     setIsUpdating(true);
@@ -606,114 +627,56 @@ export default function Cart() {
                   </span>
                 </div>
 
-                {!showPaymentForm ? (
-                  <>
-                    <Button 
-                      onClick={handleCheckout}
-                      className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 text-lg font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
-                      data-testid="button-checkout"
-                      size="lg"
+                {/* Always show payment form for seamless checkout */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    Complete Your Order
+                  </h3>
+                  
+                  {clientSecret ? (
+                    <Elements 
+                      stripe={stripePromise} 
+                      options={{ 
+                        clientSecret,
+                        appearance: {
+                          theme: 'stripe',
+                          variables: {
+                            colorPrimary: '#10b981',
+                          }
+                        }
+                      }}
                     >
-                      <CreditCard className="w-6 h-6" />
-                      Proceed to Checkout
-                    </Button>
+                      <CartPaymentForm 
+                        total={getTotal()} 
+                        onPaymentReady={setClientSecret}
+                      />
+                    </Elements>
+                  ) : (
+                    <>
+                      <Button 
+                        onClick={handleCheckout}
+                        className="w-full bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 text-lg font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-3"
+                        data-testid="button-checkout"
+                        size="lg"
+                      >
+                        <CreditCard className="w-6 h-6" />
+                        Proceed to Checkout
+                      </Button>
 
-                    <div className="space-y-2 text-center">
-                      <p className="text-xs text-muted-foreground">
-                        🔒 Secure checkout powered by Stripe
-                      </p>
-                      <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
-                        <span>✓ SSL Encrypted</span>
-                        <span>✓ Age Verified</span>
-                        <span>✓ Discreet Shipping</span>
+                      <div className="space-y-2 text-center">
+                        <p className="text-xs text-muted-foreground">
+                          🔒 Secure checkout powered by Stripe
+                        </p>
+                        <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground">
+                          <span>✓ SSL Encrypted</span>
+                          <span>✓ Age Verified</span>
+                          <span>✓ Discreet Shipping</span>
+                        </div>
                       </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-6">
-                    <div className="text-center">
-                      <h3 className="font-semibold text-lg mb-2 flex items-center justify-center gap-2">
-                        <Shield className="w-5 h-5 text-green-600" />
-                        Enter Card Information
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-4">Complete your purchase securely</p>
-                    </div>
-
-                    <div className="min-h-[450px] w-full">
-                      {clientSecret ? (
-                        <div className="w-full bg-white">
-                          <Elements 
-                            stripe={stripePromise} 
-                            options={{ 
-                              clientSecret,
-                              appearance: {
-                                theme: 'stripe',
-                                variables: {
-                                  colorPrimary: '#16a34a',
-                                  colorBackground: '#ffffff',
-                                  colorText: '#1f2937',
-                                  colorDanger: '#dc2626',
-                                  fontFamily: 'system-ui, sans-serif',
-                                  spacingUnit: '4px',
-                                  borderRadius: '8px',
-                                  fontSizeBase: '16px'
-                                },
-                                rules: {
-                                  '.Input': {
-                                    backgroundColor: '#ffffff',
-                                    border: '1px solid #d1d5db',
-                                    borderRadius: '8px',
-                                    padding: '12px',
-                                    fontSize: '16px',
-                                    color: '#1f2937'
-                                  },
-                                  '.Input:focus': {
-                                    borderColor: '#16a34a',
-                                    boxShadow: '0 0 0 2px rgba(22, 163, 74, 0.1)'
-                                  },
-                                  '.Label': {
-                                    color: '#374151',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    marginBottom: '6px'
-                                  },
-                                  '.Tab': {
-                                    backgroundColor: '#f9fafb',
-                                    border: '1px solid #d1d5db',
-                                    borderRadius: '8px',
-                                    color: '#374151'
-                                  },
-                                  '.Tab--selected': {
-                                    backgroundColor: '#16a34a',
-                                    color: '#ffffff'
-                                  }
-                                }
-                              }
-                            }}
-                          >
-                            <CartPaymentForm 
-                              total={getTotal()} 
-                              onPaymentReady={setClientSecret}
-                            />
-                          </Elements>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center py-12">
-                          <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                          <span className="ml-2 text-sm text-muted-foreground">Preparing secure payment...</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <Button 
-                      onClick={() => setShowPaymentForm(false)}
-                      variant="outline"
-                      className="w-full mt-4"
-                    >
-                      Back to Cart Summary
-                    </Button>
-                  </div>
-                )}
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>

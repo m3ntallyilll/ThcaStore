@@ -45,7 +45,15 @@ export async function apiRequest(
     }
 
     await throwIfResNotOk(res);
-    return await res.json();
+    
+    // Handle empty responses (like DELETE operations)
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await res.json();
+    } else {
+      // For non-JSON responses (like 204 No Content), return empty object
+      return {};
+    }
   } catch (error) {
     // Silently handle auth errors to reduce console spam
     if (error instanceof Error && (error.message.includes('401') || error.message.includes('403'))) {
