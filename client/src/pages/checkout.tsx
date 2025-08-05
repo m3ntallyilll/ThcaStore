@@ -170,10 +170,37 @@ const CheckoutForm = ({
       console.error('State validation error:', error);
     }
 
+    // Validate required shipping information
+    if (!shippingAddress.name || !shippingAddress.email || !shippingAddress.address || 
+        !shippingAddress.city || !shippingAddress.state || !shippingAddress.zip) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required shipping information.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         return_url: `${window.location.origin}/order-confirmation`,
+        payment_method_data: {
+          billing_details: {
+            name: shippingAddress.name,
+            email: shippingAddress.email,
+            phone: shippingAddress.phone,
+            address: {
+              line1: shippingAddress.address,
+              line2: shippingAddress.address2 || undefined,
+              city: shippingAddress.city,
+              state: shippingAddress.state,
+              postal_code: shippingAddress.zip,
+              country: shippingAddress.country,
+            }
+          }
+        },
         shipping: {
           name: shippingAddress.name,
           address: {
@@ -191,13 +218,13 @@ const CheckoutForm = ({
     if (error) {
       toast({
         title: "Payment Failed",
-        description: error.message,
+        description: error.message || "There was an issue processing your payment. Please try again.",
         variant: "destructive",
       });
     } else {
       toast({
         title: "Payment Successful",
-        description: "Thank you for your purchase!",
+        description: "Thank you for your purchase! You'll receive a confirmation email shortly.",
       });
     }
 
@@ -354,24 +381,65 @@ const CheckoutForm = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <PaymentElement />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Payment Element with enhanced styling */}
+            <div className="space-y-4">
+              <div className="text-sm text-gray-600 mb-4">
+                <p className="font-medium mb-2">Secure Payment Information</p>
+                <p className="text-xs">Your payment information is encrypted and secure. We accept all major credit and debit cards.</p>
+              </div>
+              
+              <div className="border rounded-lg p-4 bg-gray-50">
+                <PaymentElement 
+                  options={{
+                    layout: {
+                      type: 'tabs',
+                      defaultCollapsed: false,
+                      radios: false,
+                      spacedAccordionItems: true
+                    },
+                    fields: {
+                      billingDetails: {
+                        name: 'auto',
+                        email: 'auto',
+                        phone: 'auto',
+                        address: {
+                          line1: 'auto',
+                          line2: 'auto',
+                          city: 'auto',
+                          state: 'auto',
+                          postalCode: 'auto',
+                          country: 'auto'
+                        }
+                      }
+                    }
+                  }}
+                />
+              </div>
+              
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <Shield className="w-4 h-4" />
+                <span>256-bit SSL encryption • PCI DSS compliant • Powered by Stripe</span>
+              </div>
+            </div>
+
             <Button 
               type="submit" 
               disabled={!stripe || isLoading || !!stateError || !shippingAddress.state}
-              className="w-full"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-semibold"
+              data-testid="button-complete-order"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Processing Payment...
                 </>
               ) : stateError ? (
                 'Cannot ship to selected state'
               ) : !shippingAddress.state ? (
                 'Select a state to continue'
               ) : (
-                'Complete Order'
+                `Complete Order - $${(total + shippingCost?.cost || 0).toFixed(2)}`
               )}
             </Button>
           </form>

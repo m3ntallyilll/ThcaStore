@@ -44,6 +44,7 @@ import Home from "@/pages/home";
 import Products from "@/pages/products";
 import Cart from "@/pages/cart";
 import Checkout from './pages/checkout';
+import OrderConfirmation from './pages/order-confirmation';
 import Admin from "@/pages/admin";
 import Rewards from "@/pages/rewards";
 import Blog from "@/pages/blog";
@@ -75,6 +76,7 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/order-confirmation" component={OrderConfirmation} />
       <Route path="/rewards" component={Rewards} />
       <Route path="/blog/:id" component={BlogPost} />
       <Route path="/blog" component={Blog} />
