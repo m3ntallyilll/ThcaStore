@@ -72,13 +72,11 @@ const CheckoutForm = ({
   useEffect(() => {
     const loadStates = async () => {
       try {
-        const response = await apiRequest('/api/shipping/states');
-        if (response.ok) {
-          const data = await response.json();
-          setAvailableStates(data);
-        }
+        const data = await apiRequest('/api/shipping/states');
+        setAvailableStates(data);
       } catch (error) {
         console.error('Failed to load available states:', error);
+        setAvailableStates([]);
       }
     };
     loadStates();
@@ -95,19 +93,25 @@ const CheckoutForm = ({
         body: { state: stateCode }
       });
       
-      if (!response.ok) {
-        const error = await response.json();
-        if (error.prohibited) {
-          setStateError(error.message);
-          toast({
-            title: "Shipping Restricted",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
+      if (response.prohibited) {
+        setStateError(response.message);
+        toast({
+          title: "Shipping Restricted",
+          description: response.message,
+          variant: "destructive",
+        });
       }
-    } catch (error) {
-      console.error('State validation error:', error);
+    } catch (error: any) {
+      if (error.prohibited) {
+        setStateError(error.message);
+        toast({
+          title: "Shipping Restricted",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        console.error('State validation error:', error);
+      }
     }
   };
 
@@ -115,7 +119,7 @@ const CheckoutForm = ({
   const calculateShipping = async (method: string) => {
     try {
       const totalWeight = items.reduce((sum, item) => sum + (parseFloat((item.product as any).weight || '0.1') * item.quantity), 0);
-      const response = await apiRequest('/api/shipping/calculate', {
+      const shippingCost = await apiRequest('/api/shipping/calculate', {
         method: 'POST',
         body: {
           method,
@@ -123,13 +127,12 @@ const CheckoutForm = ({
           subtotal: total
         }
       });
-
-      if (response.ok) {
-        const shippingCost = await response.json();
-        onShippingChange(shippingCost);
-      }
+      
+      onShippingChange(shippingCost);
     } catch (error) {
       console.error('Error calculating shipping:', error);
+      // Default to free shipping if calculation fails
+      onShippingChange({ cost: 0, isFree: true, method: 'standard' });
     }
   };
 
@@ -387,17 +390,24 @@ export default function Checkout() {
 
   useEffect(() => {
     // Fetch shipping rates
-    apiRequest('/api/shipping/rates')
-      .then((res) => res.json())
-      .then((data) => {
+    const loadShippingRates = async () => {
+      try {
+        const data = await apiRequest('/api/shipping/rates');
         setShippingRates(data);
-      })
-      .catch(console.error);
+      } catch (error) {
+        console.error('Error loading shipping rates:', error);
+        setShippingRates([]);
+      }
+    };
 
-    // Create PaymentIntent
+    loadShippingRates();
+  }, []);
+
+  useEffect(() => {
+    // Create PaymentIntent when items or shipping cost changes
     const createPaymentIntent = async () => {
       try {
-        const response = await apiRequest("/api/create-payment-intent", { 
+        const data = await apiRequest("/api/create-payment-intent", { 
           method: "POST",
           body: {
             items,
@@ -406,10 +416,7 @@ export default function Checkout() {
           }
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          setClientSecret(data.clientSecret);
-        }
+        setClientSecret(data.clientSecret);
       } catch (error) {
         console.error('Error creating payment intent:', error);
       }
