@@ -33,14 +33,8 @@ export const useCart = create<CartState>((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const response = await apiRequest('/api/cart');
-
-      if (response.ok) {
-        const items = await response.json();
-        set({ items });
-      } else {
-        set({ items: [] });
-      }
+      const items = await apiRequest('/api/cart');
+      set({ items: items || [] });
     } catch (error) {
       console.error('Failed to fetch cart:', error);
       set({ items: [] });
@@ -50,45 +44,63 @@ export const useCart = create<CartState>((set, get) => ({
   },
 
   addToCart: async (productId: string, quantity = 1) => {
-    const { token } = useAuth.getState();
-    if (!token) throw new Error('Authentication required');
-
     try {
-      await apiRequest('/api/cart', { 
+      const result = await apiRequest('/api/cart', { 
         method: 'POST', 
         body: { productId, quantity } 
       });
+      
+      // Update cart items immediately for better UX
       await get().fetchCart();
+      
+      return result;
     } catch (error) {
+      console.error('Failed to add to cart:', error);
       throw error;
     }
   },
 
   updateQuantity: async (itemId: string, quantity: number) => {
-    const { token } = useAuth.getState();
-    if (!token) throw new Error('Authentication required');
-
     try {
       await apiRequest(`/api/cart/${itemId}`, { 
         method: 'PUT', 
         body: { quantity } 
       });
+      
+      // Immediately update the local state for better UX
+      set(state => ({
+        items: state.items.map(item => 
+          item.id === itemId ? { ...item, quantity } : item
+        )
+      }));
+      
+      // Then sync with server
       await get().fetchCart();
     } catch (error) {
+      console.error('Failed to update quantity:', error);
+      // Revert optimistic update on error
+      await get().fetchCart();
       throw error;
     }
   },
 
   removeFromCart: async (itemId: string) => {
-    const { token } = useAuth.getState();
-    if (!token) throw new Error('Authentication required');
-
     try {
       await apiRequest(`/api/cart/${itemId}`, { 
         method: 'DELETE' 
       });
+      
+      // Immediately remove from local state
+      set(state => ({
+        items: state.items.filter(item => item.id !== itemId)
+      }));
+      
+      // Then sync with server
       await get().fetchCart();
     } catch (error) {
+      console.error('Failed to remove from cart:', error);
+      // Revert optimistic update on error
+      await get().fetchCart();
       throw error;
     }
   },
