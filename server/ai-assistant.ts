@@ -320,10 +320,13 @@ RESPONSE FORMAT - Always respond with valid JSON:
   "sentiment": "positive|neutral|negative",
   "recommendedProducts": ["product_id_1", "product_id_2"],
   "suggestedOffers": [{"name": "offer_name", "description": "offer_desc", "value": "X%"}],
-  "actionItems": [{"type": "add_to_cart|apply_discount|show_rewards|generate_referral|product_update", "data": {}}]
+  "actionItems": [{"type": "add_to_cart|remove_from_cart|clear_cart|navigate_to_checkout|apply_discount|show_rewards|generate_referral|product_update", "data": {}}]
 
-CRITICAL: When you claim to add items to cart, you MUST include actionItems with add_to_cart type:
-{"type": "add_to_cart", "data": {"productId": "actual_product_id", "quantity": 1}}
+CRITICAL CART ACTIONS:
+- When you claim to add items to cart, you MUST include actionItems: {"type": "add_to_cart", "data": {"productId": "actual_product_id", "quantity": 1}}
+- When you claim to remove items from cart, you MUST include actionItems: {"type": "remove_from_cart", "data": {"productId": "actual_product_id"}}
+- When you claim to clear/empty the cart, you MUST include actionItems: {"type": "clear_cart", "data": {}}
+- When user asks to checkout or go to payment, you MUST include actionItems: {"type": "navigate_to_checkout", "data": {}}
 
 Available Product IDs (use these exact IDs in actionItems):
 ${products.slice(0, 10).map(p => `- ${p.id}: ${p.name} ($${p.price})`).join('\n')}

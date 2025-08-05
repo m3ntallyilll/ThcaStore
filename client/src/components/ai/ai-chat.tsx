@@ -237,6 +237,30 @@ How can I help you today? I can:
             case 'apply_discount':
               // Could apply discount codes
               break;
+            case 'navigate_to_checkout':
+              // Navigate to checkout page
+              setLocation('/checkout');
+              break;
+            case 'remove_from_cart':
+              if (action.data?.productId) {
+                try {
+                  // Find cart item by product ID and remove it
+                  const cartItem = cartItems.find(item => item.product.id === action.data.productId);
+                  if (cartItem) {
+                    await removeFromCart(cartItem.id);
+                  }
+                } catch (error) {
+                  console.error('Failed to remove item from cart:', error);
+                }
+              }
+              break;
+            case 'clear_cart':
+              try {
+                await clearCart();
+              } catch (error) {
+                console.error('Failed to clear cart:', error);
+              }
+              break;
             case 'product_update':
               if (user?.isAdmin) {
                 try {
