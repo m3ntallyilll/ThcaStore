@@ -96,48 +96,6 @@ const CartPaymentForm = ({
             },
             fields: {
               billingDetails: 'auto'
-            },
-            appearance: {
-              theme: 'stripe',
-              variables: {
-                colorPrimary: '#16a34a',
-                colorBackground: '#ffffff',
-                colorText: '#1f2937',
-                colorDanger: '#dc2626',
-                fontFamily: 'system-ui, sans-serif',
-                spacingUnit: '4px',
-                borderRadius: '8px'
-              },
-              rules: {
-                '.Input': {
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  padding: '12px',
-                  fontSize: '16px',
-                  color: '#1f2937'
-                },
-                '.Input:focus': {
-                  borderColor: '#16a34a',
-                  boxShadow: '0 0 0 2px rgba(22, 163, 74, 0.1)'
-                },
-                '.Label': {
-                  color: '#374151',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  marginBottom: '6px'
-                },
-                '.Tab': {
-                  backgroundColor: '#f9fafb',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '8px',
-                  color: '#374151'
-                },
-                '.Tab--selected': {
-                  backgroundColor: '#16a34a',
-                  color: '#ffffff'
-                }
-              }
             }
           }}
           className="stripe-payment-element"
@@ -694,7 +652,41 @@ export default function Cart() {
                                   colorPrimary: '#16a34a',
                                   colorBackground: '#ffffff',
                                   colorText: '#1f2937',
-                                  fontFamily: 'system-ui, sans-serif'
+                                  colorDanger: '#dc2626',
+                                  fontFamily: 'system-ui, sans-serif',
+                                  spacingUnit: '4px',
+                                  borderRadius: '8px',
+                                  fontSizeBase: '16px'
+                                },
+                                rules: {
+                                  '.Input': {
+                                    backgroundColor: '#ffffff',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '8px',
+                                    padding: '12px',
+                                    fontSize: '16px',
+                                    color: '#1f2937'
+                                  },
+                                  '.Input:focus': {
+                                    borderColor: '#16a34a',
+                                    boxShadow: '0 0 0 2px rgba(22, 163, 74, 0.1)'
+                                  },
+                                  '.Label': {
+                                    color: '#374151',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    marginBottom: '6px'
+                                  },
+                                  '.Tab': {
+                                    backgroundColor: '#f9fafb',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '8px',
+                                    color: '#374151'
+                                  },
+                                  '.Tab--selected': {
+                                    backgroundColor: '#16a34a',
+                                    color: '#ffffff'
+                                  }
                                 }
                               }
                             }}
