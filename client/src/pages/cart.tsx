@@ -84,8 +84,8 @@ const CartPaymentForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="border-2 border-green-200 rounded-lg p-4 bg-white shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="border-2 border-green-200 rounded-lg p-6 bg-white shadow-sm min-h-[350px] w-full">
         <PaymentElement 
           options={{
             layout: {
@@ -571,14 +571,14 @@ export default function Cart() {
 
           {/* Order Summary */}
           <div className="xl:col-span-1">
-            <Card className="sticky top-6 shadow-xl border-2">
+            <Card className="sticky top-6 shadow-xl border-2 max-h-[85vh] overflow-y-auto">
               <CardHeader className="bg-gradient-to-r from-primary/5 to-secondary/5">
                 <CardTitle className="flex items-center text-foreground">
                   <CreditCard className="w-5 h-5 mr-2 text-primary" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 pt-6">
+              <CardContent className="space-y-6 pt-6 pb-8">
                 <div className="space-y-3">
                   <div className="flex justify-between text-base">
                     <span className="text-muted-foreground">Subtotal:</span>
@@ -629,7 +629,7 @@ export default function Cart() {
                     </div>
                   </>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div className="text-center">
                       <h3 className="font-semibold text-lg mb-2 flex items-center justify-center gap-2">
                         <Shield className="w-5 h-5 text-green-600" />
@@ -638,24 +638,28 @@ export default function Cart() {
                       <p className="text-sm text-gray-600 mb-4">Complete your purchase securely</p>
                     </div>
 
-                    {clientSecret ? (
-                      <Elements stripe={stripePromise} options={{ clientSecret }}>
-                        <CartPaymentForm 
-                          total={getTotal()} 
-                          onPaymentReady={setClientSecret}
-                        />
-                      </Elements>
-                    ) : (
-                      <div className="flex items-center justify-center py-4">
-                        <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                        <span className="ml-2 text-sm text-muted-foreground">Preparing secure payment...</span>
-                      </div>
-                    )}
+                    <div className="min-h-[450px] w-full">
+                      {clientSecret ? (
+                        <div className="w-full">
+                          <Elements stripe={stripePromise} options={{ clientSecret }}>
+                            <CartPaymentForm 
+                              total={getTotal()} 
+                              onPaymentReady={setClientSecret}
+                            />
+                          </Elements>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center py-12">
+                          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                          <span className="ml-2 text-sm text-muted-foreground">Preparing secure payment...</span>
+                        </div>
+                      )}
+                    </div>
 
                     <Button 
                       onClick={() => setShowPaymentForm(false)}
                       variant="outline"
-                      className="w-full"
+                      className="w-full mt-4"
                     >
                       Back to Cart Summary
                     </Button>
