@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
-import { useRecommendations } from '@/hooks/use-recommendations';
-import { PersonalizedRecommendations } from './personalized-recommendations';
 import { useLocation } from 'wouter';
+import { PersonalizedRecommendations } from './personalized-recommendations';
+import { useRecommendations } from '@/hooks/use-recommendations';
 
 interface RecommendationTriggerProps {
   currentProductId?: string;
@@ -64,7 +64,7 @@ export function RecommendationTrigger({ currentProductId, children }: Recommenda
         isOpen={isRecommendationsOpen}
         onClose={closeRecommendations}
         currentProductId={currentTrigger?.productId || currentProductId}
-        triggerReason={currentTrigger?.type || 'browsing'}
+        triggerReason={currentTrigger?.type === 'product_view' ? 'browsing' : (currentTrigger?.type || 'browsing')}
       />
     </>
   );

@@ -1,19 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from './use-auth';
-import { useCart } from './use-cart';
 
 interface RecommendationTrigger {
-  type: 'browsing' | 'cart_add' | 'idle' | 'exit_intent' | 'time_based';
+  type: 'idle' | 'exit_intent' | 'time_based' | 'cart_add' | 'product_view';
   productId?: string;
-  delay?: number;
+  timestamp: number;
 }
 
 interface UseRecommendationsOptions {
   enableIdleDetection?: boolean;
   enableExitIntent?: boolean;
   enableTimeBased?: boolean;
-  idleTimeThreshold?: number; // milliseconds
-  timeBasedInterval?: number; // milliseconds
+  idleTimeThreshold?: number;
+  timeBasedInterval?: number;
 }
 
 export function useRecommendations(options: UseRecommendationsOptions = {}) {
@@ -21,32 +19,97 @@ export function useRecommendations(options: UseRecommendationsOptions = {}) {
     enableIdleDetection = true,
     enableExitIntent = true,
     enableTimeBased = true,
-    idleTimeThreshold = 60000, // 1 minute
-    timeBasedInterval = 300000, // 5 minutes
+    idleTimeThreshold = 90000, // 1.5 minutes
+    timeBasedInterval = 120000, // 2 minutes for faster popup
   } = options;
 
-  const { user } = useAuth();
-  const { items } = useCart();
-  
   const [isRecommendationsOpen, setIsRecommendationsOpen] = useState(false);
   const [currentTrigger, setCurrentTrigger] = useState<RecommendationTrigger | null>(null);
   const [lastActivity, setLastActivity] = useState(Date.now());
   const [sessionStart] = useState(Date.now());
-  const [hasShownTimeBased, setHasShownTimeBased] = useState(false);
 
-  // Track user activity
+  // Update last activity timestamp
   const updateActivity = useCallback(() => {
     setLastActivity(Date.now());
   }, []);
 
-  // Initialize session tracking
-  useEffect(() => {
-    if (!localStorage.getItem('session_start')) {
-      localStorage.setItem('session_start', sessionStart.toString());
-    }
+  // Show recommendations with trigger
+  const showRecommendations = useCallback((productId?: string, triggerType: RecommendationTrigger['type'] = 'product_view') => {
+    const trigger: RecommendationTrigger = {
+      type: triggerType,
+      productId,
+      timestamp: Date.now()
+    };
+    setCurrentTrigger(trigger);
+    setIsRecommendationsOpen(true);
+  }, []);
 
-    // Track activity events
+  // Show cart-specific recommendations
+  const showCartRecommendations = useCallback((productId: string) => {
+    showRecommendations(productId, 'cart_add');
+  }, [showRecommendations]);
+
+  // Close recommendations
+  const closeRecommendations = useCallback(() => {
+    setIsRecommendationsOpen(false);
+    setCurrentTrigger(null);
+    updateActivity(); // Reset activity when manually closed
+  }, [updateActivity]);
+
+  // Idle detection
+  useEffect(() => {
+    if (!enableIdleDetection) return;
+
+    const checkIdleTime = () => {
+      const idleTime = Date.now() - lastActivity;
+      if (idleTime >= idleTimeThreshold && !isRecommendationsOpen) {
+        showRecommendations(undefined, 'idle');
+      }
+    };
+
+    const interval = setInterval(checkIdleTime, 30000); // Check every 30 seconds
+    return () => clearInterval(interval);
+  }, [enableIdleDetection, idleTimeThreshold, lastActivity, isRecommendationsOpen, showRecommendations]);
+
+  // Time-based recommendations
+  useEffect(() => {
+    if (!enableTimeBased) return;
+
+    const timer = setTimeout(() => {
+      if (!isRecommendationsOpen) {
+        showRecommendations(undefined, 'time_based');
+      }
+    }, timeBasedInterval);
+
+    return () => clearTimeout(timer);
+  }, [enableTimeBased, timeBasedInterval, isRecommendationsOpen, showRecommendations]);
+
+  // Exit intent detection
+  useEffect(() => {
+    if (!enableExitIntent) return;
+
+    let hasTriggered = false;
+
+    const handleMouseLeave = (e: MouseEvent) => {
+      if (e.clientY <= 0 && !hasTriggered && !isRecommendationsOpen) {
+        hasTriggered = true;
+        showRecommendations(undefined, 'exit_intent');
+        
+        // Reset trigger after 10 seconds
+        setTimeout(() => {
+          hasTriggered = false;
+        }, 10000);
+      }
+    };
+
+    document.addEventListener('mouseleave', handleMouseLeave);
+    return () => document.removeEventListener('mouseleave', handleMouseLeave);
+  }, [enableExitIntent, isRecommendationsOpen, showRecommendations]);
+
+  // Track user activity
+  useEffect(() => {
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    
     events.forEach(event => {
       document.addEventListener(event, updateActivity, true);
     });
@@ -56,122 +119,12 @@ export function useRecommendations(options: UseRecommendationsOptions = {}) {
         document.removeEventListener(event, updateActivity, true);
       });
     };
-  }, [updateActivity, sessionStart]);
+  }, [updateActivity]);
 
-  // Idle detection
+  // Store session start time in localStorage
   useEffect(() => {
-    if (!enableIdleDetection) return;
-
-    const checkIdle = () => {
-      const timeSinceActivity = Date.now() - lastActivity;
-      if (timeSinceActivity >= idleTimeThreshold && !isRecommendationsOpen) {
-        triggerRecommendations({
-          type: 'idle',
-          delay: 1000
-        });
-      }
-    };
-
-    const interval = setInterval(checkIdle, 10000); // Check every 10 seconds
-    return () => clearInterval(interval);
-  }, [enableIdleDetection, lastActivity, idleTimeThreshold, isRecommendationsOpen]);
-
-  // Exit intent detection
-  useEffect(() => {
-    if (!enableExitIntent) return;
-
-    const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !isRecommendationsOpen) {
-        triggerRecommendations({
-          type: 'exit_intent',
-          delay: 500
-        });
-      }
-    };
-
-    document.addEventListener('mouseleave', handleMouseLeave);
-    return () => document.removeEventListener('mouseleave', handleMouseLeave);
-  }, [enableExitIntent, isRecommendationsOpen]);
-
-  // Time-based recommendations
-  useEffect(() => {
-    if (!enableTimeBased || hasShownTimeBased) return;
-
-    const timeBasedTimer = setTimeout(() => {
-      if (!isRecommendationsOpen) {
-        triggerRecommendations({
-          type: 'time_based',
-          delay: 2000
-        });
-        setHasShownTimeBased(true);
-      }
-    }, timeBasedInterval);
-
-    return () => clearTimeout(timeBasedTimer);
-  }, [enableTimeBased, timeBasedInterval, hasShownTimeBased, isRecommendationsOpen]);
-
-  // Trigger recommendations
-  const triggerRecommendations = useCallback((trigger: RecommendationTrigger) => {
-    if (isRecommendationsOpen) return;
-
-    setCurrentTrigger(trigger);
-    
-    if (trigger.delay) {
-      setTimeout(() => {
-        setIsRecommendationsOpen(true);
-      }, trigger.delay);
-    } else {
-      setIsRecommendationsOpen(true);
-    }
-
-    // Track trigger analytics
-    const event = new CustomEvent('recommendation_triggered', {
-      detail: { 
-        trigger: trigger.type, 
-        productId: trigger.productId,
-        sessionTime: Date.now() - sessionStart,
-        cartSize: items.length
-      }
-    });
-    window.dispatchEvent(event);
-  }, [isRecommendationsOpen, sessionStart, items.length]);
-
-  // Manual triggers
-  const showRecommendations = useCallback((productId?: string) => {
-    triggerRecommendations({
-      type: 'browsing',
-      productId
-    });
-  }, [triggerRecommendations]);
-
-  const showCartRecommendations = useCallback((productId: string) => {
-    triggerRecommendations({
-      type: 'cart_add',
-      productId,
-      delay: 2000 // Show after 2 seconds
-    });
-  }, [triggerRecommendations]);
-
-  const closeRecommendations = useCallback(() => {
-    setIsRecommendationsOpen(false);
-    setCurrentTrigger(null);
-    
-    // Track close analytics
-    const event = new CustomEvent('recommendation_closed', {
-      detail: { 
-        trigger: currentTrigger?.type,
-        sessionTime: Date.now() - sessionStart
-      }
-    });
-    window.dispatchEvent(event);
-  }, [currentTrigger, sessionStart]);
-
-  // Reset time-based flag when user is active
-  useEffect(() => {
-    if (Date.now() - lastActivity < 30000) { // Reset if active within 30 seconds
-      setHasShownTimeBased(false);
-    }
-  }, [lastActivity]);
+    localStorage.setItem('session_start', sessionStart.toString());
+  }, [sessionStart]);
 
   return {
     isRecommendationsOpen,
@@ -179,7 +132,6 @@ export function useRecommendations(options: UseRecommendationsOptions = {}) {
     showRecommendations,
     showCartRecommendations,
     closeRecommendations,
-    sessionDuration: Date.now() - sessionStart,
-    isIdle: Date.now() - lastActivity > idleTimeThreshold,
+    updateActivity
   };
 }

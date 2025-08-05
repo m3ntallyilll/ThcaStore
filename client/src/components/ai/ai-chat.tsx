@@ -45,7 +45,11 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId] = useState(`session_${Date.now()}_${Math.random().toString(36).slice(2)}`);
-  const [isTTSEnabled, setIsTTSEnabled] = useState(false);
+  const [isTTSEnabled, setIsTTSEnabled] = useState(() => {
+    // Check localStorage for TTS preference, default to true
+    const savedPreference = localStorage.getItem('aiTTSEnabled');
+    return savedPreference !== null ? JSON.parse(savedPreference) : true;
+  });
   const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
@@ -121,7 +125,10 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
     if (isTTSEnabled && isSpeaking) {
       stopSpeaking();
     }
-    setIsTTSEnabled(!isTTSEnabled);
+    const newTTSState = !isTTSEnabled;
+    setIsTTSEnabled(newTTSState);
+    // Save preference to localStorage
+    localStorage.setItem('aiTTSEnabled', JSON.stringify(newTTSState));
   };
 
   // Auto-open on first visit
@@ -244,8 +251,11 @@ How can I help you today? I can:
 
       // Speak the AI response if TTS is enabled
       if (isTTSEnabled && data.response) {
+        console.log('🔊 TTS is enabled, speaking AI response');
         // Add a small delay to let the message render first
         setTimeout(() => speakText(data.response), 300);
+      } else if (!isTTSEnabled) {
+        console.log('🔇 TTS is disabled');
       }
 
       // Handle action items

@@ -34,7 +34,7 @@ interface PersonalizedRecommendationsProps {
   isOpen: boolean;
   onClose: () => void;
   currentProductId?: string;
-  triggerReason?: 'browsing' | 'cart_add' | 'idle' | 'exit_intent';
+  triggerReason?: 'browsing' | 'cart_add' | 'idle' | 'exit_intent' | 'time_based' | 'product_view';
 }
 
 export function PersonalizedRecommendations({ 

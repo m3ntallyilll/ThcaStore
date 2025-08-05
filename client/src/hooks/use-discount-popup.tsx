@@ -19,9 +19,7 @@ export function useDiscountPopup() {
   const { user } = useAuth();
 
   useEffect(() => {
-    // Don't show popups if user is not logged in or has already seen one recently
-    if (!user) return;
-
+    // Show popups for both guest and logged-in users, but check cooldown
     const lastPopupTime = localStorage.getItem('lastDiscountPopup');
     const now = Date.now();
     const cooldownPeriod = 30 * 60 * 1000; // 30 minutes
@@ -32,12 +30,13 @@ export function useDiscountPopup() {
 
     // Show popup after user has been browsing for a bit
     const timer = setTimeout(() => {
+      console.log('🎁 Showing discount popup for user');
       setShowPopup(true);
       localStorage.setItem('lastDiscountPopup', now.toString());
-    }, 15000); // Show after 15 seconds
+    }, 8000); // Show after 8 seconds for faster visibility
 
     return () => clearTimeout(timer);
-  }, [user]);
+  }, []);
 
   const closePopup = () => {
     setShowPopup(false);
