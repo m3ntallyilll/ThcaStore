@@ -435,6 +435,10 @@ const CheckoutForm = ({
                           country: 'auto'
                         }
                       }
+                    },
+                    wallets: {
+                      applePay: 'auto',
+                      googlePay: 'auto'
                     }
                   }}
                 />

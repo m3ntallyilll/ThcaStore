@@ -61,47 +61,77 @@ export const useCart = create<CartState>((set, get) => ({
   },
 
   updateQuantity: async (itemId: string, quantity: number) => {
-    try {
-      await apiRequest(`/api/cart/${itemId}`, { 
-        method: 'PUT', 
-        body: { quantity } 
-      });
-      
-      // Immediately update the local state for better UX
-      set(state => ({
-        items: state.items.map(item => 
-          item.id === itemId ? { ...item, quantity } : item
-        )
-      }));
-      
-      // Then sync with server
-      await get().fetchCart();
-    } catch (error) {
-      console.error('Failed to update quantity:', error);
-      // Revert optimistic update on error
-      await get().fetchCart();
-      throw error;
+    // Debounce rapid updates
+    const existingTimeout = (get() as any).updateTimeouts?.[itemId];
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
     }
+
+    // Immediately update local state for responsive UI
+    set(state => ({
+      items: state.items.map(item => 
+        item.id === itemId ? { ...item, quantity } : item
+      )
+    }));
+
+    // Debounced API call
+    const timeout = setTimeout(async () => {
+      try {
+        await apiRequest(`/api/cart/${itemId}`, { 
+          method: 'PUT', 
+          body: { quantity } 
+        });
+        // Clear timeout reference
+        set(state => {
+          const timeouts = { ...(state as any).updateTimeouts };
+          delete timeouts[itemId];
+          return { ...state, updateTimeouts: timeouts };
+        });
+      } catch (error) {
+        console.error('Failed to update quantity:', error);
+        // Revert to server state on error
+        await get().fetchCart();
+      }
+    }, 500); // 500ms debounce
+
+    // Store timeout reference
+    set(state => ({
+      ...state,
+      updateTimeouts: {
+        ...(state as any).updateTimeouts,
+        [itemId]: timeout
+      }
+    }));
   },
 
   removeFromCart: async (itemId: string) => {
+    // Check if item exists before attempting removal
+    const currentItems = get().items;
+    const itemExists = currentItems.find(item => item.id === itemId);
+    
+    if (!itemExists) {
+      console.warn('Item already removed from cart:', itemId);
+      return; // Don't throw error, just exit gracefully
+    }
+
+    // Immediately remove from local state for responsive UI
+    set(state => ({
+      items: state.items.filter(item => item.id !== itemId)
+    }));
+
     try {
       await apiRequest(`/api/cart/${itemId}`, { 
         method: 'DELETE' 
       });
-      
-      // Immediately remove from local state
-      set(state => ({
-        items: state.items.filter(item => item.id !== itemId)
-      }));
-      
-      // Then sync with server
-      await get().fetchCart();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to remove from cart:', error);
-      // Revert optimistic update on error
-      await get().fetchCart();
-      throw error;
+      
+      // If 404, item was already removed, don't revert
+      if (error.status !== 404) {
+        // Only revert if it's not a 404 error
+        await get().fetchCart();
+        throw error;
+      }
     }
   },
 
