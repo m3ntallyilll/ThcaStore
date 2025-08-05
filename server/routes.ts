@@ -1275,6 +1275,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.warn('Failed to load user context:', contextError);
           contextData = { userId };
         }
+      } else {
+        // For guest users, check if they have a guest ID in header
+        const guestId = req.headers['x-guest-id'] as string;
+        if (guestId) {
+          contextData = { userId: guestId };
+        } else {
+          // Use the anonymous guest user
+          const guestUser = await storage.getUserByEmail('guest@anonymous.temp');
+          if (guestUser) {
+            contextData = { userId: guestUser.id };
+          }
+        }
       }
 
       const response = await aiAssistant.generateResponse(
@@ -1288,7 +1300,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (response.actionItems && response.actionItems.length > 0) {
         for (const action of response.actionItems) {
           try {
-            if (action.type === 'add_to_cart' && action.data && (action.data.productId || action.data.product_id) && userId) {
+            if (action.type === 'add_to_cart' && action.data && (action.data.productId || action.data.product_id)) {
               // Actually add the item to the cart
               const quantity = action.data.quantity || 1;
               let productId = action.data.productId || action.data.product_id;
@@ -1302,13 +1314,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 }
               }
               
+              // Use guest user if no userId provided
+              let cartUserId = userId;
+              if (!cartUserId) {
+                // Check for guest ID from header
+                const guestId = req.headers['x-guest-id'] as string;
+                if (guestId) {
+                  cartUserId = guestId;
+                } else {
+                  // Create or use anonymous guest user
+                  let guestUser = await storage.getUserByEmail('guest@anonymous.temp');
+                  if (!guestUser) {
+                    guestUser = await storage.createUser({
+                      email: 'guest@anonymous.temp',
+                      password: await bcrypt.hash('guest', 10),
+                      firstName: 'Anonymous',
+                      lastName: 'Guest', 
+                      username: 'anonymous-guest',
+                      isAdmin: false
+                    });
+                  }
+                  cartUserId = guestUser.id;
+                }
+              }
+              
               const cartItemData = {
-                userId,
+                userId: cartUserId,
                 productId,
                 quantity
               };
               await storage.addToCart(cartItemData);
-              console.log(`AI Assistant added product ${productId} to cart for user ${userId}`);
+              console.log(`AI Assistant added product ${productId} to cart for user ${cartUserId}`);
             }
           } catch (actionError) {
             console.error('Failed to process action:', action.type, actionError);

@@ -353,6 +353,8 @@ How can I help you today? I can:
             case 'add_to_cart':
               // Cart addition is handled on the server side, just show confirmation
               try {
+                // Immediately refresh the cart
+                await fetchCart();
                 queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
                 
                 const successMessage: ChatMessage = {
