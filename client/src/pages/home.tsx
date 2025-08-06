@@ -461,7 +461,7 @@ export default function Home() {
                 icon: Shield, 
                 title: "Quantum Purity", 
                 subtitle: "Hemp-Derived",
-                description: "Hemp-derived THCA products with full lab verification and transparency",
+                description: "Premium hemp-derived THCA flower and concentrates sourced from organic farms. Each product undergoes comprehensive third-party lab testing for potency verification, pesticide screening, heavy metal detection, and microbial analysis. Our rigorous quality control process ensures every batch meets pharmaceutical-grade standards while maintaining full legal compliance under federal hemp regulations.",
                 color: "from-emerald-500 to-green-400",
                 delay: 0
               },
@@ -469,7 +469,7 @@ export default function Home() {
                 icon: Zap, 
                 title: "Lightning Delivery", 
                 subtitle: "Same-Day Available",
-                description: "AI-optimized logistics network with real-time tracking",
+                description: "Revolutionary AI-powered logistics network featuring predictive shipping algorithms, real-time package tracking with GPS precision, and intelligent route optimization. Our advanced distribution centers utilize automated inventory management and smart packaging systems to ensure your premium THCA products arrive in perfect condition within 24-48 hours across legal states.",
                 color: "from-yellow-500 to-amber-400",
                 delay: 0.1
               },
@@ -477,7 +477,7 @@ export default function Home() {
                 icon: Brain, 
                 title: "AI Personalization", 
                 subtitle: "Tailored Experience",
-                description: "Machine learning algorithms craft your perfect product match",
+                description: "Cutting-edge machine learning algorithms analyze your preferences, consumption patterns, and desired effects to recommend the perfect THCA products. Our AI assistant learns from thousands of customer interactions to provide personalized strain recommendations, dosage guidance, and product selections tailored specifically to your unique needs and tolerance levels.",
                 color: "from-purple-500 to-indigo-400",
                 delay: 0.2
               },
@@ -744,6 +744,24 @@ export default function Home() {
                   blockchain-tracked for transparency, and crafted with the precision 
                   of Swiss watchmaking. This is hemp evolution.
                 </motion.p>
+
+                <motion.div
+                  className="bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/20 rounded-xl p-6 mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1, duration: 0.8 }}
+                  viewport={{ once: true }}
+                >
+                  <h4 className="text-emerald-400 font-bold text-lg mb-3">THCA Education & Legal Compliance</h4>
+                  <p className="text-gray-300 text-base leading-relaxed">
+                    THCA (Tetrahydrocannabinolic Acid) is a naturally occurring cannabinoid found in raw hemp plants. 
+                    Unlike THC, THCA is non-psychoactive in its natural state. Our hemp-derived THCA products are 
+                    federally legal under the 2018 Farm Bill, containing less than 0.3% Delta-9 THC. All products 
+                    undergo rigorous third-party lab testing for potency, pesticides, heavy metals, and microbials. 
+                    We ensure complete transparency with detailed Certificates of Analysis (COAs) available for every product. 
+                    Our commitment to legal compliance and quality assurance sets the industry standard for premium hemp products.
+                  </p>
+                </motion.div>
               </div>
 
               {/* Revolutionary Stats */}

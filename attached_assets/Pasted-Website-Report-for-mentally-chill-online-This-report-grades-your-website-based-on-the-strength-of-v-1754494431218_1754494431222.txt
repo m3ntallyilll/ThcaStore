@@ -1,0 +1,856 @@
+Website Report for mentally-chill.online
+This report grades your website based on the strength of various SEO factors such as On Page
+Optimization, Off Page Links, Social and more. The overall Grade is on a A+ to F- scale, with most
+major, industry leading websites in the A range. Improving your grade will generally make your website
+perform better for users and rank better in search engines. There are recommendations for improving
+your website at the bottom of the report. Feel free to reach out to us if youʼd like us to help with
+improving your websiteʼs SEO!
+Audit Results for mentally-chill.online
+Your page could be better
+B
+A
+On-Page SEO
+C
+Usability
+B
+Performance
+F
+Social
+Performance
+On-Page SE
+Social
+Usability
+The HOTH
+111 2nd Ave NE, Suite 1500, St. Petersburg, FL 33701
+8777204684
+support@thehoth.com
+thehoth.com
+On-Page SEO Results
+Your On-Page SEO is good
+Your page is mostly optimized for On-Page SEO performance. On-Page SEO is
+important to ensure Search Engines can understand your content appropriately and
+help it rank for relevant keywords. You can continue to improve your page by
+ensuring HTML Tag Content is completed correctly and text content is well aligned
+with chosen keywords.
+A
+The Title Tag is an important HTML element that tells users and Search Engines what the topic of the
+webpage is and the type of keywords the page should rank for. The Title will appear in the Header Bar
+of a user's browser. It is also one of the most important (and easiest to improve) On-Page SEO
+factors.
+We recommend setting a keyword rich Title between 5060 characters. This is often simple to enter
+into your CMS system or may need to be manually set in the header section of the HTML code.
+Title Tag
+You have a Title Tag, but ideally it should be shortened to between 50 and 60 characters
+(including spaces).
+Mentally-Chill - Premium THCA Flower & Hemp Products | Buy THCA Online
+Length : 74
+Title Tags are very important for search engines to correctly understand and categorize your
+content.
+
+Meta Description Tag
+Your page has a Meta Description Tag however, your Meta Description should ideally be
+between 120 and 160 characters (including spaces).
+Discover premium THCA hemp products at Mentally-Chill. Lab-tested THCA flower, pre-rolls, and
+concentrates with fast shipping. Buy THCA online in Alaska, California, Colorado & more. 21+ only.
+Length : 196
+A Meta Description is important for search engines to understand the content of your page, and
+is often shown as the description text blurb in search results.
+
+Meta Description is another important HTML element that explains more descriptively to Search
+Engines what your page is about. Meta Descriptions are often used as the text snippets used in
+Search Engine results (though Search Engines are inceasingly generating these themselves) and can
+help further signal to Search Engines what keywords your page should rank for.
+Make sure your page has a Meta Description included, and is at an optimum length (between 120 and
+160 characters). Make your Meta Description text interesting and easy to comprehend. Use phrases
+and keywords relevant to the page and user that you would like to rank for. Meta Description is
+normally available to be updated in your CMS.
+The SERP Snippet illustrates how your page may be shown in Search Results for a particular query.
+Typically the page's Title, URL and Meta Description have been the main components utilized here,
+and hence could be carefully dictated, though Search Engines are more frequently building these
+snippets themselves to better represent the page content to their searchers.
+It's important that the SERP Snippet is enticing for your searchers to click on, and accurately
+represents your content to avoid bounces or heavy re-writing by the Search Engine. You should keep
+these factors in mind when populating the page Title, Meta Description and URL.
+Hreflang is an HTML attribute used to specify the language and geographical targeting of a page. It is
+commonly used together with the 'alternate' attribute in the code of a page to signal to Search
+Engines a list of alternative language or geographic versions of the current page.
+If you have multiple versions of the same page in different languages, it is important to add Hreflang
+tags to tell Search Engines about these variations. This code may need to be manually added into the
+HTML code of your page, but is also often controlled by your CMS or plugin system if multi-lingual
+features are enabled.
+SERP Snippet Preview
+This illustrates how your page may appear in Search Results. Note, this is intended as a guide
+and Search Engines are more frequently generating this content dynamically.
+Buy THCA Online
+https://mentally-chill.online
+Mentally-Chill - Premium THCA Flower & Hemp Products
+Discover premium THCA hemp products at Mentally-Chill. Lab-tested THCA flower, prerolls, and concentrates with fast shipping. Buy THCA online in ...
+
+Hreflang Usage
+Your page is not making use of Hreflang attributes.
+
+Language
+Your page is using the Lang Attribute.
+Declared: English
+
+The Lang Attribute is used to describe the intended language of the current page to user's browsers
+and Search Engines. Search Engines may use the Lang Attribute to return language specific search
+results to a searcher, and in the browser, Lang Attribute can signal the need to switch to a different
+language if it is different to the user's own preferred language.
+We recommend adding the Lang Attribute to the HTML tag of every page to avoid any chance of
+misinterpretation of language. This may need to be manually added to the site's HTML code, or may
+be controlled by your CMS.
+TAG VALUE
+H1 Premium THCA Hemp Products - Lab
+Tested & LegalPremium THCA Hemp
+Products - Lab-Tested & Legal
+The H1 Header Tag is one of the most important ways of signaling to Search Engines the topic of a
+page and subsequently the keywords it should rank for. The H1 Tag normally appears as visible text in
+the largest font size on the page.
+We recommend adding a H1 Header Tag near the top of your page content and include important
+keywords you would like to rank for. You should have one, and only one H1 tag on each page. If you
+are using a CMS, this would normally be entered into the core content section of the page.
+H1 Header Tag Usage
+Your page has a H1 Tag.
+
+H2H6 Header Tag Usage
+Your page is making use multiple levels of Header Tags.
+
+HEADER TAG FREQUENCY
+H2 4
+H3 10
+H4 7
+H5 0
+H6 0
+TAG VALUE
+H2 Shop THCA Flower, Pre-Rolls & Conc
+entrates with Fast Shipping
+H2 Next-LevelExcellence
+H2 TheRevolutionBegins
+H2 Get In Touch
+H3 Premium hemp sourcing meets mode
+rn technology. Every THCA product c
+arefully selected for quality.
+H3 Quantum Purity
+H3 Lightning Delivery
+H3 AI Personalization
+H3 Premium Craftsmanship
+H3 Molecular Precision
+H3 VIP Treatment
+H3 Featured Excellence
+H3 Contact Information
+H3 Send us a Message
+H4 Purple Koolaid Infused with THCA Dia
+monds - Gram
+H4 Grape Popsicle - Eighth
+H4 Sour Lemon Diesel - Eighth
+H4 Business Hours
+H4 Products
+H4 Support
+H4 Legal
+The H2H6 Header Tags are an important way of organizing the content of your page and signaling
+to Search Engines the longer tail topics your page should rank for.
+We recommend including at least 2 other Header Tag levels on your page (such as H2 and H3) in
+addition to the H1. It is useful to also include important keywords in these Header Tags. These would
+be added to the core content section of your page.
+Keyword Consistency
+Your page's main keywords are distributed well across the important HTML Tags.
+
+KEYWORD TITLE META
+DESCRIPTION
+TAG
+HEADINGS
+TAGS
+PAGE
+FREQUENCY
+thca 13
+products 10
+hemp 8
+premium 7
+experience 5
+legal 4
+purity 4
+quality 4
+Individual Keywords
+  
+  
+  
+  
+  
+  
+  
+  
+PHRASE TITLE META
+DESCRIPTION
+TAG
+HEADINGS
+TAGS
+PAGE
+FREQUENCY
+thca store 3
+premium thca 3
+thca products 3
+thca hemp 2
+hemp products 2
+products - 2
+lab-tested legal 2
+thca flower 2
+Phrases
+  
+  
+  
+  
+  
+  
+  
+  
+Generally a page should be targeted to rank for particular set of keywords or phrases. These
+keywords should be used with some consistency in page content (naturally and without stuffing) to
+maximize ranking potential for those keywords. This means these keywords should be present
+across the most important HTML Tags of the page, and used with some frequency in the general
+page text content. The keyword consistency check illustrates the keywords we have identified
+appearing most frequently in these areas.
+If the keywords and phrases identified don't match your intended ranking keywords, and do not
+show a level of consistency, you should consider amending your core page content to better include
+these.
+Numerous studies have shown that there is a relationship between the amount of content on a page
+(typically measured in word count) and it's ranking potential - generally longer content will rank higher.
+Obviously content also needs to be topically relevant, keyword rich and highly readable for the visitor.
+Note, in our assessment, we look at all selectable text on the page at load time, not hidden content.
+As a general guideline, it is recommended to have atleast 500 words of content on a page to give it
+some ranking potential. However this should be considered on a case by case basis. It may not be
+relevant for particular pages like 'contact us' pages for example.
+Alternate Image Text or Alt Text is descriptive text that is displayed in place of an image if it can't be
+loaded, as well as a label on an image when it is moused over in the browser, to give more information
+to the visitor. Additionally, Search Engines use provided Alt Text to better understand the content of
+an image. Image SEO is not widely known, but having your image rank for image searches is an
+overlooked way of gaining traffic and backlinks to your site.
+We recommend adding useful and keyword rich Alt Text for pages's main images, in particular those
+that could have ranking potential. This should be considered on a case-by-case basis. Often there
+may be imagery such as UI components or tracking pixels where it may not be useful to add Alt Text,
+though we have tried to filter a number of these out in our analysis.
+Amount of Content
+Your page has a low volume of text content which search engines can interpret as 'thin content'.
+Word Count: 390
+It has been well researched that higher text content volumes are related to better ranking ability
+in general.
+
+Image Alt Attributes
+You do not have any images missing Alt Attributes on your page.
+
+https://mentally-chill.replit.app/
+The Canonical Tag is a HTML Tag that tells Search Engines the primary URL of a page. URLs can have
+multiple versions due to things like parameters being passed or www and non-www versions,
+resulting in potential duplicate content. Google recommends all pages specify a Canonical for this
+reason.
+You may need to determine what the primary preferred version of the page is. Often the CMS may
+manage this, or provide the ability to specify it.
+Canonical Tag
+Your page is using the Canonical Tag.
+
+A critical part of a page's ranking potential is ensuring that it can actually be accessed by Search
+Engines. The Noindex Tag, when used on pages, tells Search Engines to ignore a page, and can
+destroy out it's ranking ability. Sometimes these tags are added intentionally for low value pages, but
+sometimes they are left over unintentionally from a theme or template that has been used on the site,
+or forgotten to be removed by a developer when a website moves from design and testing to live
+usage.
+If you want the page to rank and it's using a Noindex Tag, you will need to remove the tag from your
+page's HTML entirely. This may require access to the frontend HTML code, and may need to be done
+by a developer. If you are using a CMS, you may have an option enabled to prevent indexing of the
+page, which should be turned off.
+Noindex Tag Test
+Your page is not using the Noindex Tag which prevents indexing.
+
+A critical part of a page's ranking potential is ensuring that it can actually be accessed by Search
+Engines. The Noindex Header is another Noindexing method that tells Search Engines to ignore a
+page, and can destroy out it's ranking ability. Sometimes these tags are added intentionally for low
+value pages, but sometimes they are left over unintentionally from a theme or template that has been
+used on the site, or forgotten to be removed by a developer when a website moves from design and
+testing to live usage.
+If you want the page to rank and it's using a Noindex Header, you will need to remove the Noindex
+Header from your page. This may require access to the backend code, and may need to be done by a
+developer. If you are using a CMS, you may have an option enabled to prevent indexing of the page,
+which should be turned off.
+Noindex Header Test
+Your page is not using the Noindex Header which prevents indexing.
+
+SSL Enabled
+Your website has SSL enabled.
+
+SSL or Secure Socket Layer, is a security technology that encrypts data between your website and a
+visitor. It ensures that the transfer of sensitive data like passwords and credit cards are done
+securely. Using SSL on all pages is a modern standard, and Search Engines have made it a ranking
+signal in recent years.
+SSL can often be switched on quite simply in systems like Wordpress, Wix etc. Often in more custom
+websites though, it may require the help of a technical resource to install and configure this on your
+website. After installation, test that your website loads successfully at a HTTPS// location.
+SSL is a security technology which ensures sensitive data like passwords and credit cards are sent
+securely between your website and visitors. If you have SSL enabled, it is also very important to
+ensure that your page is actually forcing usage of HTTPS by redirecting from a non-secure HTTP
+version to secure HTTPS version. Not doing this means users and Search Engines may continue to
+access insecure versions, which can also reduce your ranking ability.
+Often systems like Wix or Shopify will make it easy to enable, and redirect to SSL versions. If you
+have Wordpress, or a custom built site, you may require a developer's involvement to ensure that
+pages are being redirected to their new HTTPS versions. This can be done within a site's
+configuration or htaccess rules.
+HTTPS Redirect
+Your page successfully redirects to a HTTPS SSL secure) version.
+
+http://mentally-chill.online/robots.txt
+Robots.txt is a text file that provides instructions to Search Engine crawlers on how to crawl your site,
+including types of pages to access or not access. It is often the gatekeeper of your site, and normally
+the first thing a Search Engine bot will access.
+We recommend always having a robots file in place for your site. These can be automatically created
+using a free online utility, Wordpress plugin, or your CMS's robots.txt creation process.
+Robots.txt
+Your website appears to have a robots.txt file.
+
+The robots.txt file includes important instructions to Search Engines on how to crawl a site, including
+instructions to ignore particular pages (effectively 'blocking' them). Sometimes these instructions are
+added intentionally for low value pages, but sometimes they are left over by mistake when a website
+goes live, or can be written incorrectly excluding more pages than desired.
+If you want the page to rank and it's blocked by a rule in robots.txt, you may need to review your
+robots rules to understand why it's being blocked, and remove the rule. Because robots.txt
+instructions are a type of code, this may require the help of a developer to correct.
+Blocked by Robots.txt
+Your page does not appear to be blocked by robots.txt.
+
+https://mentally-chill.online:443/sitemap.xml
+A Sitemap is an XML data file on your site that lists all of your site's pages that are available for
+crawling together with other useful information like last update times and crawling priority. Sitemap
+files help Search Engines find all your pages to give them the highest chance of being indexed and
+ranked.
+We recommend always having a Sitemaps file in place for your site. Sitemaps can be created manually
+using a utility, Wordpress plugin, or your CMS's Sitemap creation process. Additionally, the Sitemap
+should be referenced in your robots.txt file.
+XML Sitemaps
+Your website appears to have an XML Sitemap.
+
+  Google Analytics
+Web Analytics Tools like Google Analytics allow you to analyze your websiteʼs performance and
+understand your visitors better.
+We recommend using an analytics tool on your site. Analytics tracking code can be installed manually
+into page code with the help of a developer or enabled as a feature of your CMS.
+Analytics
+Your page is using an analytics tool.
+
+Schema.org Structured Data Markup is a collection of data tags that can be added to your site to
+allow Search Engines to more easily interpret the content and use it to enhance Search Results. For
+example there are tags for providing information about your Local Business such as address and
+phone number, or adding product information on e-commerce pages so that these products can be
+displayed in shopping aggregators like Google Shopping.
+It is a good idea to start incorporating some relevant Schema.org tags into your site to improve
+interpretation and display by Search Engines.
+Schema.org Structured Data
+You are using JSONLD Schema on your page.
+
+Usability
+Your usability could be better
+Your page is OK but could be more usable across devices. Usability is important to
+maximize your available audience and minimize user bounce rates (which can
+indirectly affect your search engine rankings).
+C
+Device Rendering
+This check visually demonstrates how your page renders on different devices. It is important
+that your page is optimized for mobile and tablet experiences as today the majority of web
+traffic comes from these sources.
+A website can be viewed in a wide variety of resolutions and formats, some dictated by the size of a
+desktop display, and others by the specific dimensions of a phone or tablet model. Device rendering
+provides a preview of how the site looks on some popular device resolutions to help identify obvious
+issues. Note, our method will load a website and resize it's portlet to several dimensions, as opposed
+to loading the site multiple times directly in different devices.
+In general a website should be designed and tested to be responsive across a large variety of
+desktop and mobile device resolutions, as well as being able to transition smoothly (for example
+when resizing a browser or flipping a tablet from vertical to horizontal).
+
+Google's Core Web Vitals
+Google is indicating that they do not have 'sufficient real-world speed data for this page' in
+order to make a Core Web Vitals assessment. This can occur for smaller websites or those that
+are not crawl-able by Google.
+
+Core Web Vitals are UI Metrics designed by Google that measure the overall quality of user
+experience on your site. They assess things such as the appearance of content, interactivity of the
+page and visual stability from the moment of page load. Core Web Vitals are gathered from real world
+usage data of a website (hence some smaller websites that haven't been well sampled may not return
+an appropriate result). Google has made Core Web Vitals a ranking factor for pages with increasing
+importance.
+To improve your Core Web Vitals scores, you may need to read Google's documentation on the topic
+and follow the recommendations provided in the Google's PageSpeed Insights assessment.
+Use of Mobile Viewports
+Your page specifies a Viewport matching the device's size, allowing it to render appropriately
+across devices.
+The Viewport is a Meta Tag within the page's HTML which gives the browser instructions for how to
+control the page's dimensions and scaling. Setting the Viewport is particularly important for mobile
+and tablet device responsiveness, as without it, the page can appear incorrectly sized and require
+zooming or scrolling to view content.
+Make sure you include one Meta Viewport tag in the Head section of page HTML.
+
+Google's PageSpeed Insights - Mobile
+Google is indicating that your page is scoring poorly on their Mobile PageSpeed Insights
+evaluation.
+Note that this evaluation is being performed from US servers and the results may differ slightly
+from an evaluation carried out from Google's PageSpeed Web Interface as that reporting
+localizes to the region in which you are running the report.
+Google has indicated that the performance of a webpage is becoming more important from a
+user and subsequently ranking perspective.
+
+30
+LAB DATA VALUE
+First Contentful Paint 8 s
+Speed Index 8 s
+Largest Contentful Paint 14.7 s
+Time to Interactive 15.3 s
+Total Blocking Time 0.2 s
+Cumulative Layout Shift 3.12
+OPPORTUNITIES ESTIMATED
+SAVINGS
+Enable text compression 4.23 s
+Reduce unused JavaScript 3.17 s
+Eliminate render-blocking resources 0.74 s
+Avoid multiple page redirects 0.63 s
+Reduce unused CSS 0.6 s
+PageSpeed Insights is a tool from Google that evaluates a website's performance in both mobile and
+desktop, providing suggestions for how to improve it. Google has indicated that performance is
+becoming a more important ranking factor, so understanding Google's own analysis of your site is
+valuable. Also irrespective of SEO rankings, it has been well researched that pages that load faster
+perform better in user bounce rate and conversions.
+We recommend reviewing and implementing some of Google's listed opportunities to improve your
+site.
+PageSpeed Insights is a tool from Google that evaluates a website's performance in both mobile and
+desktop, providing suggestions for how to improve it. Google has indicated that performance is
+becoming a larger ranking factor, so understanding Google's own analysis of your site is valuable.
+Also irrespective of SEO rankings, it has been well researched that pages that load faster perform
+better in user bounce rate and conversions.
+We recommend reviewing and implementing some of Google's listed opportunities to improve your
+site.
+Google's PageSpeed Insights - Desktop
+Google is indicating that your page is scoring poorly on their Desktop PageSpeed Insights
+evaluation.
+Google has indicated that the performance of a webpage is becoming more important from a
+user and subsequently ranking perspective.
+
+38
+LAB DATA VALUE
+First Contentful Paint 1.3 s
+Speed Index 3.7 s
+Largest Contentful Paint 2.8 s
+Time to Interactive 3.1 s
+Total Blocking Time 0.6 s
+Cumulative Layout Shift 0.3
+OPPORTUNITIES ESTIMATED
+SAVINGS
+Enable text compression 0.66 s
+Reduce unused JavaScript 0.49 s
+Eliminate render-blocking resources 0.19 s
+Avoid multiple page redirects 0.19 s
+Flash is an old embedded website technology that was frequently used in heavily animated features
+such as games and videos. However, Flash is not supported by all mobile devices and is not easily
+read by search engines. Improvements to HTML and CSS and the increased speed of modern web
+browsers have made it possible to implement many similar features with standard web technologies.
+If Flash is detected on your site, you should carefully consider whether it is necessary due to the
+several drawbacks.
+Flash Used?
+No Flash content has been identified on your page.
+
+iFrames Used?
+There are no iFrames detected on your page.
+iFrames are a HTML tag that allow you to embed other webpages inside your page in a small frame.
+They generally represent an older coding practice and are discouraged as they can complicate
+navigation, particularly in mobile, and are harder for search engines to index.
+We recommend removing any iFrames if they don't serve a critical purpose, or could be replaced with
+more natural navigation. However, some coding libraries like Google Tag Manager may still rely on
+iFrames as part of their internal functionality to load external pages and code files, so you may need
+to evaluate your usage of them on a case by case basis.
+
+Favicon
+Your page has specified a Favicon.
+A Favicon is a small icon that serves as branding for your website. It's main purpose is to help visitors
+locate your page easier when they have multiple tabs open. It adds legitimacy to your site and helps
+boost your online branding as well as trust from potential consumers.
+Either use an online Favicon builder tool, or a graphic designer to build your Favicon, and load them
+into your website or CMS.
+
+Email addresses shown in clear text on your website can be easily scraped by bots, leading to
+inclusion in spam mailing lists.
+We recommend removing any plain text email addresses and replacing them with contact forms,
+images, or less obvious text like 'email at website'.
+Email Privacy
+No email addresses have been found in plain text on your page.
+
+Legible Font Sizes
+The text on your page appears to be legible across devices.
+
+Page text legibility is important from an accessibility perspective, and also to ensure your users can
+comfortably spend time on your site. In particular it's important to review text legibility on mobile and
+tablet devices where the text may naturally be smaller or lower lighting could make it more challenging
+to read.
+We recommend reviewing the legibility of your text including less considered items like footer links
+and text.
+Tap Target Sizing refers to the size of buttons, links and other navigational elements on the page. On
+touch screen devices in particular these elements can't be too small or too close together or they will
+impede clicking and frustrate users.
+We recommend reviewing the Tap Target Sizing of your of all your text to ensure they're easily
+clickable including less considered items like footer elements.
+Tap Target Sizing
+The links and buttons on your page appear to be appropriately sized for a user to easily tap on
+a touchscreen.
+
+Performance Results
+Your performance could be better
+Your page's performance has some issues and room for improvement.
+Performance is important to ensure a good user experience, and reduced bounce
+rates (which can also indirectly affect your search engine rankings). We recommend
+addressing the highlighted factors below.
+B
+Website Load Speed
+Your page loads in a reasonable amount of time.
+
+Server Response
+0.0s
+All Page Content Loaded
+0.7s
+All Page Scripts Complete
+6.1s
+Page Load Speed refers to the amount of time it takes to entirely load a webpage in a user's browser.
+Load speed is complex and can be impacted by a multitude of factors including network, web server,
+page size, technology, database or coding problems, and may require the help of a developer or
+systems administrator to troubleshoot. Page Load Speed impacts a user's experience on a website
+and can directly impact bounce rate and conversions. Additionally, Search Engines are making Page
+Load Speed a ranking factor.
+Optimize Page Load Speed by examining common problem points such as overall file size, server
+resources or coding problems.
+Download Page Size refers to the total amount of file content that needs to be downloaded by the
+browser to view a particular webpage. This includes HTML, CSS, Javascript and Images, though can
+include a number of other file formats. Generally media files like images and videos are significantly
+larger than text files and make up the bulk of Download File Size, but also represent the largest
+optimization opportunity. An important distinction here is 'Download' vs 'Raw' file size. Modern web
+protocols compress files during transfer, meaning files are usually smaller to download than their
+actual or 'raw' size. So any manual optimizations you perform would be on the 'raw' file. Download
+Page Size is one of the biggest contributors to Page Load Speed, which can directly affect rankings,
+user experience and conversions.
+It is important to ensure your Download File Size is as small as possible by removing unnecessary
+files and minifying and optimizing others. 5MB is a good metric to strive for, though modern websites
+are gradually increasing in size.
+Website Download Size
+Your page's file size is quite large which, regardless of other optimizations, can reduce load
+speed and impact user experience.
+A general rule is to keep your page under 5MB in total file size.
+
+Download Page Size
+7.08MB
+Download Page Size Breakdown
+HTML 0.02MB
+CSS 0.13MB
+JS 1.03MB
+Images 5.83MB
+Other 0.07MB
+7.08MB
+Total
+Compression Usage Gzip, Deflate, Brotli)
+Your website appears to be using a reasonable level of compression.
+We recommend reviewing server compression settings, as effective compression can represent
+a significant and relatively easy performance improvement for websites.
+
+Modern web servers allow website files to be compressed as part of their transfer, often dramatically
+reducing the Download File Size and Page Load Speed of a page. There are several different
+compression algorithms used such as GZIP, Deflate and Brotli. Enabling compression can often
+represent a simple and quick win to performance, and most new web servers will have this enabled
+by default.
+You should ensure that compression is enabled and working effectively on your web server.
+Sometimes compression may only be partially enabled for particular file types, or using an older
+compression method, so it is important to understand whether your server is configured as efficiently
+as possible. This may require the help of a developer to investigate.
+When browsers display a modern website, they have to retrieve a wide variety of files including
+HTML, CSS, Javascript, Images and other media. As a general rule, every file that needs to be
+retrieved is another network request that needs to be made by the browser to the server, which can
+each face some connection overhead and add to Page Load Time.
+It is a good idea to remove unnecessary files or consolidate smaller files with similar content like
+styles and scripts where possible to optimize performance.
+Compression Rate
+3%
+Compression Rates
+HTML 0% compressed of 0.02MB
+CSS 0% compressed of 0.13MB
+JS 20% compressed of 1.29MB
+Images 0% compressed of 5.83MB
+Other 0% compressed of 0.07MB
+Total 3% compressed of 7.34MB
+Resources Breakdown
+This check displays the total number of files that need to be retrieved from web servers to load
+your page.
+14
+Total Objects
+4
+Number of
+HTML Pages
+2
+Number of JS
+Resources
+1
+Number of CSS
+Resources
+3
+Number of
+Images
+4
+Other
+Resources
+HTML JS CSS IMG
+
+Google Accelerated Mobile Pages AMP
+This page does not appear to have AMP Enabled.
+
+AMP INDICATOR
+AMP Related Doctype Declaration
+AMP Runtime
+AMP CSS Boilerplate
+Embedded Inline Custom CS
+AMP Images
+AMP HTML Canonical Link
+AMP or Accelerated Mobile Pages, was an initiative originally created by Google to help mobile pages
+load faster through adherence to a specific set of requirements. Some research demonstrated that
+AMP enabled pages would receive a ranking benefit. AMP has often been criticized and begun to be
+deprecated by particular browsers and frameworks.
+JavaScript is embedded code on a webpage that can perform any number of functions such as
+modifying page elements dynamically, or making calls to retrieve information live without refreshing
+the page. JavaScript is a staple of the modern web and used on almost every modern website.
+However, with increasing usage and complexity, Javascript can fail on a page due to coding
+problems, incorrect versions or loading issues. Sometimes failures can interrupt proper execution of a
+page and break other functions, and so Javascript errors should generally be examined to understand
+the cause and what it's impacts are .
+HTTP is a technology protocol used by web browser to communicate with websites and is a
+cornerstone of the world wide web. HTTP/2 (and above) are newer versions of the HTTP protocol
+that offer significant peformance improvements. Older websites may be set to using an older HTTP
+protocol despite their web servers having been upgraded to support newer versions.
+It is worth reviewing whether your website is configured to use the latest available HTTP protocol as
+it can provide immediate Page Load Speed improvements.
+
+
+
+
+
+
+JavaScript Errors
+Your page is not reporting any JavaScript errors.
+
+HTTP2 Usage
+Your website is using the recommended HTTP/2 Protocol.
+
+Optimize Images
+All of the images on your page appear to be optimized.
+
+Image and media files in general tend to be the largest component of file size on most modern
+webpages. File size can directly impact how quickly a page loads, and subsequently the quality of the
+experience for users. Images in general can have a large range in how much they can be optimized.
+For example, a high quality photograph downloaded from a camera could be 16MB, but using a
+reasonable level of size reduction and optimization could comfortably reduce it to 150KB without a
+noticeable amount of quality loss.
+Review the images used on your site, starting from the largest in file size to determine if there are
+optimization opportunities. You can use common image editing tools like Photoshop or even free
+online compression tools to optimize them.
+Minification is a procedure run on code text files that can reduce the text size by removing white
+space and substituting common values or names with shorter versions. Minification also offers the
+additional value of making code much harder to read and reverse engineer by third parties. It is best
+practice to minify any exposed JS and CSS Files before publishing them to a live site.
+Minification can be done automatically through some development tools and website build
+procedures, or through minification CMS Plugins, or manually through minification tools available
+online.
+HTML, like most coding languages, has had improvements made over time that has removed older
+features, either due to them simply being problematic, or more often replaced with something better. If
+you continue to use these older features in your page, you may at the bare minimum not get the
+expected functionality in your page, or in the worst case, break some execution.
+It is recommended to identify and remove any old or 'deprecated' tags from your code. This could be
+done manually if you have HTML or web design skills, or could be done by upgrading the template
+and library versions on your website.
+HTML provides the ability to embed UI styling attributes within individual HTML elements. Despite this
+feature being available, it is modern best practice to completely separate UI styling into separate CSS
+files. This separates functions and centralises UI styling into one place making it easier for example to
+upgrade the UI styling of a site independently of the page content and structure. Inline Styles also
+have some particular problems in that they can degrade the page load performance of a page and
+unnecessarily complicate HTML code.
+Inline Styles should be manually removed from the HTML code of a page and merged into separate
+CSS files, but may need the help of a designer to carefully consider their purpose and function.
+Minification
+All your JavaScript and CSS files appear to be minified.
+
+Deprecated HTML
+No deprecated HTML tags have been found within your page.
+
+Inline Styles
+No Inline Styles have been found within your page's HTML tags.
+
+Social Results
+Your social needs improvement
+You appear to have a weak social presence or level of social activity (or we may
+just not be able to see your profiles!. Social activity is important for customer
+communication, brand awareness and as a marketing channel to bring visitors to
+your website. We recommend that you list all of your profiles on your page for
+visibility, and begin to build a following on those networks.
+F
+Creating Social Profiles as well as linking to these from your website can help to build trust in your
+business and provide other mediums to nurture your customer relationships.
+We recommend creating all common Social Profiles and linking to these from your website. Most CMS
+systems will offer fields to enter your Social Profile URLs and will display these in a button row section
+in the footer.
+Facebook Page Linked
+No associated Facebook Page found as a link on your page.
+
+Facebook Open Graph Tags are a type of structured data that can be placed on your page to control
+what is shown when your page is shared on Facebook. You can indicate exactly what content should
+appear in a sharing snippet's title, description, imagery and other information. This is useful when
+pages like your homepage, products or articles are shared, and effective sharing can drive traffic and
+conversions. You may want to ensure that the content presented is correct and has the highest
+chance of attracting visitors. If you don't define specific content, Facebook may decide automatically
+which pieces of text and imagery are displayed which may not always be correct or appealing.
+We recommend defining as many of Facebook's Open Graph fields as possible, and inserting this
+code into the HTML of your page. Facebook has a helper tool for creating this content, or sometimes
+it can be written automatically with the help of a CMS plugin.
+TAG CONTENT
+og:type website
+og:url https://mentally-chill.online/
+og:title Mentally-Chill - Premium THCA Products | Lab-Tested Hemp Flower
+og:description Premium lab-tested hemp-derived THCA products with fast shipping. Discover quality TH
+CA flower, concentrates, and edibles. 21+ only.
+og:image /og-image.jpg
+Facebook Open Graph Tags
+Your page is using Facebook Open Graph Tags.
+
+Facebook Pixel is a piece of analytics code that allows Facebook to capture and analyse visitor
+information from your site. This allows you to retarget these visitors with Facebook messaging in
+future, or build new 'lookalike' audiences similar to your existing visitors.
+In can be a good idea to install a Facebook Pixel if you intend to do any Facebook related marketing
+in the future in order to prepare audience data.
+Facebook Pixel
+We have not detected a Facebook Pixel on your page.
+Facebook's Pixel is a useful piece of analytics code that allows you to retarget visitors if you
+decide to run Facebook Ads in future.
+
+X (formerly Twitter) Account Linked
+No associated X Profile found as a link on your page.
+
+Similar to Facebook Open Graph Tags, X Cards are a type of structured data that can be placed on
+your page to control what is shown when your page is shared on X. You can indicate exactly what
+content should appear in a sharing snippet's title, description, imagery and other information.
+We recommend defining as many of X`s Cards as possible, and inserting this code into the HTML of
+your page. X has a cards markup tool for creating this content, or sometimes it can be written
+automatically with the help of a CMS plugin.
+TAG CONTENT
+twitter:card summary_large_image
+twitter:url https://mentally-chill.online/
+twitter:title Mentally-Chill - Premium Hemp THCA Products
+twitter:description Premium lab-tested hemp-derived THCA products with fast shipping. 21+ o
+nly.
+twitter:image /og-image.jpg
+X Cards
+Your page is using X Cards.
+
+Instagram Linked
+No associated Instagram Profile found linked on your page
+
+LinkedIn Page Linked
+No associated LinkedIn Profile found linked on your page.
+
+YouTube Channel Linked
+No associated YouTube Channel found
+linked on your page.
+ YouTube Channel Activity
+No associated YouTube Channel found
+linked on your page.
+
+Address & phone number are key pieces of information for customers to contact a local business.
+However they also help Google identify that the website represents a particular local business to
+build a complete online profile helping it rank in local search results.
+Ensure that your full business address and phone number are correct and clearly visible in clear text
+on the site and not hidden behind expanders or text that could load dynamically.
+Local Business Schema is a type of structured data markup that can be added to the code of a
+webpage. Adding accurate Local Business Schema categories helps Search Engines more understand
+your website and the business it represents so that it can rank in local search results.
+The approach for adding Local Business Schema depends on your website's capabilities. Your CMS
+may have the ability to input this directly, or you may need to install a Schema app or plugin.
+Alternatively you can manually create your Schema through the use of an online Schema Generator
+tool and copy this into the code of your site.
+A Google Business Profile GBP) is a listing representing your business that appears in Google Maps
+or standard Google Searches that have local intent. GBP contains key information about the business
+such as name, location, contact information, opening hours as well as customer ratings and reviews.
+GBP is an important tool for local businesses to manage their online presence, reach customers on
+Google, and compete against other similar businesses.
+If you are a local business, it is important to create your Google Business Profile (or claim it if one has
+been automatically created by Google) and update the details as completely and accurately as
+possible. We try to identify your GBP based on the website URL listed in the profile matching the one
+in this audit. If your GBP profile exists but we can't identify it, you may want to check that the website
+URL is correct.
+Address & Phone Shown on Website
+We can't identify one or both of these components on the page. Missing: Phone
+Local SEO
+
+Local Business Schema
+Local Business Schema identified on the page.
+LocalBusiness
+
+Google Business Profile Identified
+No Google Business Profile was identified that links to this website.
+
+Google Business Profile Completeness
+No Google Business Profile was identified that links to this website.
+
+It is important your Google Business Profile GBP) details are complete and correct - in particular
+those referred to as the 'NAP' - Name, Address Phone. This obviously helps local customers find
+your business, but also aids local SEO by helping Google accurately identify online citations of your
+business to understand the online presence, trust and reputation of your business.
+We recommend reviewing the details of your business's Google Business Profile and updating it as
+completely and accurately as possible.
+Google reviews and ratings are critical for a business - they can directly impact customer trust and
+reputation of your business which drives foot traffic, but are also a ranking signal Google uses to
+determine how to rank your business in local search results.
+Be pro-active in trying to drive reviews for your business (there are multiple methods and online tools
+to assist) as well as responding to any negative feedback.
+Google Reviews
+No Google Business Profile was identified that links to this website.
+
+HTTP/3
+Node.js
+Technology List
+These software or coding libraries have been identified on your page.
+Technology Results
+
+TECHNOLOGY VERSION
+Express
+Google Analytics
+Google Cloud
+Google Cloud CDN
+Google Cloud Trace
+HSTS
+Server IP Address
+34.111.179.208
+
+DNS Servers
+dns1.registrar-servers.com
+dns2.registrar-servers.com
+
+DMARC Domain-based Message Authentication, Reporting, and Conformance) is a DNS record that
+can be added for a site to help prevent email spoofing from malicious parties. It is more frequently
+being adopted as a mailing requirement by email providers like Google and can affect deliverability
+rates if not in place.
+We recommend reviewing the documentation from both your email delivery platform as well as
+common recipient platforms like Gmail and Outlook to determine the appropriate DMARC records and
+how to implement this into your site's DNS
+An SPF Sender Policy Framework) record is a DNS record that is set to identify mail servers and
+domains that are allowed to send email on behalf of your domain and is designed to help combat
+email spoofing.
+We recommend reviewing the documentation of all the delivery platforms you use to determine the
+appropriate SPF records to implement for your site to ensure highest deliverability.
+Web Server
+Google Frontend
+
+Charset
+text/html; charset=UTF8
+
+DMARC Record
+This site does not appear to have a DMARC record in place.
+DMARC records are important to improve email deliverability and combat spoofing.
+
+SPF Record
+This site appears to have an SPF record.
+v=spf1 include:spf.efwd.registrar-servers.com
+~all
+
