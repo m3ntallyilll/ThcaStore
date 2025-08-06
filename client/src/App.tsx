@@ -9,7 +9,7 @@ import { Navigation } from "@/components/layout/navigation";
 import { Footer } from "@/components/layout/footer";
 
 // Pages
-import Home from "@/pages/home-simple";
+import Home from "@/pages/home";
 import Products from "@/pages/products";
 import Cart from "@/pages/cart";
 import Checkout from './pages/checkout';
@@ -26,9 +26,6 @@ import Returns from "@/pages/returns";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  // Track page views when routes change
-  useAnalytics();
-  
   return (
     <Switch>
       <Route path="/" component={Home} />
