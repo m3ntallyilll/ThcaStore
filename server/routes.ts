@@ -3345,6 +3345,58 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // SEO Enhancement for all posts
+  app.post("/api/seo/enhance-all", async (req, res) => {
+    try {
+      const posts = await storage.getBlogPosts();
+      const enhanced = [];
+      
+      for (const post of posts.slice(0, 5)) { // Limit to 5 posts to avoid timeout
+        try {
+          const { AISEOService } = await import('./ai-seo-service');
+          const seoService = new AISEOService();
+          await seoService.enhanceBlogPostSEO(post.id);
+          enhanced.push(post.title);
+        } catch (error) {
+          console.error(`Failed to enhance ${post.title}:`, error);
+        }
+      }
+      
+      res.json({ 
+        message: `Enhanced ${enhanced.length} blog posts with AI SEO`,
+        enhanced 
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Object storage routes
+  app.post("/api/objects/upload", async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import('./objectStorage');
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import('./objectStorage');
+      const objectStorageService = new ObjectStorageService();
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error: any) {
+      if (error.name === 'ObjectNotFoundError') {
+        return res.sendStatus(404);
+      }
+      return res.status(500).json({ error: error.message });
+    }
+  });
+
   // Set up global storage for seed functions
   (global as any).storage = storage;
 

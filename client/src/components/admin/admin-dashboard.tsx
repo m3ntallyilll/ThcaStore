@@ -14,7 +14,8 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  Search
+  Search,
+  Upload
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -325,6 +326,53 @@ export function AdminDashboard() {
     const [stock, setStock] = useState(product?.stock || 0);
     const [category, setCategory] = useState(product?.category || '');
     const [imageUrl, setImageUrl] = useState(product?.imageUrl || '');
+    const [uploading, setUploading] = useState(false);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setUploading(true);
+      try {
+        // Get upload URL from backend
+        const response = await apiRequest('/api/objects/upload', { 
+          method: 'POST' 
+        });
+        const { uploadURL } = await response.json();
+
+        // Upload file to object storage
+        const uploadResponse = await fetch(uploadURL, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('Upload failed');
+        }
+
+        // Extract the object path from the upload URL
+        const objectPath = uploadURL.split('?')[0].split('/').slice(-2).join('/');
+        const finalPath = `/objects/${objectPath}`;
+        
+        setImageUrl(finalPath);
+        toast({
+          title: "Image Uploaded",
+          description: "Product image has been uploaded successfully.",
+        });
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Upload Failed",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setUploading(false);
+      }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
@@ -430,9 +478,33 @@ export function AdminDashboard() {
             </div>
           )}
           
+          {/* File Upload Section */}
+          <div className="space-y-2">
+            <Label htmlFor="imageUpload" className="text-gray-300 text-sm">Upload Image File</Label>
+            <div className="flex items-center gap-2">
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="w-full p-2 border border-gray-600 rounded bg-[#000000] text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gold file:text-black hover:file:bg-gold-600 disabled:opacity-50"
+              />
+              {uploading && (
+                <div className="flex items-center gap-2 text-gold">
+                  <Upload className="w-4 h-4 animate-pulse" />
+                  <span className="text-sm">Uploading...</span>
+                </div>
+              )}
+            </div>
+            <p className="text-xs text-gray-400">
+              Upload JPG, PNG, or WEBP images up to 10MB
+            </p>
+          </div>
+          
           {/* Image URL Input */}
           <div>
-            <Label htmlFor="imageUrl" className="text-gray-300 text-sm">Image URL</Label>
+            <Label htmlFor="imageUrl" className="text-gray-300 text-sm">Or Enter Image URL</Label>
             <Input
               id="imageUrl"
               value={imageUrl}
