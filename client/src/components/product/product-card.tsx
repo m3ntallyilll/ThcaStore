@@ -135,17 +135,17 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
         <img
           src={
             product.category === 'prerolls' 
-              ? '/src/assets/BCO.a2a7308e-9352-45a2-b06b-e37fac50f394_1753959647149.png'
+              ? 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center'
               : product.category === 'flower'
-              ? '/src/assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png'
+              ? 'https://images.unsplash.com/photo-1583912086096-8c60d75a53d0?w=400&h=400&fit=crop&crop=center'
               : product.category === 'variety-packs'
-              ? '/src/assets/9iJEuJA_1754440582666.avif'
-              : 'https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg?auto=compress&cs=tinysrgb&w=400'
+              ? 'https://images.unsplash.com/photo-1605185020656-ac2c5a9eff9d?w=400&h=400&fit=crop&crop=center'
+              : 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center'
           }
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
-            e.currentTarget.src = 'https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg?auto=compress&cs=tinysrgb&w=400';
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
