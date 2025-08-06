@@ -25,6 +25,7 @@ import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import Returns from "@/pages/returns";
 import NotFound from "@/pages/not-found";
+import StateTHCA from "@/pages/state-thca";
 
 function Router() {
   return (
@@ -42,6 +43,8 @@ function Router() {
       <Route path="/returns" component={Returns} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/thca/:state" component={StateTHCA} />
+      <Route path="/thca" component={StateTHCA} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>

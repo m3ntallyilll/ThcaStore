@@ -98,9 +98,26 @@ Allow: /admin
 Crawl-delay: 1`);
   });
 
-  // Serve sitemap.xml
+  // Serve sitemap.xml with state pages
   app.get('/sitemap.xml', (req, res) => {
     res.type('application/xml');
+    
+    const stateKeywords = {
+      california: true, oregon: true, washington: true, nevada: true, arizona: true, newmexico: true,
+      texas: true, oklahoma: true, arkansas: true, illinois: true, michigan: true, ohio: true,
+      minnesota: true, wisconsin: true, colorado: true, utah: true, montana: true, newyork: true,
+      newjersey: true, massachusetts: true, connecticut: true, vermont: true, florida: true,
+      georgia: true, northcarolina: true, southcarolina: true, tennessee: true
+    };
+    
+    const stateUrls = Object.keys(stateKeywords).map(state => `
+  <url>
+    <loc>https://mentally-chill.replit.app/thca/${state}</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`).join('');
+    
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -121,6 +138,12 @@ Crawl-delay: 1`);
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://mentally-chill.replit.app/thca</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>${stateUrls}
   <url>
     <loc>https://mentally-chill.replit.app/about</loc>
     <lastmod>2025-08-06</lastmod>

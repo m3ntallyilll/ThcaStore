@@ -452,6 +452,35 @@ export default function Home() {
             >
               Premium hemp sourcing meets modern technology. Every THCA product carefully selected for quality.
             </motion.h3>
+            
+            <motion.div 
+              className="flex flex-wrap justify-center gap-4 mb-8"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <Link href="/thca/california">
+                <Button variant="outline" className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10">
+                  🏖️ Buy THCA California
+                </Button>
+              </Link>
+              <Link href="/thca/texas">
+                <Button variant="outline" className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10">
+                  🤠 Buy THCA Texas  
+                </Button>
+              </Link>
+              <Link href="/thca/florida">
+                <Button variant="outline" className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10">
+                  🌴 Buy THCA Florida
+                </Button>
+              </Link>
+              <Link href="/thca/newyork">
+                <Button variant="outline" className="border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10">
+                  🗽 Buy THCA New York
+                </Button>
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* Interactive Feature Grid */}
