@@ -173,7 +173,8 @@ export function AdminDashboard() {
           }
         });
 
-        return await apiRequest(`/api/products/${id}`, { method: 'PATCH', body: cleanData });
+        const response = await apiRequest(`/api/products/${id}`, { method: 'PATCH', body: cleanData });
+        return response.json();
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['/api/products'] });
@@ -322,11 +323,23 @@ export function AdminDashboard() {
   }) => {
     const [name, setName] = useState(product?.name || '');
     const [description, setDescription] = useState(product?.description || '');
-    const [price, setPrice] = useState(product?.price || 0);
+    const [price, setPrice] = useState(typeof product?.price === 'string' ? parseFloat(product.price) : (product?.price || 0));
     const [stock, setStock] = useState(product?.stock || 0);
     const [category, setCategory] = useState(product?.category || '');
     const [imageUrl, setImageUrl] = useState(product?.imageUrl || '');
     const [uploading, setUploading] = useState(false);
+
+    // Update form when product changes
+    useEffect(() => {
+      if (product) {
+        setName(product.name || '');
+        setDescription(product.description || '');
+        setPrice(typeof product.price === 'string' ? parseFloat(product.price) : (product.price || 0));
+        setStock(product.stock || 0);
+        setCategory(product.category || '');
+        setImageUrl(product.imageUrl || '');
+      }
+    }, [product]);
 
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -561,7 +574,16 @@ export function AdminDashboard() {
                 } else if (strain.includes('sativa')) {
                   setImageUrl('/src/assets/generated_images/Sativa_hemp_flower_61fa5cdb.png');
                 } else if (strain.includes('pre-roll') || strain.includes('preroll')) {
-                  setImageUrl('/src/assets/generated_images/THCA_prerolls_new.png');
+                  // Size-specific pre-roll images
+                  if (strain.includes('1.45') || strain.includes('infused')) {
+                    setImageUrl('/src/assets/generated_images/Pre_rolls_1_45g_joints.png');
+                  } else if (strain.includes('1.25') || strain.includes('1.1')) {
+                    setImageUrl('/src/assets/generated_images/Pre_rolls_1_25g_tubes.png');
+                  } else if (strain.includes('pack') || strain.includes('variety')) {
+                    setImageUrl('/src/assets/generated_images/Pre_rolls_variety_pack.png');
+                  } else {
+                    setImageUrl('/src/assets/generated_images/THCA_prerolls_new.png');
+                  }
                 } else if (strain.includes('variety') || strain.includes('pack')) {
                   setImageUrl('/src/assets/generated_images/THCA_variety_new.png');
                 } else {
