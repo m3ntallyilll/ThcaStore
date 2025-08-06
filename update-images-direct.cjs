@@ -17,7 +17,7 @@ const aiImageMap = {
 
 // Category-specific defaults
 const categoryDefaults = {
-  'prerolls': '/src/assets/generated_images/THCA_hemp_pre-rolls_70e0ccf9.png',
+  'prerolls': '/src/assets/generated_images/Hemp_pre-rolls_in_tubes_eff785cb.png',
   'variety-packs': '/src/assets/generated_images/THCA_variety_pack_dd4e2f15.png',
   'flower': '/src/assets/generated_images/Sour_Diesel_THCA_flower_218b58ff.png'
 };
@@ -51,7 +51,12 @@ async function updateProductImages() {
     let updatedCount = 0;
     
     for (const product of products) {
-      const newImageUrl = getStrainImage(product.name, product.category);
+      let newImageUrl = getStrainImage(product.name, product.category);
+      
+      // Force update all pre-rolls to use the new tube image
+      if (product.category === 'prerolls') {
+        newImageUrl = '/src/assets/generated_images/Hemp_pre-rolls_in_tubes_eff785cb.png';
+      }
       
       // Only update if the image URL is different
       if (product.image_url !== newImageUrl) {
