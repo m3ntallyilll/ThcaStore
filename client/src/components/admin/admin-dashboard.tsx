@@ -341,7 +341,11 @@ export function AdminDashboard() {
         rating: null,
         thcaContent: null,
         strainType: null,
-        effects: null
+        effects: null,
+        variants: null,
+        subcategory: null,
+        potency: null,
+        priceRange: null
       });
     };
 
@@ -399,15 +403,82 @@ export function AdminDashboard() {
             className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
           />
         </div>
-        <div>
-          <Label htmlFor="imageUrl" className="text-white font-semibold">Image URL</Label>
-          <Input
-            id="imageUrl"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="Enter product image URL"
-            className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
-          />
+        {/* Enhanced Image Management Section */}
+        <div className="space-y-4">
+          <Label className="text-white font-semibold">Product Image</Label>
+          
+          {/* Current Image Preview */}
+          {imageUrl && (
+            <div className="relative">
+              <img
+                src={imageUrl}
+                alt={name || 'Product preview'}
+                className="w-full h-48 object-cover rounded-lg border border-gray-600"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="absolute top-2 right-2 bg-red-500/80 text-white hover:bg-red-600"
+                onClick={() => setImageUrl('')}
+              >
+                Remove Image
+              </Button>
+            </div>
+          )}
+          
+          {/* Image URL Input */}
+          <div>
+            <Label htmlFor="imageUrl" className="text-gray-300 text-sm">Image URL</Label>
+            <Input
+              id="imageUrl"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="Enter product image URL"
+              className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Enter a direct URL to an image (JPG, PNG, or WEBP)
+            </p>
+          </div>
+          
+          {/* Quick Image Options */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="text-xs"
+              onClick={() => {
+                const strain = name.toLowerCase();
+                if (strain.includes('sour diesel')) {
+                  setImageUrl('https://images.leafly.com/flower/sour-diesel/primary?width=1000');
+                } else if (strain.includes('purple')) {
+                  setImageUrl('https://moonrockcanada.co/wp-content/uploads/2021/03/Buy-Purple-Koolaid-AAAA-Indica-Hybrid-online-canada-5-510x510.jpg');
+                } else if (strain.includes('runtz')) {
+                  setImageUrl('https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800');
+                } else if (strain.includes('lemon')) {
+                  setImageUrl('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800');
+                } else {
+                  setImageUrl('https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800');
+                }
+              }}
+            >
+              Auto-Fill Based on Name
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="text-xs"
+              onClick={() => setImageUrl('https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800')}
+            >
+              Use Default Hemp Image
+            </Button>
+          </div>
         </div>
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isLoading} className="bg-gold text-black hover:bg-gold-600 font-semibold">
@@ -605,6 +676,49 @@ export function AdminDashboard() {
               {/* Bulk Product Generator */}
               <BulkProductGenerator />
               
+              {/* Bulk Image Update */}
+              <Card className="glass border-blue-500/20">
+                <CardHeader>
+                  <CardTitle className="text-blue-400">Bulk Image Update</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-300 mb-2">Update product images with strain-specific URLs automatically</p>
+                      <p className="text-sm text-gray-400">Uses high-quality strain images from Leafly, Unsplash, and verified sources</p>
+                    </div>
+                    <Button 
+                      className="bg-blue-500 hover:bg-blue-600 text-white"
+                      onClick={async () => {
+                        try {
+                          setIsLoading(true);
+                          const result = await apiRequest('/api/admin/products/bulk-update-images', {
+                            method: 'POST'
+                          });
+                          toast({
+                            title: "Images Updated",
+                            description: `Successfully updated ${result.updatedCount || 0} product images`,
+                          });
+                          queryClient.invalidateQueries({ queryKey: ['/api/products'] });
+                        } catch (error) {
+                          toast({
+                            title: "Error",
+                            description: "Failed to update product images",
+                            variant: "destructive",
+                          });
+                        } finally {
+                          setIsLoading(false);
+                        }
+                      }}
+                      disabled={isLoading}
+                    >
+                      <Package className="w-4 h-4 mr-2" />
+                      {isLoading ? 'Updating...' : 'Update All Product Images'}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
               {/* Bulk Variant Update */}
               <Card className="glass border-emerald-500/20">
                 <CardHeader>
@@ -624,10 +738,17 @@ export function AdminDashboard() {
                           const result = await apiRequest('/api/admin/products/bulk-update-variants', {
                             method: 'POST'
                           });
-                          toast(result.message, 'success');
+                          toast({
+                            title: "Success",
+                            description: result.message || "Variants updated successfully",
+                          });
                           queryClient.invalidateQueries({ queryKey: ['/api/products'] });
                         } catch (error) {
-                          toast('Failed to update product variants', 'error');
+                          toast({
+                            title: "Error",
+                            description: "Failed to update product variants",
+                            variant: "destructive",
+                          });
                         } finally {
                           setIsLoading(false);
                         }

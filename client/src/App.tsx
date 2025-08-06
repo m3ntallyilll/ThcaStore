@@ -34,7 +34,7 @@ const useAnalytics = () => {
 import { Navigation } from "@/components/layout/navigation";
 import { Footer } from "@/components/layout/footer";
 import { CartSidebar } from "@/components/cart/cart-sidebar";
-import { ToastProvider } from "@/components/ui/toast-provider";
+
 import { AIChat } from "@/components/ai/ai-chat";
 import { AISupport } from "@/components/support/ai-support";
 import { SkipLinks } from "@/components/accessibility/skip-links";
@@ -93,93 +93,16 @@ function Router() {
 }
 
 function AppContent() {
-  const { checkAuth, user } = useAuth();
-  const isAuthenticated = !!user;
-  const { fetchCart } = useCart();
-  const { showPopup, currentDiscount, closePopup, applyDiscount, clearDiscount } = useDiscountPopup();
-  const [location, setLocation] = useLocation();
-
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchCart();
-    }
-  }, [isAuthenticated]);
-
-  // Handle AI product recommendations by linking to actual products
-  const handleProductRecommendation = (productIdentifier: string) => {
-    // Navigate to products page with the product highlighted
-    setLocation('/products');
-    
-    // Scroll to product after navigation (wait for page to load) 
-    setTimeout(() => {
-      // Try by product ID first, then by product name
-      let productElement = document.querySelector(`[data-product-id="${productIdentifier}"]`);
-      
-      // If not found by ID, try to find by product name
-      if (!productElement) {
-        productElement = document.querySelector(`[data-product-name="${productIdentifier}"]`);
-      }
-      
-      // If still not found, try partial name match
-      if (!productElement) {
-        const allProductElements = Array.from(document.querySelectorAll('[data-product-name]'));
-        for (const element of allProductElements) {
-          const productName = element.getAttribute('data-product-name');
-          if (productName && productName.toLowerCase().includes(productIdentifier.toLowerCase())) {
-            productElement = element;
-            break;
-          }
-        }
-      }
-      
-      if (productElement) {
-        productElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        productElement.classList.add('ring-2', 'ring-gold', 'ring-opacity-75');
-        setTimeout(() => {
-          productElement.classList.remove('ring-2', 'ring-gold', 'ring-opacity-75');
-        }, 3000);
-      }
-    }, 500);
-  };
-
   return (
-    <RecommendationTrigger>
-      <div className="min-h-screen bg-black text-white relative">
-        <SmokeBackground />
-        <div className="relative z-10 bg-black/20 backdrop-blur-[1px]">
-          <SkipLinks />
-          <Navigation />
-          <main id="main-content" tabIndex={-1}>
-            <Router />
-          </main>
-          <Footer />
-        </div>
-        <CartSidebar />
-        <AIChat 
-          autoOpen={true} 
-          onProductRecommendation={handleProductRecommendation}
-        />
-        <AISupport />
-        <ToastProvider />
-        
-        {/* Discount Features */}
-        <DiscountPopup 
-          isOpen={showPopup}
-          onClose={closePopup}
-          onApplyDiscount={applyDiscount}
-        />
-        {currentDiscount && (
-          <FloatingDiscountBanner 
-            discount={currentDiscount}
-            onClear={clearDiscount}
-          />
-        )}
+    <div className="min-h-screen bg-black text-white relative">
+      <div className="relative z-10 bg-black/20 backdrop-blur-[1px]">
+        <Navigation />
+        <main id="main-content" tabIndex={-1}>
+          <Router />
+        </main>
+        <Footer />
       </div>
-    </RecommendationTrigger>
+    </div>
   );
 }
 
@@ -192,7 +115,6 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppContent />
-      <Toaster />
     </QueryClientProvider>
   );
 }

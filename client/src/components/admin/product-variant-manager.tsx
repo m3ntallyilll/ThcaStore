@@ -103,10 +103,17 @@ export function ProductVariantManager({ product, onProductUpdate }: ProductVaria
       });
 
       onProductUpdate(updatedProduct);
-      toast('Product variants updated successfully!', 'success');
+      toast({
+        title: "Success",
+        description: "Product variants updated successfully!",
+      });
       
     } catch (error) {
-      toast('Failed to update product variants', 'error');
+      toast({
+        title: "Error",
+        description: "Failed to update product variants",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }

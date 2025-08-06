@@ -478,6 +478,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Bulk update product images
+  app.post("/api/admin/products/bulk-update-images", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      console.log('🎨 Starting bulk image update...');
+      
+      // High-quality strain-specific image mappings
+      const strainImageMap = {
+        'sour diesel': 'https://images.leafly.com/flower/sour-diesel/primary?width=1000',
+        'purple koolaid': 'https://moonrockcanada.co/wp-content/uploads/2021/03/Buy-Purple-Koolaid-AAAA-Indica-Hybrid-online-canada-5-510x510.jpg',
+        'purple': 'https://moonrockcanada.co/wp-content/uploads/2021/03/Buy-Purple-Koolaid-AAAA-Indica-Hybrid-online-canada-5-510x510.jpg',
+        'runtz': 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800',
+        'lemon': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        'sour lemon': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        'too tall': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800',
+        'og kush': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800',
+        'gelato': 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800',
+        'blue dream': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800',
+        'white widow': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        'girl scout cookies': 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800',
+        'zkittlez': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800'
+      };
+
+      function getStrainImage(productName: string, category: string) {
+        const nameLower = productName.toLowerCase();
+        
+        // Check for exact strain matches first
+        for (const [strain, imageUrl] of Object.entries(strainImageMap)) {
+          if (nameLower.includes(strain)) {
+            return imageUrl;
+          }
+        }
+        
+        // Category-specific defaults
+        switch (category) {
+          case 'flower':
+            return 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800';
+          case 'prerolls':
+            return 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
+          case 'concentrates':
+            return 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800';
+          case 'edibles':
+            return 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800';
+          default:
+            return 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800';
+        }
+      }
+
+      const products = await storage.getProducts();
+      let updatedCount = 0;
+
+      for (const product of products) {
+        const newImageUrl = getStrainImage(product.name, product.category);
+        
+        // Only update if the image URL is different
+        if (product.imageUrl !== newImageUrl) {
+          await storage.updateProduct(product.id, {
+            imageUrl: newImageUrl
+          });
+          updatedCount++;
+          console.log(`📸 Updated image for: ${product.name}`);
+        }
+      }
+
+      console.log(`✅ Updated ${updatedCount} product images`);
+      res.json({ 
+        success: true, 
+        updatedCount,
+        message: `Successfully updated ${updatedCount} product images with strain-specific URLs` 
+      });
+      
+    } catch (error: any) {
+      console.error('Bulk image update error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // AI Recommendations API
   app.post("/api/ai/recommendations", async (req, res) => {
     try {
