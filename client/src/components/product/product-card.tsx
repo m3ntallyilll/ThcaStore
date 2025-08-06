@@ -133,19 +133,11 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={product.imageUrl || (
-            product.category === 'prerolls' 
-              ? 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center'
-              : product.category === 'flower'
-              ? 'https://images.unsplash.com/photo-1583912086096-8c60d75a53d0?w=400&h=400&fit=crop&crop=center'
-              : product.category === 'variety-packs'
-              ? 'https://images.unsplash.com/photo-1605185020656-ac2c5a9eff9d?w=400&h=400&fit=crop&crop=center'
-              : 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center'
-          )}
+          src={product.imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400'}
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
-            e.currentTarget.src = 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center';
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
