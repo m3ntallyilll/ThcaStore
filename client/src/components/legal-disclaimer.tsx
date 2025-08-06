@@ -4,8 +4,6 @@ import { Shield, CheckCircle, AlertTriangle, Scale, FileText, X } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import * as React from 'react';
 
 interface LegalDisclaimerProps {
   onAccept: () => void;
@@ -20,8 +18,13 @@ export function LegalDisclaimer({ onAccept, onDecline }: LegalDisclaimerProps) {
 
   useEffect(() => {
     // Check if user has already accepted disclaimer
-    const hasAccepted = localStorage.getItem('thca-disclaimer-accepted');
-    if (!hasAccepted) {
+    try {
+      const hasAccepted = localStorage.getItem('thca-disclaimer-accepted');
+      if (!hasAccepted) {
+        setIsVisible(true);
+      }
+    } catch (error) {
+      // If localStorage isn't available, show disclaimer
       setIsVisible(true);
     }
   }, []);
@@ -69,8 +72,12 @@ export function LegalDisclaimer({ onAccept, onDecline }: LegalDisclaimerProps) {
   };
 
   const handleFinalAccept = () => {
-    localStorage.setItem('thca-disclaimer-accepted', 'true');
-    localStorage.setItem('thca-disclaimer-date', new Date().toISOString());
+    try {
+      localStorage.setItem('thca-disclaimer-accepted', 'true');
+      localStorage.setItem('thca-disclaimer-date', new Date().toISOString());
+    } catch (error) {
+      console.log('LocalStorage not available, disclaimer accepted for session');
+    }
     setIsVisible(false);
     onAccept();
   };
@@ -114,14 +121,13 @@ export function LegalDisclaimer({ onAccept, onDecline }: LegalDisclaimerProps) {
               </p>
               <div className="flex justify-center gap-2 mt-4">
                 {disclaimerSections.map((_, index) => (
-                  <Badge 
+                  <div
                     key={index}
-                    variant={acceptedSections[index] ? "default" : "outline"}
-                    className={`h-2 w-8 ${acceptedSections[index] 
+                    className={`h-2 w-8 rounded-full ${acceptedSections[index] 
                       ? 'bg-emerald-500' 
                       : index === currentSection 
-                        ? 'border-emerald-400' 
-                        : 'border-gray-600'
+                        ? 'border-2 border-emerald-400' 
+                        : 'border-2 border-gray-600'
                     }`}
                   />
                 ))}
@@ -142,9 +148,10 @@ export function LegalDisclaimer({ onAccept, onDecline }: LegalDisclaimerProps) {
                     >
                       <div className="flex items-start gap-4">
                         <div className={`p-3 rounded-full bg-black/50 ${disclaimerSections[currentSection].color}`}>
-                          {React.createElement(disclaimerSections[currentSection].icon, { 
-                            className: "w-6 h-6" 
-                          })}
+                          {currentSection === 0 && <Shield className="w-6 h-6" />}
+                          {currentSection === 1 && <Scale className="w-6 h-6" />}
+                          {currentSection === 2 && <FileText className="w-6 h-6" />}
+                          {currentSection === 3 && <AlertTriangle className="w-6 h-6" />}
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-semibold text-white mb-3">
