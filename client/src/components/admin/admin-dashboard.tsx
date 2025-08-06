@@ -530,7 +530,9 @@ export function AdminDashboard() {
                 // Map strain names to specific AI-generated images
                 if (strain.includes('sour diesel')) {
                   setImageUrl('/src/assets/generated_images/Sour_Diesel_THCA_flower_218b58ff.png');
-                } else if (strain.includes('purple koolaid') || strain.includes('purple')) {
+                } else if (strain.includes('purple koolaid') || strain.includes('purple punch')) {
+                  setImageUrl('/src/assets/generated_images/Purple_Punch_new.png');
+                } else if (strain.includes('purple')) {
                   setImageUrl('/src/assets/generated_images/Purple_Koolaid_THCA_flower_a7e52253.png');
                 } else if (strain.includes('runtz')) {
                   setImageUrl('/src/assets/generated_images/Runtz_THCA_flower_22bdedde.png');
@@ -539,33 +541,31 @@ export function AdminDashboard() {
                 } else if (strain.includes('too tall')) {
                   setImageUrl('/src/assets/generated_images/Too_Tall_THCA_flower_8b45913e.png');
                 } else if (strain.includes('blue dream')) {
-                  setImageUrl('/src/assets/generated_images/Blue_Dream_hemp_strain_ee2cf878.png');
+                  setImageUrl('/src/assets/generated_images/Blue_Dream_strain_new.png');
                 } else if (strain.includes('gelato')) {
-                  setImageUrl('/src/assets/generated_images/Gelato_hemp_strain_1a2aebbb.png');
+                  setImageUrl('/src/assets/generated_images/Gelato_strain_new.png');
                 } else if (strain.includes('girl scout') || strain.includes('gsc')) {
-                  setImageUrl('/src/assets/generated_images/Girl_Scout_Cookies_strain_79b13530.png');
+                  setImageUrl('/src/assets/generated_images/Girl_Scout_Cookies_new.png');
                 } else if (strain.includes('green crack')) {
-                  setImageUrl('/src/assets/generated_images/Green_Crack_hemp_strain_d16ab8e0.png');
+                  setImageUrl('/src/assets/generated_images/Green_Crack_new.png');
                 } else if (strain.includes('jack herer')) {
-                  setImageUrl('/src/assets/generated_images/Jack_Herer_hemp_strain_bae15f39.png');
+                  setImageUrl('/src/assets/generated_images/Jack_Herer_strain_new.png');
                 } else if (strain.includes('northern lights')) {
-                  setImageUrl('/src/assets/generated_images/Northern_Lights_hemp_strain_f76fb796.png');
+                  setImageUrl('/src/assets/generated_images/Northern_Lights_new.png');
                 } else if (strain.includes('og kush') || strain.includes('og')) {
-                  setImageUrl('/src/assets/generated_images/OG_Kush_hemp_strain_970f7637.png');
-                } else if (strain.includes('purple punch')) {
-                  setImageUrl('/src/assets/generated_images/Purple_Punch_hemp_strain_5a390f11.png');
+                  setImageUrl('/src/assets/generated_images/OG_Kush_strain_new.png');
                 } else if (strain.includes('white widow')) {
-                  setImageUrl('/src/assets/generated_images/White_Widow_hemp_strain_1f35747f.png');
+                  setImageUrl('/src/assets/generated_images/White_Widow_strain_new.png');
                 } else if (strain.includes('indica')) {
                   setImageUrl('/src/assets/generated_images/Indica_hemp_flower_d4c0d165.png');
                 } else if (strain.includes('sativa')) {
                   setImageUrl('/src/assets/generated_images/Sativa_hemp_flower_61fa5cdb.png');
                 } else if (strain.includes('pre-roll') || strain.includes('preroll')) {
-                  setImageUrl('/src/assets/generated_images/THCA_hemp_pre-rolls_70e0ccf9.png');
+                  setImageUrl('/src/assets/generated_images/THCA_prerolls_new.png');
                 } else if (strain.includes('variety') || strain.includes('pack')) {
-                  setImageUrl('/src/assets/generated_images/THCA_variety_pack_dd4e2f15.png');
+                  setImageUrl('/src/assets/generated_images/THCA_variety_new.png');
                 } else {
-                  setImageUrl('/src/assets/generated_images/Premium_hemp_flower_buds_568629db.png');
+                  setImageUrl('/src/assets/generated_images/Premium_hemp_new.png');
                 }
               }}
             >
