@@ -133,11 +133,11 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={product.imageUrl || 'https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg?auto=compress&cs=tinysrgb&w=400'}
+          src={product.imageUrl}
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
-            e.currentTarget.src = 'https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg?auto=compress&cs=tinysrgb&w=400';
+            e.currentTarget.src = '/src/assets/generated_images/Hemp_pre-rolls_in_tubes_eff785cb.png';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
