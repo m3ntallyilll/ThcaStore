@@ -2,7 +2,8 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { useEffect } from "react";
+import { LegalDisclaimer } from "@/components/legal-disclaimer";
+import { useEffect, useState } from "react";
 
 
 // Layout Components
@@ -52,6 +53,13 @@ function Router() {
 }
 
 function AppContent() {
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  
+  useEffect(() => {
+    const hasAccepted = localStorage.getItem('thca-disclaimer-accepted');
+    setDisclaimerAccepted(!!hasAccepted);
+  }, []);
+  
   return (
     <div className="min-h-screen bg-black text-white relative">
       <div className="relative z-10 bg-black/20 backdrop-blur-[1px]">
@@ -62,6 +70,14 @@ function AppContent() {
         <Footer />
       </div>
       <Toaster />
+      
+      {/* Legal Disclaimer Modal */}
+      {!disclaimerAccepted && (
+        <LegalDisclaimer 
+          onAccept={() => setDisclaimerAccepted(true)}
+          onDecline={() => window.location.href = 'https://google.com'}
+        />
+      )}
     </div>
   );
 }
