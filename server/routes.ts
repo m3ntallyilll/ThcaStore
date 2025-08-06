@@ -3211,32 +3211,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
-  // Bot and crawler friendly routes
-  app.get('/robots.txt', (req, res) => {
-    res.type('text/plain');
-    res.setHeader('X-Robots-Tag', 'index, follow, all');
-    res.setHeader('Cache-Control', 'public, max-age=86400');
-    res.sendFile(path.join(__dirname, '../client/public/robots.txt'));
-  });
-
-  app.get('/sitemap.xml', (req, res) => {
-    res.type('application/xml');
-    res.setHeader('X-Robots-Tag', 'index, follow, all');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.sendFile(path.join(__dirname, '../client/public/sitemap.xml'));
-  });
-
-  app.get('/.well-known/robots.txt', (req, res) => {
-    res.type('text/plain');
-    res.setHeader('X-Robots-Tag', 'index, follow, all');
-    res.sendFile(path.join(__dirname, '../client/public/.well-known/robots.txt'));
-  });
-
-  app.get('/.well-known/security.txt', (req, res) => {
-    res.type('text/plain');
-    res.setHeader('X-Robots-Tag', 'index, follow, all');
-    res.sendFile(path.join(__dirname, '../client/public/.well-known/security.txt'));
-  });
+  // Bot and crawler friendly routes are now handled in server/index.ts
 
   // Enhanced crawler welcome endpoint
   app.get('/crawler-welcome', (req, res) => {

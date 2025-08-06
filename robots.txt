@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl the entire site
+Sitemap: https://mentally-chill.replit.app/sitemap.xml
+
+# Allow crawling of CSS, JS and asset files for better rendering
+Allow: /src/
+Allow: /assets/
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.webp
+
+# Allow important pages
+Allow: /products
+Allow: /blog
+Allow: /about
+Allow: /contact
+Allow: /admin
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1

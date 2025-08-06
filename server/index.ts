@@ -9,7 +9,7 @@ app.use(express.json({
 
 // Add JSON error handling middleware
 app.use((err: any, req: any, res: any, next: any) => {
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+  if (err instanceof SyntaxError && (err as any).status === 400 && 'body' in err) {
     console.error('JSON Parse Error:', err.message);
     return res.status(400).json({ message: 'Invalid JSON in request body' });
   }
@@ -67,6 +67,74 @@ app.use((req, res, next) => {
 
   // Add static file serving for assets
   app.use('/src/assets', express.static('client/src/assets'));
+  
+  // Serve robots.txt
+  app.get('/robots.txt', (req, res) => {
+    res.type('text/plain');
+    res.send(`User-agent: *
+Allow: /
+
+# Allow all search engines to crawl the entire site
+Sitemap: https://mentally-chill.replit.app/sitemap.xml
+
+# Allow crawling of CSS, JS and asset files for better rendering
+Allow: /src/
+Allow: /assets/
+Allow: *.css
+Allow: *.js
+Allow: *.png
+Allow: *.jpg
+Allow: *.jpeg
+Allow: *.webp
+
+# Allow important pages
+Allow: /products
+Allow: /blog
+Allow: /about
+Allow: /contact
+Allow: /admin
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1`);
+  });
+
+  // Serve sitemap.xml
+  app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml');
+    res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://mentally-chill.replit.app/</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.replit.app/products</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.replit.app/blog</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.replit.app/about</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.replit.app/contact</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>`);
+  });
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
