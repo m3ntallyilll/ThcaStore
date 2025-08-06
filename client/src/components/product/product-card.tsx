@@ -133,7 +133,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={
+          src={product.imageUrl || (
             product.category === 'prerolls' 
               ? 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center'
               : product.category === 'flower'
@@ -141,7 +141,7 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
               : product.category === 'variety-packs'
               ? 'https://images.unsplash.com/photo-1605185020656-ac2c5a9eff9d?w=400&h=400&fit=crop&crop=center'
               : 'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400&h=400&fit=crop&crop=center'
-          }
+          )}
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
