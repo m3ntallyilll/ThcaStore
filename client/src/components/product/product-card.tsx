@@ -133,11 +133,19 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
     >
       <div className="relative overflow-hidden">
         <img
-          src={product.imageUrl || 'https://via.placeholder.com/400x400/10b981/ffffff?text=Hemp+Product'}
+          src={
+            product.category === 'prerolls' 
+              ? '/src/assets/BCO.a2a7308e-9352-45a2-b06b-e37fac50f394_1753959647149.png'
+              : product.category === 'flower'
+              ? '/src/assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png'
+              : product.category === 'variety-packs'
+              ? '/src/assets/9iJEuJA_1754440582666.avif'
+              : 'https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg?auto=compress&cs=tinysrgb&w=400'
+          }
           alt={product.name}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
-            e.currentTarget.src = 'https://via.placeholder.com/400x400/10b981/ffffff?text=Hemp+Product';
+            e.currentTarget.src = 'https://images.pexels.com/photos/5418318/pexels-photo-5418318.jpeg?auto=compress&cs=tinysrgb&w=400';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
