@@ -2,45 +2,14 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-
-import { useEffect, useRef } from "react";
-import { useLocation } from "wouter";
-// Analytics tracking hook
-const useAnalytics = () => {
-  const [location] = useLocation();
-  const prevLocationRef = useRef<string>(location);
-  
-  // Track page views using Google Analytics
-  const trackPageView = (url: string) => {
-    if (typeof window === 'undefined' || !(window as any).gtag) return;
-    
-    const measurementId = "G-J8CL11FFW2";
-    if (!measurementId) return;
-    
-    (window as any).gtag('config', measurementId, {
-      page_path: url
-    });
-  };
-  
-  useEffect(() => {
-    if (location !== prevLocationRef.current) {
-      trackPageView(location);
-      prevLocationRef.current = location;
-    }
-  }, [location]);
-};
+import { useEffect } from "react";
 
 // Layout Components
 import { Navigation } from "@/components/layout/navigation";
 import { Footer } from "@/components/layout/footer";
-import { CartSidebar } from "@/components/cart/cart-sidebar";
-
-import { AIChat } from "@/components/ai/ai-chat";
-import { AISupport } from "@/components/support/ai-support";
-import { SkipLinks } from "@/components/accessibility/skip-links";
 
 // Pages
-import Home from "@/pages/home";
+import Home from "@/pages/home-simple";
 import Products from "@/pages/products";
 import Cart from "@/pages/cart";
 import Checkout from './pages/checkout';
@@ -55,17 +24,6 @@ import PrivacyPolicy from "@/pages/privacy-policy";
 import TermsOfService from "@/pages/terms-of-service";
 import Returns from "@/pages/returns";
 import NotFound from "@/pages/not-found";
-
-// Hooks
-import { useAuth } from "@/hooks/use-auth";
-import { useCart } from "@/hooks/use-cart";
-import { useDiscountPopup } from "@/hooks/use-discount-popup";
-
-// Discount Components  
-import { DiscountPopup } from "@/components/ui/discount-popup";
-import { FloatingDiscountBanner } from "@/components/ui/floating-discount-banner";
-import { SmokeBackground } from "@/components/ui/smoke-background";
-import { RecommendationTrigger } from "@/components/recommendations/recommendation-trigger";
 
 function Router() {
   // Track page views when routes change
@@ -102,6 +60,7 @@ function AppContent() {
         </main>
         <Footer />
       </div>
+      <Toaster />
     </div>
   );
 }
