@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { User, ShoppingCart, Settings, Menu, X } from 'lucide-react';
+import { User, ShoppingCart, Settings, Menu, X, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
@@ -11,7 +11,7 @@ export function Navigation() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const isAuthenticated = !!user;
   const { toggleCart, getTotalItems } = useCart();
   const totalItems = getTotalItems();
@@ -55,9 +55,21 @@ export function Navigation() {
 
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
-                <span className="text-sm text-gray-300">
-                  Welcome, {user?.firstName || user?.username}
-                </span>
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-300">
+                    Welcome, {user?.firstName || user?.username}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={logout}
+                    className="text-white hover:text-red-400 hover:bg-gray-800"
+                    data-testid="button-logout"
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Logout
+                  </Button>
+                </div>
               ) : (
                 <Button
                   variant="ghost"
@@ -130,7 +142,16 @@ export function Navigation() {
                   Sales Strategy
                 </Link>
               )}
-              {!isAuthenticated && (
+              {isAuthenticated ? (
+                <button
+                  onClick={logout}
+                  className="block w-full text-left px-4 py-2 hover:text-red-400 transition-colors"
+                  data-testid="button-mobile-logout"
+                >
+                  <LogOut className="w-4 h-4 mr-2 inline" />
+                  Logout
+                </button>
+              ) : (
                 <>
                   <button
                     onClick={() => openAuthModal('login')}
@@ -157,7 +178,7 @@ export function Navigation() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         mode={authMode}
-        onModeChange={setAuthMode}
+        onSwitchMode={setAuthMode}
       />
     </>
   );

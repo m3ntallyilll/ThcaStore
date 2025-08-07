@@ -64,8 +64,13 @@ export const useAuth = create<AuthState>()(
       },
 
       logout: () => {
+        // Clear authentication data
         localStorage.removeItem('authToken');
+        localStorage.removeItem('guestId');
         set({ user: null, token: null });
+        
+        // Reload the page to reset all app state
+        window.location.reload();
       },
 
       checkAuth: async () => {
