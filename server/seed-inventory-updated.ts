@@ -10,7 +10,7 @@ const inventoryProducts = [
     description: "Legendary sativa-dominant hybrid with uplifting cerebral effects and sweet berry aroma. Perfect for creativity and productivity. High-mids quality at competitive prices.",
     price: "45.00",
     category: "flower",
-    imageUrl: "/products/blue-dream.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 80, // 5 lbs = 80 eighths
     weight: "0.22",
     featured: true,
@@ -24,7 +24,7 @@ const inventoryProducts = [
     description: "Legendary sativa-dominant hybrid with uplifting cerebral effects and sweet berry aroma. Perfect for creativity and productivity. High-mids quality at competitive prices.",
     price: "160.00",
     category: "flower",
-    imageUrl: "/products/blue-dream.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 20, // 5 lbs = 20 halfs
     weight: "0.88",
     featured: true,
@@ -38,7 +38,7 @@ const inventoryProducts = [
     description: "Legendary sativa-dominant hybrid with uplifting cerebral effects and sweet berry aroma. Perfect for creativity and productivity. High-mids quality at competitive prices.",
     price: "85.00",
     category: "flower",
-    imageUrl: "/products/blue-dream.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 40, // 5 lbs = 40 quarters
     weight: "0.44",
     featured: false,
@@ -52,7 +52,7 @@ const inventoryProducts = [
     description: "Legendary sativa-dominant hybrid with uplifting cerebral effects and sweet berry aroma. Perfect for creativity and productivity. High-mids quality at competitive prices.",
     price: "300.00",
     category: "flower",
-    imageUrl: "/products/blue-dream.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 10, // 5 lbs = 10 ounces
     weight: "1.75",
     featured: false,
@@ -124,7 +124,7 @@ const inventoryProducts = [
     description: "Classic sativa with diesel aroma and cerebral effects. Delivers energizing high perfect for daytime use. Fast-acting and long-lasting euphoria.",
     price: "44.00",
     category: "flower",
-    imageUrl: "/products/sour-diesel.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 80, // 5 lbs = 80 eighths
     weight: "0.22",
     featured: true,
@@ -138,7 +138,7 @@ const inventoryProducts = [
     description: "Classic sativa with diesel aroma and cerebral effects. Delivers energizing high perfect for daytime use. Fast-acting and long-lasting euphoria.",
     price: "82.00",
     category: "flower",
-    imageUrl: "/products/sour-diesel.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 40, // 5 lbs = 40 quarters
     weight: "0.44",
     featured: false,
@@ -152,7 +152,7 @@ const inventoryProducts = [
     description: "Classic sativa with diesel aroma and cerebral effects. Delivers energizing high perfect for daytime use. Fast-acting and long-lasting euphoria.",
     price: "158.00",
     category: "flower",
-    imageUrl: "/products/sour-diesel.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 20, // 5 lbs = 20 halfs
     weight: "0.88",
     featured: false,
@@ -166,7 +166,7 @@ const inventoryProducts = [
     description: "Classic sativa with diesel aroma and cerebral effects. Delivers energizing high perfect for daytime use. Fast-acting and long-lasting euphoria.",
     price: "295.00",
     category: "flower",
-    imageUrl: "/products/sour-diesel.svg",
+    imageUrl: "/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png",
     stock: 10, // 5 lbs = 10 ounces
     weight: "1.75",
     featured: false,
@@ -181,7 +181,7 @@ const inventoryProducts = [
     description: "Premium indica with complex aroma and stress-relieving effects. Dense buds with heavy trichome coverage. Perfect for evening relaxation.",
     price: "48.00",
     category: "flower",
-    imageUrl: "/products/og-kush.svg",
+    imageUrl: "/attached_assets/generated_images/OG_Kush_hemp_strain_970f7637.png",
     stock: 56, // 3.5 lbs = 56 eighths
     weight: "0.22",
     featured: true,
@@ -195,7 +195,7 @@ const inventoryProducts = [
     description: "Premium indica with complex aroma and stress-relieving effects. Dense buds with heavy trichome coverage. Perfect for evening relaxation.",
     price: "90.00",
     category: "flower",
-    imageUrl: "/products/og-kush.svg",
+    imageUrl: "/attached_assets/generated_images/OG_Kush_hemp_strain_970f7637.png",
     stock: 28, // 3.5 lbs = 28 quarters
     weight: "0.44",
     featured: false,
@@ -209,7 +209,7 @@ const inventoryProducts = [
     description: "Premium indica with complex aroma and stress-relieving effects. Dense buds with heavy trichome coverage. Perfect for evening relaxation.",
     price: "170.00",
     category: "flower",
-    imageUrl: "/products/og-kush.svg",
+    imageUrl: "/attached_assets/generated_images/OG_Kush_hemp_strain_970f7637.png",
     stock: 14, // 3.5 lbs = 14 halfs
     weight: "0.88",
     featured: false,
@@ -223,7 +223,7 @@ const inventoryProducts = [
     description: "Premium indica with complex aroma and stress-relieving effects. Dense buds with heavy trichome coverage. Perfect for evening relaxation.",
     price: "320.00",
     category: "flower",
-    imageUrl: "/products/og-kush.svg",
+    imageUrl: "/attached_assets/generated_images/OG_Kush_hemp_strain_970f7637.png",
     stock: 7, // 3.5 lbs = 7 ounces
     weight: "1.75",
     featured: false,
@@ -238,7 +238,7 @@ const inventoryProducts = [
     description: "Sweet indica with grape and berry flavors. Delivers deep body relaxation and sedating effects. Beautiful purple hues with orange pistils.",
     price: "46.00",
     category: "flower",
-    imageUrl: "/products/purple-punch.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 56, // 3.5 lbs = 56 eighths
     weight: "0.22",
     featured: true,
@@ -252,7 +252,7 @@ const inventoryProducts = [
     description: "Sweet indica with grape and berry flavors. Delivers deep body relaxation and sedating effects. Beautiful purple hues with orange pistils.",
     price: "88.00",
     category: "flower",
-    imageUrl: "/products/purple-punch.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 28, // 3.5 lbs = 28 quarters
     weight: "0.44",
     featured: false,
@@ -266,7 +266,7 @@ const inventoryProducts = [
     description: "Sweet indica with grape and berry flavors. Delivers deep body relaxation and sedating effects. Beautiful purple hues with orange pistils.",
     price: "168.00",
     category: "flower",
-    imageUrl: "/products/purple-punch.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 14, // 3.5 lbs = 14 halfs
     weight: "0.88",
     featured: false,
@@ -280,7 +280,7 @@ const inventoryProducts = [
     description: "Sweet indica with grape and berry flavors. Delivers deep body relaxation and sedating effects. Beautiful purple hues with orange pistils.",
     price: "315.00",
     category: "flower",
-    imageUrl: "/products/purple-punch.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 7, // 3.5 lbs = 7 ounces
     weight: "1.75",
     featured: false,
@@ -295,7 +295,7 @@ const inventoryProducts = [
     description: "Classic purple indica with grape and berry aroma. Deep relaxation and pain relief. Dense, frosty buds with rich purple coloration.",
     price: "50.00",
     category: "flower",
-    imageUrl: "/products/granddaddy-purple.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 48, // 3 lbs = 48 eighths
     weight: "0.22",
     featured: true,
@@ -309,7 +309,7 @@ const inventoryProducts = [
     description: "Classic purple indica with grape and berry aroma. Deep relaxation and pain relief. Dense, frosty buds with rich purple coloration.",
     price: "95.00",
     category: "flower",
-    imageUrl: "/products/granddaddy-purple.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 24, // 3 lbs = 24 quarters
     weight: "0.44",
     featured: false,
@@ -323,7 +323,7 @@ const inventoryProducts = [
     description: "Classic purple indica with grape and berry aroma. Deep relaxation and pain relief. Dense, frosty buds with rich purple coloration.",
     price: "180.00",
     category: "flower",
-    imageUrl: "/products/granddaddy-purple.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 12, // 3 lbs = 12 halfs
     weight: "0.88",
     featured: false,
@@ -337,7 +337,7 @@ const inventoryProducts = [
     description: "Classic purple indica with grape and berry aroma. Deep relaxation and pain relief. Dense, frosty buds with rich purple coloration.",
     price: "340.00",
     category: "flower",
-    imageUrl: "/products/granddaddy-purple.svg",
+    imageUrl: "/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png",
     stock: 6, // 3 lbs = 6 ounces
     weight: "1.75",
     featured: false,
@@ -352,7 +352,7 @@ const inventoryProducts = [
     description: "Balanced hybrid with sweet and earthy flavors. Euphoric head high with full-body relaxation. Perfect for any time of day enjoyment.",
     price: "47.00",
     category: "flower",
-    imageUrl: "/products/girl-scout-cookies.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 40, // 2.5 lbs = 40 eighths
     weight: "0.22",
     featured: true,
@@ -366,7 +366,7 @@ const inventoryProducts = [
     description: "Balanced hybrid with sweet and earthy flavors. Euphoric head high with full-body relaxation. Perfect for any time of day enjoyment.",
     price: "90.00",
     category: "flower",
-    imageUrl: "/products/girl-scout-cookies.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 20, // 2.5 lbs = 20 quarters
     weight: "0.44",
     featured: false,
@@ -380,7 +380,7 @@ const inventoryProducts = [
     description: "Balanced hybrid with sweet and earthy flavors. Euphoric head high with full-body relaxation. Perfect for any time of day enjoyment.",
     price: "172.00",
     category: "flower",
-    imageUrl: "/products/girl-scout-cookies.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 10, // 2.5 lbs = 10 halfs
     weight: "0.88",
     featured: false,
@@ -394,7 +394,7 @@ const inventoryProducts = [
     description: "Balanced hybrid with sweet and earthy flavors. Euphoric head high with full-body relaxation. Perfect for any time of day enjoyment.",
     price: "325.00",
     category: "flower",
-    imageUrl: "/products/girl-scout-cookies.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 5, // 2.5 lbs = 5 ounces
     weight: "1.75",
     featured: false,
@@ -409,7 +409,7 @@ const inventoryProducts = [
     description: "Premium hybrid with sweet dessert flavors. Balanced cerebral and physical effects. Beautiful dense buds with vibrant colors and heavy resin.",
     price: "49.00",
     category: "flower",
-    imageUrl: "/products/gelato.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 40, // 2.5 lbs = 40 eighths
     weight: "0.22",
     featured: true,
@@ -423,7 +423,7 @@ const inventoryProducts = [
     description: "Premium hybrid with sweet dessert flavors. Balanced cerebral and physical effects. Beautiful dense buds with vibrant colors and heavy resin.",
     price: "92.00",
     category: "flower",
-    imageUrl: "/products/gelato.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 20, // 2.5 lbs = 20 quarters
     weight: "0.44",
     featured: false,
@@ -437,7 +437,7 @@ const inventoryProducts = [
     description: "Premium hybrid with sweet dessert flavors. Balanced cerebral and physical effects. Beautiful dense buds with vibrant colors and heavy resin.",
     price: "175.00",
     category: "flower",
-    imageUrl: "/products/gelato.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 10, // 2.5 lbs = 10 halfs
     weight: "0.88",
     featured: false,
@@ -451,7 +451,7 @@ const inventoryProducts = [
     description: "Premium hybrid with sweet dessert flavors. Balanced cerebral and physical effects. Beautiful dense buds with vibrant colors and heavy resin.",
     price: "330.00",
     category: "flower",
-    imageUrl: "/products/gelato.svg",
+    imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 5, // 2.5 lbs = 5 ounces
     weight: "1.75",
     featured: false,
@@ -714,10 +714,10 @@ const inventoryProducts = [
 
 export async function seedInventoryProducts() {
   console.log("Seeding inventory products...");
-  
+
   // Clear existing products first
   await storage.clearProducts();
-  
+
   for (const product of inventoryProducts) {
     try {
       const createdProduct = await storage.createProduct(product);
@@ -726,7 +726,7 @@ export async function seedInventoryProducts() {
       console.error(`Failed to create product ${product.name}:`, error);
     }
   }
-  
+
   console.log("Inventory seeding complete!");
   console.log("Total inventory:");
   console.log("- Flower: 30 lbs (15 sativa, 10 indica, 5 hybrid)");
