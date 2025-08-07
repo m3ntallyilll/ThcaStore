@@ -40,9 +40,10 @@ export function AIProductRecommendations({
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch all products for AI analysis
-  const { data: products = [] } = useQuery({
+  const { data: products = [] } = useQuery<Product[]>({
     queryKey: ['/api/products'],
-    queryFn: () => apiRequest('/api/products')
+    queryFn: () => apiRequest('/api/products'),
+    retry: false,
   });
 
   // AI-powered recommendation engine
@@ -58,7 +59,7 @@ export function AIProductRecommendations({
       try {
         // Filter out current product if specified
         const availableProducts = currentProductId 
-          ? products.filter(p => p.id !== currentProductId)
+          ? products.filter((p: Product) => p.id !== currentProductId)
           : products;
 
         if (availableProducts.length === 0) {
@@ -87,7 +88,7 @@ export function AIProductRecommendations({
             const matchingPrefs = userPreferences.filter(pref => 
               product.name.toLowerCase().includes(pref.toLowerCase()) ||
               product.description?.toLowerCase().includes(pref.toLowerCase()) ||
-              product.effects?.some(effect => effect.toLowerCase().includes(pref.toLowerCase()))
+              product.effects?.some((effect: string) => effect.toLowerCase().includes(pref.toLowerCase()))
             );
             
             if (matchingPrefs.length > 0) {
@@ -98,7 +99,7 @@ export function AIProductRecommendations({
           }
 
           // Strain type compatibility (20% weight)
-          const currentProduct = products.find(p => p.id === currentProductId);
+          const currentProduct = products.find((p: Product) => p.id === currentProductId);
           if (currentProduct?.strainType && product.strainType) {
             if (currentProduct.strainType === product.strainType) {
               score += 20;

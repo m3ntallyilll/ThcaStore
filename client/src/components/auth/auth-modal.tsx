@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAuth } from '@/hooks/use-auth';
-import { useToast } from '@/components/ui/toast-provider';
+import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { insertUserSchema, loginSchema } from '@shared/schema';
@@ -27,7 +27,7 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
   const loginForm = useForm<LoginRequest>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   });
@@ -38,8 +38,8 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
       username: '',
       email: '',
       password: '',
-      firstName: '',
-      lastName: '',
+      firstName: null,
+      lastName: null,
     },
   });
 
@@ -47,10 +47,17 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
     setIsLoading(true);
     try {
       await login(data);
-      toast('Welcome back!', 'success');
+      toast({
+        title: "Welcome back!",
+        description: "Successfully logged in"
+      });
       onClose();
     } catch (error: any) {
-      toast(error.message || 'Login failed', 'error');
+      toast({
+        title: "Login failed",
+        description: error.message || 'Login failed',
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -60,10 +67,17 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
     setIsLoading(true);
     try {
       await register(data);
-      toast('Account created successfully!', 'success');
+      toast({
+        title: "Account created!",
+        description: "Welcome to THCA Store!"
+      });
       onClose();
     } catch (error: any) {
-      toast(error.message || 'Registration failed', 'error');
+      toast({
+        title: "Registration failed",
+        description: error.message || 'Registration failed',
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
