@@ -362,22 +362,52 @@ How can I help you today? I can:
               break;
 
             case 'add_to_cart':
-              // Cart addition is handled on the server side, just show confirmation
-              try {
-                // Immediately refresh the cart
-                await fetchCart();
-                queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
-                
-                const successMessage: ChatMessage = {
-                  id: `cart_success_${Date.now()}`,
-                  message: '',
-                  response: `✅ Item added to cart! Your cart has been updated.`,
-                  timestamp: new Date(),
+              // Cart addition is handled on the server side, but we also refresh frontend state
+              if (action.data?.productId || action.data?.product_id) {
+                try {
+                  const productId = action.data.productId || action.data.product_id;
+                  const quantity = action.data.quantity || 1;
+                  
+                  // Trigger frontend cart addition
+                  await addToCart(productId, quantity);
+                  
+                  // Also refresh the cart to ensure sync
+                  await fetchCart();
+                  queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+                  
+                  toast({
+                    title: "Added to cart!",
+                    description: `Item has been added to your cart.`,
+                  });
+                  
+                  const successMessage: ChatMessage = {
+                    id: `cart_success_${Date.now()}`,
+                    message: '',
+                    response: `✅ I've added that item to your cart! You now have ${quantity} item${quantity > 1 ? 's' : ''} in your cart.`,
+                    timestamp: new Date(),
                   isUser: false
                 };
                 setMessages(prev => [...prev, successMessage]);
               } catch (error) {
-                console.error('Failed to refresh cart:', error);
+                console.error('Failed to add item to cart:', error);
+                
+                toast({
+                  title: "Failed to add item",
+                  description: "There was a problem adding the item to your cart. Please try again.",
+                  variant: "destructive"
+                });
+                
+                const errorMessage: ChatMessage = {
+                  id: `cart_error_${Date.now()}`,
+                  message: '',
+                  response: `❌ Sorry, I couldn't add that item to your cart. Please try again or add it manually from the product page.`,
+                  timestamp: new Date(),
+                  isUser: false
+                };
+                setMessages(prev => [...prev, errorMessage]);
+              }
+              } else {
+                console.warn('No product ID provided for add_to_cart action');
               }
               break;
           }

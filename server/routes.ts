@@ -914,7 +914,22 @@ function shuffleArray(array: any[]) {
           // Return empty cart for new guest users without session ID
           return res.json([]);
         }
-        userId = guestId;
+        
+        // Ensure the guest user exists in the database
+        let guestUser = await storage.getUser(guestId);
+        if (!guestUser) {
+          // Create guest user with the provided guest ID
+          guestUser = await storage.createUser({
+            id: guestId,
+            email: `${guestId}@guest.temp`,
+            password: await bcrypt.hash('guest', 10),
+            firstName: 'Guest',
+            lastName: 'User', 
+            username: guestId,
+            isAdmin: false
+          });
+        }
+        userId = guestUser.id;
       }
       
       const cartItems = await storage.getCartItems(userId);
@@ -951,7 +966,22 @@ function shuffleArray(array: any[]) {
         if (!guestId) {
           return res.status(400).json({ message: 'Guest session ID required' });
         }
-        userId = guestId;
+        
+        // Ensure the guest user exists in the database
+        let guestUser = await storage.getUser(guestId);
+        if (!guestUser) {
+          // Create guest user with the provided guest ID
+          guestUser = await storage.createUser({
+            id: guestId,
+            email: `${guestId}@guest.temp`,
+            password: await bcrypt.hash('guest', 10),
+            firstName: 'Guest',
+            lastName: 'User', 
+            username: guestId,
+            isAdmin: false
+          });
+        }
+        userId = guestUser.id;
       }
 
       const cartItemData = insertCartItemSchema.parse({
@@ -1464,13 +1494,35 @@ function shuffleArray(array: any[]) {
         // For guest users, check if they have a guest ID in header
         const guestId = req.headers['x-guest-id'] as string;
         if (guestId) {
-          contextData = { userId: guestId };
+          // Ensure the guest user exists in the database
+          let guestUser = await storage.getUser(guestId);
+          if (!guestUser) {
+            // Create guest user with the provided guest ID
+            guestUser = await storage.createUser({
+              id: guestId,
+              email: `${guestId}@guest.temp`,
+              password: await bcrypt.hash('guest', 10),
+              firstName: 'Guest',
+              lastName: 'User', 
+              username: guestId,
+              isAdmin: false
+            });
+          }
+          contextData = { userId: guestUser.id };
         } else {
           // Use the anonymous guest user
-          const guestUser = await storage.getUserByEmail('guest@anonymous.temp');
-          if (guestUser) {
-            contextData = { userId: guestUser.id };
+          let guestUser = await storage.getUserByEmail('guest@anonymous.temp');
+          if (!guestUser) {
+            guestUser = await storage.createUser({
+              email: 'guest@anonymous.temp',
+              password: await bcrypt.hash('guest', 10),
+              firstName: 'Anonymous',
+              lastName: 'Guest', 
+              username: 'anonymous-guest',
+              isAdmin: false
+            });
           }
+          contextData = { userId: guestUser.id };
         }
       }
 
@@ -1505,7 +1557,21 @@ function shuffleArray(array: any[]) {
                 // Check for guest ID from header
                 const guestId = req.headers['x-guest-id'] as string;
                 if (guestId) {
-                  cartUserId = guestId;
+                  // Ensure the guest user exists in the database
+                  let guestUser = await storage.getUser(guestId);
+                  if (!guestUser) {
+                    // Create guest user with the provided guest ID
+                    guestUser = await storage.createUser({
+                      id: guestId,
+                      email: `${guestId}@guest.temp`,
+                      password: await bcrypt.hash('guest', 10),
+                      firstName: 'Guest',
+                      lastName: 'User', 
+                      username: guestId,
+                      isAdmin: false
+                    });
+                  }
+                  cartUserId = guestUser.id;
                 } else {
                   // Create or use anonymous guest user
                   let guestUser = await storage.getUserByEmail('guest@anonymous.temp');
