@@ -58,15 +58,6 @@ export function CartSidebar() {
   };
 
   const handleCheckout = () => {
-    if (!user) {
-      toast({
-        title: "Login required",
-        description: "Please login to checkout",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (items.length === 0) {
       toast({
         title: "Cart empty",
@@ -76,6 +67,7 @@ export function CartSidebar() {
       return;
     }
 
+    // Close cart and go to checkout (works for both logged in and guest users)
     toggleCart();
     setLocation('/checkout');
   };
@@ -104,7 +96,12 @@ export function CartSidebar() {
             {/* Header */}
             <div className="p-6 border-b border-gray-700">
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold">Shopping Cart</h3>
+                <div>
+                  <h3 className="text-xl font-semibold">Shopping Cart</h3>
+                  {items.length > 0 && (
+                    <p className="text-sm text-gray-400 mt-1">Ready to checkout? →</p>
+                  )}
+                </div>
                 <Button variant="ghost" size="icon" onClick={toggleCart}>
                   <X className="w-5 h-5" />
                 </Button>
@@ -236,6 +233,7 @@ export function CartSidebar() {
                   </div>
                   <Button
                     onClick={handleCheckout}
+                    data-cart-checkout
                     className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2"
                   >
                     <CreditCard className="w-5 h-5" />

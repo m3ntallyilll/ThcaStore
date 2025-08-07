@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { AuthModal } from '../auth/auth-modal';
+import { Badge } from '@/components/ui/badge';
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
-  
+
   const { user, logout } = useAuth();
   const isAuthenticated = !!user;
   const { toggleCart, getTotalItems } = useCart();
