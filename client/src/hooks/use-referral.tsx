@@ -17,6 +17,14 @@ interface ReferralInfo {
   message?: string;
 }
 
+interface UserReferralData {
+  referralCode?: string;
+  hasUsedReferral?: boolean;
+  stats?: any;
+  totalReferrals?: number;
+  totalEarned?: number;
+}
+
 export function useReferral() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -40,7 +48,7 @@ export function useReferral() {
   }, [toast]);
 
   // Get user's own referral info
-  const { data: userReferralData } = useQuery({
+  const { data: userReferralData } = useQuery<UserReferralData>({
     queryKey: ['/api/referrals/user'],
     enabled: !!user,
     retry: false,
@@ -50,7 +58,7 @@ export function useReferral() {
   const storedReferralCode = getStoredReferralCode();
 
   // Validate referral code
-  const validateReferralMutation = useMutation({
+  const validateReferralMutation = useMutation<ReferralInfo, Error, string>({
     mutationFn: async (code: string): Promise<ReferralInfo> => {
       const response = await apiRequest('POST', '/api/referrals/validate', { code });
       return response.json();
@@ -58,7 +66,7 @@ export function useReferral() {
   });
 
   // Apply referral code
-  const applyReferralMutation = useMutation({
+  const applyReferralMutation = useMutation<any, Error, string | undefined>({
     mutationFn: async (code?: string) => {
       const referralCode = code || storedReferralCode;
       if (!referralCode) throw new Error('No referral code to apply');
@@ -98,7 +106,7 @@ export function useReferral() {
       
       return () => clearTimeout(timer);
     }
-  }, [user, storedReferralCode, userReferralData]);
+  }, [user, storedReferralCode, userReferralData, applyReferralMutation]);
 
   // Generate user's referral link
   const generateUserReferralLink = () => {

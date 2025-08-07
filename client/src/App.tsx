@@ -2,6 +2,8 @@ import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { AIChat } from "@/components/ai/ai-chat";
+import { ReferralBanner } from "@/components/referral/referral-banner";
 import { LegalDisclaimer } from "@/components/legal-disclaimer";
 import { useEffect, useState } from "react";
 
@@ -70,6 +72,20 @@ function AppContent() {
         <Footer />
       </div>
       <Toaster />
+      
+      {/* Global AI Customer Service Assistant */}
+      <AIChat 
+        autoOpen={false}
+        onProductRecommendation={(productId) => {
+          console.log('AI Product recommendation:', productId);
+        }}
+        onOfferSuggestion={(offer) => {
+          console.log('AI Offer suggestion:', offer);
+        }}
+      />
+      
+      {/* Global Referral Detection Banner */}
+      <ReferralBanner className="fixed top-20 left-4 right-4 z-40" compact />
       
       {/* Legal Disclaimer Modal */}
       {!disclaimerAccepted && (

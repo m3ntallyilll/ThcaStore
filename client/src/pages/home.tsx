@@ -1096,17 +1096,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      
-      {/* AI Customer Service Assistant - Floating Chat */}
-      <AIChat 
-        autoOpen={false}
-        onProductRecommendation={(productId) => {
-          console.log('Product recommended:', productId);
-        }}
-        onOfferSuggestion={(offer) => {
-          console.log('Offer suggested:', offer);
-        }}
-      />
     </div>
   );
 }
