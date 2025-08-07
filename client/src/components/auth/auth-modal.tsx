@@ -97,7 +97,7 @@ export function AuthModal({ isOpen, onClose, mode, onSwitchMode }: AuthModalProp
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-start justify-center pt-16 p-4"
           onClick={onClose}
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
         >
