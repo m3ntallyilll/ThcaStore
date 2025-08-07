@@ -910,12 +910,11 @@ function shuffleArray(array: any[]) {
       // Use guest session ID from header if not authenticated
       if (!userId) {
         const guestId = req.headers['x-guest-id'] as string;
-        if (guestId) {
-          userId = guestId;
-        } else {
-          // Return empty cart for new guest users
+        if (!guestId) {
+          // Return empty cart for new guest users without session ID
           return res.json([]);
         }
+        userId = guestId;
       }
       
       const cartItems = await storage.getCartItems(userId);
@@ -946,29 +945,13 @@ function shuffleArray(array: any[]) {
         }
       }
       
-      // If no userId provided and not authenticated, use special guest user
+      // If no userId provided and not authenticated, use guest session
       if (!userId) {        
-        // Check if shared guest user exists, create if not
-        let guestUser = await storage.getUserByEmail('guest@anonymous.temp');
-        if (!guestUser) {
-          try {
-            console.log('Creating anonymous guest user...');
-            guestUser = await storage.createUser({
-              email: 'guest@anonymous.temp',
-              password: await bcrypt.hash('guest', 10),
-              firstName: 'Anonymous',
-              lastName: 'Guest',
-              username: 'anonymous-guest',
-              isAdmin: false
-            });
-            console.log('Guest user created:', guestUser.id);
-          } catch (error) {
-            console.error('Failed to create guest user:', error);
-            return res.status(500).json({ message: 'Unable to create guest session' });
-          }
+        const guestId = req.headers['x-guest-id'] as string;
+        if (!guestId) {
+          return res.status(400).json({ message: 'Guest session ID required' });
         }
-        
-        userId = guestUser.id;
+        userId = guestId;
       }
 
       const cartItemData = insertCartItemSchema.parse({

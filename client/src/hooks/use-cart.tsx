@@ -27,6 +27,13 @@ export const useCart = create<CartState>((set, get) => ({
   fetchCart: async () => {
     set({ isLoading: true });
     try {
+      // Ensure guest ID is available for the request
+      let guestId = localStorage.getItem('guestId');
+      if (!guestId) {
+        guestId = `guest_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        localStorage.setItem('guestId', guestId);
+      }
+      
       // API request will handle both authenticated and guest users
       const items = await apiRequest('/api/cart');
       set({ items: items || [] });
@@ -40,12 +47,19 @@ export const useCart = create<CartState>((set, get) => ({
 
   addToCart: async (productId: string, quantity = 1) => {
     try {
+      // Ensure guest ID is available for the request
+      let guestId = localStorage.getItem('guestId');
+      if (!guestId) {
+        guestId = `guest_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        localStorage.setItem('guestId', guestId);
+      }
+      
       const result = await apiRequest('/api/cart', { 
         method: 'POST', 
         body: { productId, quantity } 
       });
       
-      // If guest session, store guest ID
+      // If guest session, ensure guest ID is stored
       if (result.guestSession && result.userId) {
         localStorage.setItem('guestId', result.userId);
       }
