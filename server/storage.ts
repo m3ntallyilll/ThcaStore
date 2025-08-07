@@ -24,6 +24,7 @@ export interface IStorage {
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   getProductsByCategory(category: string): Promise<Product[]>;
+  getProductsByStrainType(strainType: string): Promise<Product[]>;
   getFeaturedProducts(): Promise<Product[]>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product | undefined>;
@@ -511,6 +512,12 @@ export class MemStorage implements IStorage {
 
   async getProductsByCategory(category: string): Promise<Product[]> {
     return Array.from(this.products.values()).filter(product => product.category === category);
+  }
+
+  async getProductsByStrainType(strainType: string): Promise<Product[]> {
+    return Array.from(this.products.values()).filter(product => 
+      product.strainType?.toLowerCase() === strainType.toLowerCase()
+    );
   }
 
   async getFeaturedProducts(): Promise<Product[]> {

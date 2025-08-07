@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, Grid, List, ChevronDown } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -67,6 +68,52 @@ export default function Products() {
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [selectedEffects, setSelectedEffects] = useState<string[]>([]);
   const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
+
+  // Generate dynamic SEO based on current filters
+  const generateDynamicSEO = () => {
+    let title = 'Premium THCA Products | Lab-Tested Quality';
+    let description = 'Shop the finest THCA products online. Premium quality, lab-tested, fast shipping nationwide.';
+    let keywords = ['THCA products', 'buy THCA online', 'premium THCA', 'THCA flower', 'THCA delivery', 'lab-tested THCA'];
+
+    if (selectedCategory !== 'all') {
+      const categoryName = selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+      title = `Premium THCA ${categoryName} | Lab-Tested Quality`;
+      description = `Shop premium THCA ${selectedCategory} with lab-tested quality. ${categoryName} for all preferences and effects. Fast shipping nationwide.`;
+      keywords = [
+        `THCA ${selectedCategory}`,
+        `buy THCA ${selectedCategory}`,
+        `premium ${selectedCategory}`,
+        `${selectedCategory} online`,
+        `${selectedCategory} delivery`,
+        `lab-tested ${selectedCategory}`,
+        `quality ${selectedCategory}`,
+        `best THCA ${selectedCategory}`,
+        ...keywords
+      ];
+    }
+
+    if (selectedEffects.length > 0) {
+      const effect = selectedEffects[0];
+      title += ` for ${effect}`;
+      description += ` Perfect for ${effect} with reliable effects.`;
+      keywords.push(
+        `THCA for ${effect}`,
+        `${effect} THCA`,
+        `${effect} ${selectedCategory}`,
+        `THCA ${effect} effects`
+      );
+    }
+
+    if (searchQuery) {
+      title = `${searchQuery} THCA | Search Results`;
+      description = `Find ${searchQuery} THCA products. Premium quality, lab-tested, fast shipping nationwide.`;
+      keywords.unshift(`${searchQuery} THCA`, `buy ${searchQuery}`, `${searchQuery} strain`);
+    }
+
+    return { title, description, keywords: keywords.slice(0, 15).join(', ') };
+  };
+
+  const seoData = generateDynamicSEO();
 
   // Fetch products
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
@@ -169,7 +216,52 @@ export default function Products() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-dark-900 to-dark-800 pt-16">
+    <>
+      {/* Dynamic SEO Meta Tags */}
+      <Helmet>
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta name="keywords" content={seoData.keywords} />
+        <meta property="og:title" content={seoData.title} />
+        <meta property="og:description" content={seoData.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mentally-chill.online/products" />
+        <meta property="og:image" content="https://mentally-chill.online/logo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seoData.title} />
+        <meta name="twitter:description" content={seoData.description} />
+        <meta name="twitter:image" content="https://mentally-chill.online/logo.png" />
+        <link rel="canonical" href="https://mentally-chill.online/products" />
+        {/* Schema.org structured data for products */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org/",
+            "@type": "CollectionPage",
+            "name": seoData.title,
+            "description": seoData.description,
+            "url": "https://mentally-chill.online/products",
+            "mainEntity": {
+              "@type": "ItemList",
+              "numberOfItems": filteredProducts.length,
+              "itemListElement": filteredProducts.slice(0, 10).map((product, index) => ({
+                "@type": "Product",
+                "position": index + 1,
+                "name": product.name,
+                "description": product.description,
+                "category": product.category,
+                "offers": {
+                  "@type": "Offer",
+                  "price": product.price,
+                  "priceCurrency": "USD",
+                  "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+                }
+              }))
+            }
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen bg-gradient-to-b from-dark-900 to-dark-800 pt-16">
       {/* Hero Section */}
       <section className="py-20 text-center">
         <div className="max-w-4xl mx-auto px-4">
@@ -449,6 +541,7 @@ export default function Products() {
         isOpen={!!selectedProduct}
         onClose={closeProductModal}
       />
-    </div>
+      </div>
+    </>
   );
 }

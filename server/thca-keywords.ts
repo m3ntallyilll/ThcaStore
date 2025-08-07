@@ -1,3 +1,215 @@
+// Comprehensive THCA keywords for all angles and strain niches
+export const strainNicheKeywords = {
+  // Indica Strain Niche Keywords
+  indica: [
+    'Buy THCA Indica strains',
+    'Best THCA Indica flower',
+    'Relaxing THCA Indica',
+    'THCA Indica for sleep',
+    'Premium Indica THCA buds',
+    'THCA Indica delivery',
+    'Heavy Indica THCA strains',
+    'Sedating THCA Indica',
+    'Couch lock THCA Indica',
+    'THCA Indica effects',
+    'Pure Indica THCA flower',
+    'Strong THCA Indica strains'
+  ],
+
+  // Sativa Strain Niche Keywords
+  sativa: [
+    'Buy THCA Sativa strains',
+    'Energizing THCA Sativa',
+    'Best THCA Sativa flower',
+    'Uplifting THCA Sativa',
+    'Creative THCA Sativa',
+    'Focus THCA Sativa strains',
+    'Daytime THCA Sativa',
+    'Pure Sativa THCA flower',
+    'Cerebral THCA Sativa',
+    'THCA Sativa effects',
+    'Motivating THCA Sativa',
+    'Social THCA Sativa'
+  ],
+
+  // Hybrid Strain Niche Keywords
+  hybrid: [
+    'Buy THCA Hybrid strains',
+    'Balanced THCA Hybrid',
+    'Best THCA Hybrid flower',
+    'Indica-dominant THCA Hybrid',
+    'Sativa-dominant THCA Hybrid',
+    'THCA Hybrid effects',
+    'Versatile THCA Hybrid',
+    'All-day THCA Hybrid',
+    'Premium THCA Hybrid buds',
+    'Popular THCA Hybrid strains',
+    'Smooth THCA Hybrid',
+    'Mellow THCA Hybrid'
+  ]
+};
+
+export const effectsKeywords = {
+  // Therapeutic Effects
+  therapeutic: [
+    'THCA for anxiety relief',
+    'THCA for pain management',
+    'THCA anti-inflammatory',
+    'THCA for insomnia',
+    'THCA stress relief',
+    'THCA muscle relaxation',
+    'THCA neuroprotective',
+    'THCA for appetite',
+    'THCA mood enhancement',
+    'Natural THCA therapy',
+    'Holistic THCA treatment',
+    'Medical THCA benefits'
+  ],
+
+  // Recreational Effects
+  recreational: [
+    'THCA for relaxation',
+    'THCA euphoric effects',
+    'Creative THCA experience',
+    'Social THCA strains',
+    'Uplifting THCA flower',
+    'Happy THCA effects',
+    'Energizing THCA buds',
+    'Focus THCA strains',
+    'Giggly THCA varieties',
+    'Talkative THCA flower',
+    'Productive THCA strains',
+    'Adventure THCA buds'
+  ]
+};
+
+export const productAngleKeywords = {
+  // Quality Angles
+  quality: [
+    'Premium THCA flower',
+    'Top-shelf THCA buds',
+    'Craft THCA strains',
+    'Small-batch THCA',
+    'Artisan THCA flower',
+    'Hand-trimmed THCA',
+    'Cured THCA buds',
+    'Fresh THCA flower',
+    'Potent THCA strains',
+    'Grade-A THCA',
+    'Exotic THCA varieties',
+    'Rare THCA strains'
+  ],
+
+  // Price Angles
+  pricing: [
+    'Affordable THCA flower',
+    'Cheap THCA buds',
+    'Budget THCA strains',
+    'THCA deals and discounts',
+    'Best THCA prices',
+    'Wholesale THCA flower',
+    'Bulk THCA purchase',
+    'THCA sale prices',
+    'Value THCA packages',
+    'THCA clearance',
+    'Low-cost THCA',
+    'Economy THCA options'
+  ],
+
+  // Convenience Angles
+  convenience: [
+    'THCA same-day delivery',
+    'Fast THCA shipping',
+    'THCA express delivery',
+    'Quick THCA orders',
+    'THCA rush delivery',
+    'Instant THCA purchase',
+    'THCA subscription box',
+    'Auto-delivery THCA',
+    'THCA monthly delivery',
+    'Scheduled THCA orders',
+    'THCA pickup service',
+    'THCA curbside pickup'
+  ]
+};
+
+export const terpeneKeywords = {
+  // Major Terpenes
+  myrcene: [
+    'Myrcene-rich THCA',
+    'THCA high myrcene',
+    'Sedating myrcene THCA',
+    'Relaxing myrcene strains',
+    'Myrcene dominant THCA'
+  ],
+  limonene: [
+    'Limonene THCA strains',
+    'Citrus THCA flower',
+    'Uplifting limonene THCA',
+    'Mood-boosting THCA',
+    'Energizing citrus THCA'
+  ],
+  caryophyllene: [
+    'Caryophyllene THCA',
+    'Spicy THCA strains',
+    'Anti-inflammatory THCA',
+    'Pain-relief THCA',
+    'Therapeutic THCA buds'
+  ],
+  pinene: [
+    'Pinene THCA strains',
+    'Pine THCA flower',
+    'Focus-enhancing THCA',
+    'Alert THCA varieties',
+    'Memory-boosting THCA'
+  ],
+  linalool: [
+    'Linalool THCA flower',
+    'Lavender THCA strains',
+    'Calming THCA buds',
+    'Anxiety-relief THCA',
+    'Peaceful THCA varieties'
+  ]
+};
+
+export const consumptionMethodKeywords = {
+  // Smoking Methods
+  smoking: [
+    'THCA flower for smoking',
+    'Smokable THCA buds',
+    'THCA joints and blunts',
+    'THCA pipe flower',
+    'THCA bong buds',
+    'Smooth-smoking THCA',
+    'Clean-burning THCA',
+    'Flavorful THCA smoke'
+  ],
+
+  // Vaping Methods
+  vaping: [
+    'THCA flower for vaping',
+    'Vaporizer THCA buds',
+    'Dry herb THCA',
+    'THCA vape flower',
+    'Temperature-controlled THCA',
+    'Clean THCA vapor',
+    'Terpene-rich THCA vapor',
+    'Flavorful THCA vaping'
+  ],
+
+  // Edibles and Processing
+  processing: [
+    'THCA for decarboxylation',
+    'Raw THCA flower',
+    'THCA cooking material',
+    'THCA infusion flower',
+    'Edible THCA buds',
+    'THCA extraction material',
+    'High-THCA flower',
+    'Pure THCA crystal'
+  ]
+};
+
 // State-specific THCA keywords for SEO optimization
 export const stateKeywords = {
   // West Coast

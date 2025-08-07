@@ -1,6 +1,7 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { AIChat } from "@/components/ai/ai-chat";
 import { ReferralBanner } from "@/components/referral/referral-banner";
@@ -30,6 +31,7 @@ import TermsOfService from "@/pages/terms-of-service";
 import Returns from "@/pages/returns";
 import NotFound from "@/pages/not-found";
 import StateTHCA from "@/pages/state-thca";
+import StrainLanding from "@/pages/strain-landing";
 
 function Router() {
   return (
@@ -49,6 +51,7 @@ function Router() {
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/thca/:state" component={StateTHCA} />
       <Route path="/thca" component={StateTHCA} />
+      <Route path="/strains/:strainType" component={StrainLanding} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>
@@ -112,9 +115,11 @@ function App() {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppContent />
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
