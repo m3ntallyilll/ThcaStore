@@ -10,6 +10,7 @@ import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { SkipLinks } from '@/components/accessibility/skip-links';
+import { AIChat } from '@/components/ai/ai-chat';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -1095,6 +1096,17 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* AI Customer Service Assistant - Floating Chat */}
+      <AIChat 
+        autoOpen={false}
+        onProductRecommendation={(productId) => {
+          console.log('Product recommended:', productId);
+        }}
+        onOfferSuggestion={(offer) => {
+          console.log('Offer suggested:', offer);
+        }}
+      />
     </div>
   );
 }

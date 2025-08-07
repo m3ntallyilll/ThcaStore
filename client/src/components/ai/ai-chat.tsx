@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Send, X, Sparkles, Gift, Star, TrendingUp, Settings, Package, Edit3, Volume2, VolumeX, ShoppingCart } from 'lucide-react';
+import { FloatingChatButton } from '@/components/ui/floating-chat-button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

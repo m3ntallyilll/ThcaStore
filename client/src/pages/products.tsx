@@ -22,6 +22,7 @@ import { ProductCard } from '@/components/product/product-card';
 import { ProductModal } from '@/components/product/product-modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SkipLinks } from '@/components/accessibility/skip-links';
+import { AIChat } from '@/components/ai/ai-chat';
 import type { Product } from '@shared/schema';
 
 const categories = [
