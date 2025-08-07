@@ -83,6 +83,8 @@ function AppContent() {
         autoOpen={false}
         onProductRecommendation={(productId) => {
           console.log('AI Product recommendation:', productId);
+          // Navigate to products page with the specific product highlighted
+          window.location.href = `/products?highlight=${productId}`;
         }}
         onOfferSuggestion={(offer) => {
           console.log('AI Offer suggestion:', offer);

@@ -66,11 +66,31 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [priceRange, setPriceRange] = useState<{ min: number; max: number } | null>(null);
   const [selectedEffects, setSelectedEffects] = useState<string[]>([]);
+  const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
 
   // Fetch products
   const { data: products = [], isLoading, error } = useQuery<Product[]>({
     queryKey: ['/api/products'],
   });
+
+  // Check for highlighted product from URL params
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const highlightId = urlParams.get('highlight');
+    if (highlightId && products.length > 0) {
+      setHighlightedProductId(highlightId);
+      const product = products.find(p => p.id === highlightId);
+      if (product) {
+        setSelectedProduct(product);
+        // Clear the URL parameter after 3 seconds
+        setTimeout(() => {
+          setHighlightedProductId(null);
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, '', newUrl);
+        }, 3000);
+      }
+    }
+  }, [products]);
 
   // Filter and sort products
   const filteredProducts = products
@@ -415,6 +435,7 @@ export default function Products() {
                   <ProductCard
                     product={product}
                     onProductClick={handleProductClick}
+                    isHighlighted={highlightedProductId === product.id}
                   />
                 </motion.div>
               ))}

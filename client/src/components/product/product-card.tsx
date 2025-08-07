@@ -12,9 +12,10 @@ import type { Product, ProductVariant } from '@shared/schema';
 interface ProductCardProps {
   product: Product;
   onProductClick: (product: Product) => void;
+  isHighlighted?: boolean;
 }
 
-export function ProductCard({ product, onProductClick }: ProductCardProps) {
+export function ProductCard({ product, onProductClick, isHighlighted = false }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [showVariants, setShowVariants] = useState(false);
@@ -126,7 +127,9 @@ export function ProductCard({ product, onProductClick }: ProductCardProps) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -10, rotateX: 5 }}
       transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="product-card glass rounded-2xl overflow-hidden group cursor-pointer"
+      className={`product-card glass rounded-2xl overflow-hidden group cursor-pointer ${
+        isHighlighted ? 'ring-4 ring-gold animate-pulse' : ''
+      }`}
       data-product-id={product.id}
       data-product-name={product.name}
       onClick={() => onProductClick(product)}
