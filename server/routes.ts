@@ -2736,18 +2736,32 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       const { items } = req.body;
       
       // Convert cart items to Stripe line items
-      const lineItems = items.map((item: any) => ({
-        price_data: {
-          currency: 'usd',
-          product_data: {
-            name: item.product.name,
-            description: item.product.description,
-            images: item.product.imageUrl ? [item.product.imageUrl] : [],
+      const lineItems = items.map((item: any) => {
+        // Convert relative image URLs to absolute URLs for Stripe
+        let imageUrl = '';
+        if (item.product.imageUrl) {
+          if (item.product.imageUrl.startsWith('http')) {
+            imageUrl = item.product.imageUrl;
+          } else {
+            // Convert relative URL to absolute URL
+            imageUrl = `${req.headers.origin}${item.product.imageUrl}`;
+          }
+        }
+
+        return {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: item.product.name,
+              description: item.product.description,
+              // Only include images if we have a valid absolute URL
+              ...(imageUrl.startsWith('http') ? { images: [imageUrl] } : {}),
+            },
+            unit_amount: Math.round(parseFloat(item.product.price) * 100), // Convert to cents
           },
-          unit_amount: Math.round(parseFloat(item.product.price) * 100), // Convert to cents
-        },
-        quantity: item.quantity,
-      }));
+          quantity: item.quantity,
+        };
+      });
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
