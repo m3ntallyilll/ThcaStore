@@ -75,7 +75,7 @@ app.use((req, res, next) => {
 Allow: /
 
 # Allow all search engines to crawl the entire site
-Sitemap: https://mentally-chill.replit.app/sitemap.xml
+Sitemap: https://mentally-chill.online/sitemap.xml
 
 # Allow crawling of CSS, JS and asset files for better rendering
 Allow: /src/
@@ -112,46 +112,61 @@ Crawl-delay: 1`);
     
     const stateUrls = Object.keys(stateKeywords).map(state => `
   <url>
-    <loc>https://mentally-chill.replit.app/thca/${state}</loc>
+    <loc>https://mentally-chill.online/thca/${state}</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>`).join('');
     
+    // City-specific THCA landing pages
+    const cityUrls = [
+      'thca-los-angeles-california',
+      'thca-denver-colorado', 
+      'thca-portland-oregon',
+      'thca-seattle-washington',
+      'thca-las-vegas-nevada'
+    ].map(city => `
+  <url>
+    <loc>https://mentally-chill.online/${city}</loc>
+    <lastmod>2025-08-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`).join('');
+    
     res.send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://mentally-chill.replit.app/</loc>
+    <loc>https://mentally-chill.online/</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.replit.app/products</loc>
+    <loc>https://mentally-chill.online/products</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.replit.app/blog</loc>
+    <loc>https://mentally-chill.online/blog</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.replit.app/thca</loc>
+    <loc>https://mentally-chill.online/thca</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>${stateUrls}
+  </url>${stateUrls}${cityUrls}
   <url>
-    <loc>https://mentally-chill.replit.app/about</loc>
+    <loc>https://mentally-chill.online/about</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.replit.app/contact</loc>
+    <loc>https://mentally-chill.online/contact</loc>
     <lastmod>2025-08-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

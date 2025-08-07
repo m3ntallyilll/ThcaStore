@@ -28,7 +28,7 @@ sitemapRouter.get('/sitemap.xml', async (_req, res) => {
     
     // Base URLs for the site
     const baseUrl = process.env.NODE_ENV === 'production' 
-      ? 'https://thcastore.replit.app' 
+      ? 'https://mentally-chill.online' 
       : 'http://localhost:5000';
     
     // Generate sitemap XML
@@ -96,6 +96,37 @@ sitemapRouter.get('/sitemap.xml', async (_req, res) => {
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`).join('')}
+  <!-- City THCA Landing Pages -->
+  <url>
+    <loc>${baseUrl}/thca-los-angeles-california</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/thca-denver-colorado</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/thca-portland-oregon</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/thca-seattle-washington</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${baseUrl}/thca-las-vegas-nevada</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>`;
 
     res.set('Content-Type', 'application/xml');
@@ -109,7 +140,7 @@ sitemapRouter.get('/sitemap.xml', async (_req, res) => {
 // Generate robots.txt for search engine crawlers
 sitemapRouter.get('/robots.txt', (_req, res) => {
   const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://thcastore.replit.app' 
+    ? 'https://mentally-chill.online' 
     : 'http://localhost:5000';
     
   const robotsTxt = `User-agent: *

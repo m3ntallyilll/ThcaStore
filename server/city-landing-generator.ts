@@ -57,7 +57,7 @@ export class CityLandingGenerator {
 
   async generateLandingPage(keywords: THCAKeywordSet): Promise<CityLandingPage> {
     const slug = this.generateSlug(keywords.city, keywords.state);
-    const canonicalUrl = `https://mentally-chill.com/${slug}`;
+    const canonicalUrl = `https://mentally-chill.online/${slug}`;
 
     const prompt = `Create a comprehensive, SEO-optimized THCA landing page for ${keywords.city}, ${keywords.state}.
 
