@@ -406,10 +406,10 @@ How can I help you today? I can:
                 };
                 setMessages(prev => [...prev, errorMessage]);
               }
-              } else {
-                console.warn('No product ID provided for add_to_cart action');
-              }
-              break;
+            } else {
+              console.warn('No product ID provided for add_to_cart action');
+            }
+            break;
           }
         });
       }

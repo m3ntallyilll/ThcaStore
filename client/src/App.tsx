@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AIChat } from "@/components/ai/ai-chat";
 import { ReferralBanner } from "@/components/referral/referral-banner";
 import { LegalDisclaimer } from "@/components/legal-disclaimer";
+import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
 
 
@@ -56,11 +57,15 @@ function Router() {
 
 function AppContent() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const { fetchCart } = useCart();
   
   useEffect(() => {
     const hasAccepted = localStorage.getItem('thca-disclaimer-accepted');
     setDisclaimerAccepted(!!hasAccepted);
-  }, []);
+    
+    // Initialize cart on app load to ensure persistence
+    fetchCart();
+  }, [fetchCart]);
   
   return (
     <div className="min-h-screen bg-black text-white relative">
