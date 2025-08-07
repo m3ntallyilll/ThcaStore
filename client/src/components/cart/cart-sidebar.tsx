@@ -234,11 +234,14 @@ export function CartSidebar() {
                   <Button
                     onClick={handleCheckout}
                     data-cart-checkout
-                    className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2 animate-pulse"
                   >
                     <CreditCard className="w-5 h-5" />
-                    Secure Checkout
+                    Checkout Now - ${getTotal().toFixed(2)}
                   </Button>
+                  <p className="text-center text-xs text-gray-400 mt-2">
+                    🔒 Secure payment • 🚚 Free shipping • ⚡ Quick checkout
+                  </p>
                 </div>
               </div>
             )}

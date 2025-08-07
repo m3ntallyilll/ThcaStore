@@ -90,12 +90,13 @@ export function Navigation() {
                 onClick={toggleCart}
                 className="relative border-glow-green-500 text-glow-green-400 hover:bg-glow-green-500 hover:text-white"
                 data-testid="button-cart"
+                title={totalItems > 0 ? `Cart (${totalItems} items) - Click to review and checkout` : "Cart (empty)"}
               >
                 <ShoppingCart className="w-4 h-4" />
                 {totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  <Badge className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center border-0 p-0">
                     {totalItems}
-                  </span>
+                  </Badge>
                 )}
               </Button>
 
