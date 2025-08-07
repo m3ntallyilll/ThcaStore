@@ -140,6 +140,7 @@ export function GamifiedRewardsDashboard() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
 
   // Existing rewards data
   const { data: rewardsData, isLoading: rewardsLoading } = useQuery({
@@ -768,21 +769,59 @@ export function GamifiedRewardsDashboard() {
                   <Button 
                     variant="outline" 
                     className="flex-1"
-                    onClick={() => {
-                      const text = `Join THCA Store and get premium hemp products! Use my referral code: ${referrals?.referralCode || 'SIGNUP'}`;
-                      if (navigator.share) {
-                        navigator.share({ text });
-                      } else {
-                        navigator.clipboard.writeText(text);
-                        toast({
-                          title: "Share text copied!",
-                          description: "Paste this anywhere to share your referral.",
-                        });
+                    disabled={isSharing}
+                    onClick={async () => {
+                      if (isSharing) return;
+                      
+                      setIsSharing(true);
+                      
+                      try {
+                        const text = `Join THCA Store and get premium hemp products! Use my referral code: ${referrals?.referralCode || 'SIGNUP'}`;
+                        const url = `${window.location.origin}?ref=${referrals?.referralCode || 'SIGNUP'}`;
+                        
+                        // Check if Web Share API is available and can share
+                        if (navigator.share && 'canShare' in navigator) {
+                          const shareData = { 
+                            title: 'Join THCA Store',
+                            text: text,
+                            url: url
+                          };
+                          
+                          if (navigator.canShare(shareData)) {
+                            try {
+                              await navigator.share(shareData);
+                              return; // Exit early if share succeeded
+                            } catch (error: any) {
+                              // Only proceed to fallback if it's not user cancellation
+                              if (error.name === 'AbortError') {
+                                return;
+                              }
+                            }
+                          }
+                        }
+                        
+                        // Fallback to clipboard
+                        try {
+                          await navigator.clipboard.writeText(`${text}\n${url}`);
+                          toast({
+                            title: "Share text copied!",
+                            description: "Paste this anywhere to share your referral.",
+                          });
+                        } catch (error) {
+                          // Final fallback - show the referral code
+                          toast({
+                            title: "Your referral code",
+                            description: `Share this code: ${referrals?.referralCode || 'SIGNUP'}`,
+                            duration: 5000,
+                          });
+                        }
+                      } finally {
+                        setTimeout(() => setIsSharing(false), 1000);
                       }
                     }}
                   >
                     <Share2 className="h-4 w-4 mr-2" />
-                    Share
+                    {isSharing ? 'Sharing...' : 'Share'}
                   </Button>
                 </div>
               </CardContent>
