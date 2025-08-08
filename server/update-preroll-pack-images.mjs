@@ -10,11 +10,11 @@ async function updatePrerollPackImages() {
   try {
     console.log('🔄 Updating pre-roll pack images...');
     
-    // Find all pre-roll products that contain "pack" in their name
+    // Find all pre-roll products that contain "Pack" in their name
     const prerollPacks = await db
       .select()
       .from(products)
-      .where(like(products.name, '%pack%'));
+      .where(like(products.name, '%Pack%'));
     
     console.log(`Found ${prerollPacks.length} products with "pack" in the name`);
     
@@ -44,8 +44,7 @@ async function updatePrerollPackImages() {
       await db
         .update(products)
         .set({ 
-          image: imageUrl,
-          updatedAt: new Date()
+          imageUrl: imageUrl
         })
         .where(eq(products.id, product.id));
       
