@@ -328,6 +328,16 @@ export function AdminDashboard() {
     const [category, setCategory] = useState(product?.category || '');
     const [imageUrl, setImageUrl] = useState(product?.imageUrl || '');
     const [uploading, setUploading] = useState(false);
+    
+    // THCA-specific fields
+    const [weight, setWeight] = useState(product?.weight || '');
+    const [featured, setFeatured] = useState(product?.featured || false);
+    const [rating, setRating] = useState(product?.rating || 0);
+    const [thcaContent, setThcaContent] = useState(product?.thcaContent || '');
+    const [strainType, setStrainType] = useState(product?.strainType || '');
+    const [effects, setEffects] = useState(product?.effects ? product.effects.join(', ') : '');
+    const [subcategory, setSubcategory] = useState(product?.subcategory || '');
+    const [potency, setPotency] = useState(product?.potency || 'Medium');
 
     // Update form when product changes
     useEffect(() => {
@@ -338,6 +348,14 @@ export function AdminDashboard() {
         setStock(product.stock || 0);
         setCategory(product.category || '');
         setImageUrl(product.imageUrl || '');
+        setWeight(product.weight || '');
+        setFeatured(product.featured || false);
+        setRating(product.rating || 0);
+        setThcaContent(product.thcaContent || '');
+        setStrainType(product.strainType || '');
+        setEffects(product.effects ? product.effects.join(', ') : '');
+        setSubcategory(product.subcategory || '');
+        setPotency(product.potency || 'Medium');
       }
     }, [product]);
 
@@ -397,15 +415,15 @@ export function AdminDashboard() {
         category, 
         imageUrl,
         createdAt: null,
-        weight: null,
-        featured: null,
-        rating: null,
-        thcaContent: null,
-        strainType: null,
-        effects: null,
+        weight: weight || null,
+        featured,
+        rating,
+        thcaContent: thcaContent || null,
+        strainType: strainType || null,
+        effects: effects ? effects.split(',').map(e => e.trim()).filter(e => e) : null,
         variants: null,
-        subcategory: null,
-        potency: null,
+        subcategory: subcategory || null,
+        potency: potency || null,
         priceRange: null
       });
     };
@@ -604,6 +622,112 @@ export function AdminDashboard() {
             </Button>
           </div>
         </div>
+
+        {/* THCA-Specific Product Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="weight" className="text-white font-semibold">Weight</Label>
+            <Input
+              id="weight"
+              value={weight}
+              onChange={(e) => setWeight(e.target.value)}
+              placeholder="e.g., 3.5g, 1oz"
+              className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="thcaContent" className="text-white font-semibold">THCA Content</Label>
+            <Input
+              id="thcaContent"
+              value={thcaContent}
+              onChange={(e) => setThcaContent(e.target.value)}
+              placeholder="e.g., 25.5%"
+              className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="strainType" className="text-white font-semibold">Strain Type</Label>
+            <Select value={strainType} onValueChange={setStrainType}>
+              <SelectTrigger className="border-gray-600 text-white focus:border-gold bg-[#000000]">
+                <SelectValue placeholder="Select strain type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="sativa">Sativa</SelectItem>
+                <SelectItem value="indica">Indica</SelectItem>
+                <SelectItem value="hybrid">Hybrid</SelectItem>
+                <SelectItem value="indica-dominant">Indica Dominant</SelectItem>
+                <SelectItem value="sativa-dominant">Sativa Dominant</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="potency" className="text-white font-semibold">Potency</Label>
+            <Select value={potency} onValueChange={setPotency}>
+              <SelectTrigger className="border-gray-600 text-white focus:border-gold bg-[#000000]">
+                <SelectValue placeholder="Select potency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Low">Low</SelectItem>
+                <SelectItem value="Medium">Medium</SelectItem>
+                <SelectItem value="High">High</SelectItem>
+                <SelectItem value="Extra High">Extra High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="subcategory" className="text-white font-semibold">Subcategory</Label>
+            <Input
+              id="subcategory"
+              value={subcategory}
+              onChange={(e) => setSubcategory(e.target.value)}
+              placeholder="e.g., Pre-rolls, Flower, Edibles"
+              className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
+            />
+          </div>
+          <div>
+            <Label htmlFor="rating" className="text-white font-semibold">Rating (1-5)</Label>
+            <Input
+              id="rating"
+              type="number"
+              min="1"
+              max="5"
+              step="0.1"
+              value={rating}
+              onChange={(e) => setRating(Number(e.target.value))}
+              placeholder="Product rating"
+              className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="effects" className="text-white font-semibold">Effects (comma-separated)</Label>
+          <Input
+            id="effects"
+            value={effects}
+            onChange={(e) => setEffects(e.target.value)}
+            placeholder="e.g., Relaxing, Uplifting, Creative, Euphoric"
+            className="border-gray-600 text-white placeholder:text-gray-400 focus:border-gold bg-[#000000]"
+          />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            id="featured"
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
+            className="rounded"
+          />
+          <Label htmlFor="featured" className="text-white font-semibold">Featured Product</Label>
+        </div>
+
         <div className="flex justify-end gap-2">
           <Button type="submit" disabled={isLoading} className="bg-gold text-black hover:bg-gold-600 font-semibold">
             {isLoading ? 'Saving...' : 'Save'}
