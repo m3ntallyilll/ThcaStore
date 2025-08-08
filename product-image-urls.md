@@ -9,7 +9,7 @@
 
 ## Flower Strain Images (All Weight Options)
 - **Grape Popsicle**: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format`
-- **Purple Koolaid Infused with THCA Diamonds**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
+- **Purple Koolaid Infused with THCA Diamonds**: `/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png`
 - **Sour Diesel**: `https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format`
 - **Sour Lemon Diesel**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
 - **Sour Diesel Popcorn Buds**: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format`

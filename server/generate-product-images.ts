@@ -5,14 +5,14 @@ import { join } from 'path';
 export const productImageUrls = {
   // Pre-roll strains
   'sour-diesel-infused': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'purple-koolaid-infused': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
+  'purple-koolaid-infused': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
   'sour-lemon-diesel': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
   'too-tall': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
   'runtz': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
 
   // Flower strains  
   'grape-popsicle': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'purple-koolaid-diamonds': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
+  'purple-koolaid-diamonds': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
   'sour-diesel-flower': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
   'sour-lemon-diesel-flower': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
   'sour-diesel-popcorn': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
