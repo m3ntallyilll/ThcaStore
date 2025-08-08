@@ -18,11 +18,12 @@
 - **Runtz x Peppermint**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
 
 ## Pre-Roll Pack Images (2x-15x)
-- **Sour Diesel Infused Packs**: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format`
-- **Purple Koolaid Infused Packs**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
-- **Sour Lemon Diesel Packs**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
-- **Too Tall Packs**: `https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format`
-- **Runtz Packs**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
+- **All Pre-Roll Packs**: `/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png`
+- **Sour Diesel Infused Packs**: `/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png`
+- **Purple Koolaid Infused Packs**: `/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png`
+- **Sour Lemon Diesel Packs**: `/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png`
+- **Too Tall Packs**: `/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png`
+- **Runtz Packs**: `/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png`
 
 ## Variety Pack Images (3g flower + 3 pre-rolls)
 - **Indica Variety Pack**: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`
