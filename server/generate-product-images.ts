@@ -22,6 +22,7 @@ export const productImageUrls = {
 
   // Pre-roll packs
   'preroll-pack': '/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png',
+  'preroll-multi-pack': '/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png',
   
   // Variety packs
   'variety-pack': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format'
@@ -33,6 +34,14 @@ export function getProductImageUrl(productName: string, category: string): strin
   
   // Pre-rolls
   if (category === 'prerolls') {
+    // Check for multi-packs (x4, x5, x6, x7, x8, x9, x10)
+    if (name.includes('pack') && (name.includes('x4') || name.includes('x5') || name.includes('x6') || 
+        name.includes('x7') || name.includes('x8') || name.includes('x9') || name.includes('x10') ||
+        name.includes('4x') || name.includes('5x') || name.includes('6x') || 
+        name.includes('7x') || name.includes('8x') || name.includes('9x') || name.includes('10x'))) {
+      return productImageUrls['preroll-multi-pack'];
+    }
+    
     if (name.includes('sour diesel infused')) return productImageUrls['sour-diesel-infused'];
     if (name.includes('purple koolaid infused')) return productImageUrls['purple-koolaid-infused'];
     if (name.includes('sour lemon diesel')) return productImageUrls['sour-lemon-diesel'];
