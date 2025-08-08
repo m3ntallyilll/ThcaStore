@@ -33,13 +33,14 @@ The application utilizes a monorepo structure, ensuring clear separation of clie
 - **Shopping Cart**: Provides real-time cart management with persistent state and dynamic quantity updates.
 - **Admin Dashboard**: Enables CRUD operations for products, order management, user administration, and sales analytics.
 - **AI-Powered Blog Management System**: Full infrastructure supporting blog posts, categories, tags, and SEO, with AI content generation capabilities.
-- **Dual AI Assistant System**: Features distinct customer support and sales AI assistants, offering intelligent support and integrating with a knowledge base.
+- **Dual AI Assistant System**: Features distinct customer support and sales AI assistants, offering intelligent support and integrating with a knowledge base. Updated cart functionality to automatically redirect to checkout when items are added.
 - **State-Based Purchase Restrictions**: Implements a system to prevent orders from states where THCA products are prohibited.
 - **Referral System**: Manages unique code generation, database validation, and referral tracking.
 - **Viral Marketing System**: A complete arsenal of viral content tailored for platforms like TikTok, Instagram, Reddit, and Twitter, designed for automated deployment and viral spread.
 - **AI-Enhanced SEO System**: Leverages AI for automated metadata generation, intelligent internal link pyramids, schema markup automation, and comprehensive SEO health analysis.
 - **Dynamic Discount System**: Incorporates attention-grabbing popups with animated price slashes, countdown timers, rotating offers, and cart integration to display savings.
 - **Legal Disclaimer System**: Features an interactive multi-section modal for age verification, legal compliance, product safety warnings, and FDA disclaimers, with one-click acceptance and persistent storage.
+- **Social Sharing System**: Comprehensive social media integration with pot leaf logo branding across Facebook, Twitter, Reddit, WhatsApp, Telegram, and LinkedIn. Features floating share buttons with pulse animations and branded messaging.
 
 ### Data Flow
 - **Client-Server Communication**: Utilizes TanStack Query for API requests, JWT validation for secure communication, Drizzle ORM for database interactions, and JSON for responses.

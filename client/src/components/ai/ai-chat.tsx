@@ -373,6 +373,9 @@ How can I help you today? I can:
                   
                   // Also refresh the cart to ensure sync
                   await fetchCart();
+                  
+                  // Navigate to checkout like the checkout button functionality
+                  setLocation('/checkout');
                   queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
                   
                   toast({
