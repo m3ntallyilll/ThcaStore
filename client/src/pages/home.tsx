@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
-import { ArrowRight, CheckCircle, Truck, Headphones, Mail, Phone, MapPin, Send, Star, Zap, Shield, Award, Users, TrendingUp, Sparkles, Eye, Brain, Atom, Rocket, Diamond, Crown, Flame, Leaf } from 'lucide-react';
+import { ArrowRight, CheckCircle, Truck, Headphones, Mail, Phone, MapPin, Send, Star, Zap, Shield, Award, Users, TrendingUp, Sparkles, Eye, Brain, Atom, Rocket, Diamond, Crown, Flame, Leaf, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { apiRequest } from '@/lib/queryClient';
 import { SkipLinks } from '@/components/accessibility/skip-links';
 import { AIChat } from '@/components/ai/ai-chat';
 import { FloatingSocialShare } from '@/components/floating-social-share';
+import { AuthModal } from '@/components/auth/auth-modal';
+import { useAuth } from '@/hooks/use-auth';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -119,6 +121,8 @@ export default function Home() {
   
   const [isVisible, setIsVisible] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
   const [contactForm, setContactForm] = useState({
     firstName: '',
     lastName: '',
@@ -128,6 +132,7 @@ export default function Home() {
   });
   
   const { toast } = useToast();
+  const { user } = useAuth();
 
   // Advanced parallax transforms
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
@@ -213,6 +218,43 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="min-h-screen overflow-hidden">
+      {/* Quick Access Login Section - Top of Page */}
+      {!user && (
+        <motion.div 
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 bg-gradient-to-r from-emerald-600/90 to-teal-600/90 backdrop-blur-md border border-emerald-500/30 rounded-full px-8 py-3 shadow-2xl"
+        >
+          <div className="flex items-center gap-4">
+            <span className="text-white font-medium">Get Started:</span>
+            <Button
+              onClick={() => {
+                setAuthMode('login');
+                setAuthModalOpen(true);
+              }}
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 rounded-full"
+              data-testid="button-quick-login"
+            >
+              <User className="w-4 h-4 mr-2" />
+              Login
+            </Button>
+            <Button
+              onClick={() => {
+                setAuthMode('register');
+                setAuthModalOpen(true);
+              }}
+              size="sm"
+              className="bg-gold hover:bg-gold/80 text-black font-semibold rounded-full"
+              data-testid="button-quick-register"
+            >
+              Sign Up Free
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Revolutionary Hero Section */}
       <section className="relative h-screen overflow-hidden">
         {/* Multi-layered Background System */}
@@ -1103,6 +1145,14 @@ export default function Home() {
         title="Premium THCA Products | Mentally Chill - Lab-Tested Quality"
         description="Discover premium lab-tested THCA products with fast nationwide shipping. Quality cannabis products you can trust."
         hashtags={['THCA', 'Hemp', 'Cannabis', 'Premium', 'LabTested', 'MentallyChill']}
+      />
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        mode={authMode}
+        onSwitchMode={setAuthMode}
       />
     </div>
   );

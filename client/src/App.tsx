@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AIChat } from "@/components/ai/ai-chat";
 import { ReferralBanner } from "@/components/referral/referral-banner";
 import { LegalDisclaimer } from "@/components/legal-disclaimer";
+import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
 
@@ -104,6 +105,9 @@ function AppContent() {
           onDecline={() => window.location.href = 'https://google.com'}
         />
       )}
+      
+      {/* Cart Sidebar */}
+      <CartSidebar />
     </div>
   );
 }
