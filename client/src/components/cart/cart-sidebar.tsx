@@ -99,7 +99,7 @@ export function CartSidebar() {
                 <div>
                   <h3 className="text-xl font-semibold">Shopping Cart</h3>
                   {items.length > 0 && (
-                    <p className="text-sm text-gray-400 mt-1">Ready to checkout? →</p>
+                    <p className="text-sm text-emerald-400 mt-1 font-medium animate-pulse">✨ Ready to checkout? Scroll down! ✨</p>
                   )}
                 </div>
                 <Button variant="ghost" size="icon" onClick={toggleCart}>
@@ -231,17 +231,21 @@ export function CartSidebar() {
                     <span>Total:</span>
                     <span className="text-gold">${getTotal().toFixed(2)}</span>
                   </div>
-                  <Button
-                    onClick={handleCheckout}
-                    data-cart-checkout
-                    className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-gold/30 transition-all duration-300 flex items-center justify-center gap-2 animate-pulse"
-                  >
-                    <CreditCard className="w-5 h-5" />
-                    Checkout Now - ${getTotal().toFixed(2)}
-                  </Button>
-                  <p className="text-center text-xs text-gray-400 mt-2">
-                    🔒 Secure payment • 🚚 Free shipping • ⚡ Quick checkout
-                  </p>
+                  
+                  {/* Prominent checkout button with extra visual emphasis */}
+                  <div className="bg-gradient-to-r from-emerald-500/20 to-gold/20 p-4 rounded-xl border-2 border-gold/50">
+                    <Button
+                      onClick={handleCheckout}
+                      data-cart-checkout
+                      className="w-full bg-gradient-to-r from-gold to-gold-600 text-black py-6 rounded-xl font-bold text-xl hover:shadow-xl hover:shadow-gold/50 transition-all duration-300 flex items-center justify-center gap-3 animate-pulse hover:animate-none hover:scale-105"
+                    >
+                      <CreditCard className="w-6 h-6" />
+                      🛒 CHECKOUT NOW - ${getTotal().toFixed(2)}
+                    </Button>
+                    <p className="text-center text-sm text-emerald-300 mt-3 font-medium">
+                      🔒 Secure payment • 🚚 Free shipping • ⚡ 2-minute checkout
+                    </p>
+                  </div>
                 </div>
               </div>
             )}

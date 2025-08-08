@@ -67,6 +67,9 @@ export const useCart = create<CartState>((set, get) => ({
       // Update cart items immediately for better UX
       await get().fetchCart();
       
+      // Auto-open cart sidebar to show checkout button
+      set({ isOpen: true });
+      
       return result;
     } catch (error) {
       console.error('Failed to add to cart:', error);
