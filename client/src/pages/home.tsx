@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { SkipLinks } from '@/components/accessibility/skip-links';
 import { AIChat } from '@/components/ai/ai-chat';
+import { FloatingSocialShare } from '@/components/floating-social-share';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -1096,6 +1097,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* Floating Social Share with Pot Leaf Logo */}
+      <FloatingSocialShare 
+        title="Premium THCA Products | Mentally Chill - Lab-Tested Quality"
+        description="Discover premium lab-tested THCA products with fast nationwide shipping. Quality cannabis products you can trust."
+        hashtags={['THCA', 'Hemp', 'Cannabis', 'Premium', 'LabTested', 'MentallyChill']}
+      />
     </div>
   );
 }

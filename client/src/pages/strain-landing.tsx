@@ -6,6 +6,7 @@ import { Leaf, Star, Shield, Truck, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import StrainCollection from './strain-collection';
+import { StrainSocialShare } from '@/components/social-share';
 
 // Comprehensive strain keyword data from our keyword system
 const strainKeywordData = {
@@ -384,6 +385,9 @@ export default function StrainLanding() {
       ) : (
         <StrainCollection strainType={strainType} />
       )}
+      
+      {/* Floating Social Share */}
+      <StrainSocialShare strainType={strainType} />
     </>
   );
 }

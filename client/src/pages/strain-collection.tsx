@@ -6,6 +6,7 @@ import { Star, Leaf, Clock, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ProductCard } from '@/components/product/product-card';
+import { SocialShare } from '@/components/social-share';
 import type { Product } from '@shared/schema';
 
 interface StrainCollectionProps {

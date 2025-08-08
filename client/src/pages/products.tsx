@@ -24,6 +24,7 @@ import { ProductModal } from '@/components/product/product-modal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SkipLinks } from '@/components/accessibility/skip-links';
 import { AIChat } from '@/components/ai/ai-chat';
+import { SocialShare } from '@/components/social-share';
 import type { Product } from '@shared/schema';
 
 const categories = [
@@ -276,6 +277,16 @@ export default function Products() {
             <p className="text-xl max-w-3xl mx-auto mb-8 text-[#4cff4c]">
               Expertly crafted THCA products designed to elevate your experience with uncompromising quality and purity
             </p>
+            
+            {/* Social Share Section */}
+            <div className="flex justify-center items-center gap-4 mb-8">
+              <SocialShare
+                title="Premium THCA Products - Lab-Tested Quality"
+                description="Discover our premium collection of THCA products. Lab-tested quality with fast shipping nationwide."
+                hashtags={['THCA', 'Hemp', 'Cannabis', 'Premium', 'LabTested', 'Quality']}
+                className="bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600"
+              />
+            </div>
           </motion.div>
         </div>
       </section>

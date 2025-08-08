@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { User, ShoppingCart, Settings, Menu, X, LogOut } from 'lucide-react';
+import { User, ShoppingCart, Settings, Menu, X, LogOut, Leaf } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
@@ -28,8 +28,9 @@ export function Navigation() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <Link href="/" className="text-2xl font-display font-bold text-glow-green-400 glow-effect">
-                THCA Store
+              <Link href="/" className="flex items-center space-x-2 text-2xl font-display font-bold text-glow-green-400 glow-effect">
+                <Leaf className="w-8 h-8 text-green-400" />
+                <span>THCA Store</span>
               </Link>
               <div className="hidden md:flex space-x-6">
                 <Link href="/products" className="hover:text-glow-green-400 transition-colors duration-300">
