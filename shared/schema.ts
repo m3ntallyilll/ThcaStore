@@ -76,6 +76,11 @@ export const orders = pgTable("orders", {
   paymentStatus: text("payment_status").notNull().default("pending"),
   storeCreditUsed: decimal("store_credit_used", { precision: 10, scale: 2 }).default("0.00"),
   
+  // Promo Code & Affiliate
+  promoCodeUsed: text("promo_code_used"),
+  promoDiscount: decimal("promo_discount", { precision: 10, scale: 2 }).default("0.00"),
+  affiliateCode: text("affiliate_code"), // Track which affiliate referred this order
+  
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -370,6 +375,70 @@ export const blogPosts = pgTable('blog_posts', {
   updatedAt: timestamp('updated_at').defaultNow().notNull()
 });
 
+// Affiliate Program Tables
+export const affiliates = pgTable('affiliates', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull().unique(),
+  affiliateCode: text('affiliate_code').notNull().unique(), // For URL tracking: ?ref=CODE
+  commissionRate: decimal('commission_rate', { precision: 5, scale: 2 }).default('10.00'), // Percentage
+  totalEarnings: decimal('total_earnings', { precision: 12, scale: 2 }).default('0.00'),
+  availableBalance: decimal('available_balance', { precision: 12, scale: 2 }).default('0.00'),
+  totalClicks: integer('total_clicks').default(0),
+  totalConversions: integer('total_conversions').default(0),
+  isActive: boolean('is_active').default(true),
+  customUrl: text('custom_url'), // Optional custom landing page
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const affiliateClicks = pgTable('affiliate_clicks', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  affiliateId: varchar('affiliate_id').references(() => affiliates.id).notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  referrerUrl: text('referrer_url'),
+  landingPage: text('landing_page'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const affiliateConversions = pgTable('affiliate_conversions', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  affiliateId: varchar('affiliate_id').references(() => affiliates.id).notNull(),
+  orderId: varchar('order_id').references(() => orders.id).notNull().unique(),
+  orderTotal: decimal('order_total', { precision: 10, scale: 2 }).notNull(),
+  commissionAmount: decimal('commission_amount', { precision: 10, scale: 2 }).notNull(),
+  status: text('status', { enum: ['pending', 'approved', 'paid', 'cancelled'] }).default('pending'),
+  paidAt: timestamp('paid_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Promo Codes Table (synced with affiliates)
+export const promoCodes = pgTable('promo_codes', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  code: text('code').notNull().unique(),
+  affiliateId: varchar('affiliate_id').references(() => affiliates.id), // Optional link to affiliate
+  discountType: text('discount_type', { enum: ['percentage', 'fixed', 'free_shipping'] }).notNull(),
+  discountValue: decimal('discount_value', { precision: 10, scale: 2 }).notNull(),
+  minPurchase: decimal('min_purchase', { precision: 10, scale: 2 }).default('0.00'),
+  maxUses: integer('max_uses'),
+  currentUses: integer('current_uses').default(0),
+  isActive: boolean('is_active').default(true),
+  expiresAt: timestamp('expires_at'),
+  applicableCategories: text('applicable_categories').array(),
+  description: text('description'),
+  createdBy: varchar('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const promoCodeUsage = pgTable('promo_code_usage', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  promoCodeId: varchar('promo_code_id').references(() => promoCodes.id).notNull(),
+  orderId: varchar('order_id').references(() => orders.id).notNull(),
+  userId: varchar('user_id').references(() => users.id),
+  discountAmount: decimal('discount_amount', { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Relations
 export const rewardTiersRelations = relations(rewardTiers, ({ many }) => ({
   userRewards: many(userRewards),
@@ -399,6 +468,35 @@ export const aiInteractionsRelations = relations(aiInteractions, ({ one }) => ({
 
 export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
   author: one(users, { fields: [blogPosts.authorId], references: [users.id] }),
+}));
+
+// Affiliate Relations
+export const affiliatesRelations = relations(affiliates, ({ one, many }) => ({
+  user: one(users, { fields: [affiliates.userId], references: [users.id] }),
+  clicks: many(affiliateClicks),
+  conversions: many(affiliateConversions),
+  promoCodes: many(promoCodes),
+}));
+
+export const affiliateClicksRelations = relations(affiliateClicks, ({ one }) => ({
+  affiliate: one(affiliates, { fields: [affiliateClicks.affiliateId], references: [affiliates.id] }),
+}));
+
+export const affiliateConversionsRelations = relations(affiliateConversions, ({ one }) => ({
+  affiliate: one(affiliates, { fields: [affiliateConversions.affiliateId], references: [affiliates.id] }),
+  order: one(orders, { fields: [affiliateConversions.orderId], references: [orders.id] }),
+}));
+
+export const promoCodesRelations = relations(promoCodes, ({ one, many }) => ({
+  affiliate: one(affiliates, { fields: [promoCodes.affiliateId], references: [affiliates.id] }),
+  createdByUser: one(users, { fields: [promoCodes.createdBy], references: [users.id] }),
+  usage: many(promoCodeUsage),
+}));
+
+export const promoCodeUsageRelations = relations(promoCodeUsage, ({ one }) => ({
+  promoCode: one(promoCodes, { fields: [promoCodeUsage.promoCodeId], references: [promoCodes.id] }),
+  order: one(orders, { fields: [promoCodeUsage.orderId], references: [orders.id] }),
+  user: one(users, { fields: [promoCodeUsage.userId], references: [users.id] }),
 }));
 
 // AI Memory Relations
@@ -676,27 +774,6 @@ export interface AuthUser {
   };
   referralCode?: string;
 }
-
-// Promo Code System
-export const promoCodes = pgTable("promo_codes", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  code: text("code").notNull().unique(),
-  discountType: text("discount_type").notNull(), // 'percentage' | 'fixed' | 'free_shipping'
-  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
-  minPurchase: decimal("min_purchase", { precision: 10, scale: 2 }).default("0.00"),
-  maxUses: integer("max_uses"), // null = unlimited
-  currentUses: integer("current_uses").default(0),
-  isActive: boolean("is_active").default(true),
-  expiresAt: timestamp("expires_at"),
-  applicableCategories: jsonb("applicable_categories").$type<string[]>().default([]),
-  description: text("description"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-export const insertPromoCodeSchema = createInsertSchema(promoCodes);
-export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
-export type PromoCode = typeof promoCodes.$inferSelect;
 
 export const insertStoreCreditTransactionSchema = createInsertSchema(storeCreditTransactions).omit({
   id: true,

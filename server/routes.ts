@@ -5,6 +5,7 @@ import path from "path";
 import { storage } from "./storage";
 import { aiAssistant } from "./ai-assistant";
 import Stripe from "stripe";
+import affiliateRoutes from "./routes/affiliate";
 
 // Initialize Stripe in production mode
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -245,6 +246,9 @@ const requireAdmin = (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Affiliate routes
+  app.use('/api/affiliate', affiliateRoutes);
+  
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -2746,7 +2750,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
 
     try {
-      const { items, storeCreditUsed = 0 } = req.body;
+      const { items, storeCreditUsed = 0, promoCode, promoDiscount = 0, affiliateCode } = req.body;
       const userId = req.user?.id;
       
       // If store credit is being used, validate the user's balance
@@ -2808,6 +2812,21 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         });
       }
 
+      // If using promo code, add a discount line item
+      if (promoDiscount > 0 && promoCode) {
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `Promo Code: ${promoCode}`,
+              description: 'Promotional discount applied',
+            },
+            unit_amount: -Math.round(promoDiscount * 100), // Negative amount for discount
+          },
+          quantity: 1,
+        });
+      }
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: lineItems,
@@ -2827,6 +2846,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           environment: process.env.NODE_ENV || 'production',
           userId: userId || '',
           storeCreditUsed: storeCreditUsed.toString(),
+          promoCode: promoCode || '',
+          promoDiscount: promoDiscount?.toString() || '0',
+          affiliateCode: affiliateCode || '',
         },
         expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
         allow_promotion_codes: true,
@@ -2893,6 +2915,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         // Process store credit deduction if used
         const storeCreditUsed = parseFloat(session.metadata.storeCreditUsed || '0');
         const userId = session.metadata.userId;
+        const promoCode = session.metadata.promoCode;
+        const affiliateCode = session.metadata.affiliateCode;
+        const orderTotal = session.amount_total / 100; // Convert from cents
         
         if (storeCreditUsed > 0 && userId) {
           try {

@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
-import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy, Coins } from 'lucide-react';
+import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy, Coins, Tag, CheckCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
 export default function Checkout() {
@@ -13,6 +14,9 @@ export default function Checkout() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [usedStoreCredit, setUsedStoreCredit] = useState(0);
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<any>(null);
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
   
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
   
@@ -23,7 +27,55 @@ export default function Checkout() {
   
   const availableStoreCredit = storeCreditBalance?.balance || 0;
   const maxStoreCreditUsable = Math.min(availableStoreCredit, subtotal);
-  const total = subtotal - usedStoreCredit;
+  const promoDiscount = appliedPromo?.discountAmount ? parseFloat(appliedPromo.discountAmount) : 0;
+  const total = subtotal - usedStoreCredit - promoDiscount;
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      toast({
+        title: "Enter Promo Code",
+        description: "Please enter a promo code to apply.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsValidatingPromo(true);
+    try {
+      const result = await apiRequest("/api/affiliate/validate-promo", {
+        method: "POST",
+        body: {
+          code: promoCode.trim(),
+          subtotal: subtotal
+        }
+      });
+
+      if (result.valid) {
+        setAppliedPromo(result);
+        toast({
+          title: "Promo Applied!",
+          description: `${result.discountType === 'percentage' ? result.discountValue + '% off' : '$' + result.discountValue + ' off'} - You saved $${result.discountAmount}!`,
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Invalid Promo Code",
+        description: error.message || "The promo code entered is not valid.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsValidatingPromo(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    toast({
+      title: "Promo Removed",
+      description: "The promo code has been removed.",
+    });
+  };
 
   const handleCheckout = async () => {
     if (items.length === 0) {
@@ -38,11 +90,20 @@ export default function Checkout() {
     setIsLoading(true);
 
     try {
+      // Get affiliate code from cookie if exists
+      const affiliateCode = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('affiliate_ref='))
+        ?.split('=')[1];
+
       const response = await apiRequest("/api/create-checkout-session", {
         method: "POST",
         body: { 
           items,
-          storeCreditUsed: usedStoreCredit 
+          storeCreditUsed: usedStoreCredit,
+          promoCode: appliedPromo?.promo?.code,
+          promoDiscount: promoDiscount,
+          affiliateCode: affiliateCode
         }
       });
 
@@ -114,6 +175,67 @@ export default function Checkout() {
                   <span className="text-white">${subtotal.toFixed(2)}</span>
                 </div>
                 
+                {/* Promo Code Section */}
+                <div className="bg-purple-500/20 rounded-lg p-3 mb-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Tag className="w-4 h-4 text-purple-300" />
+                    <span className="text-white/80 text-sm">Have a promo code?</span>
+                  </div>
+                  {!appliedPromo ? (
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter promo code"
+                        value={promoCode}
+                        onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                        disabled={isValidatingPromo}
+                      />
+                      <Button
+                        onClick={handleApplyPromo}
+                        disabled={isValidatingPromo || !promoCode.trim()}
+                        className="bg-purple-600 hover:bg-purple-700"
+                      >
+                        {isValidatingPromo ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          'Apply'
+                        )}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between bg-green-500/20 rounded p-2">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="w-4 h-4 text-green-400" />
+                        <span className="text-green-400 font-medium">{appliedPromo.promo.code}</span>
+                        <span className="text-white/70 text-sm">
+                          ({appliedPromo.discountType === 'percentage' ? 
+                            `${appliedPromo.discountValue}% off` : 
+                            `$${appliedPromo.discountValue} off`})
+                        </span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={handleRemovePromo}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Promo Discount Display */}
+                {appliedPromo && (
+                  <div className="flex justify-between items-center mb-2 text-green-400">
+                    <span className="flex items-center gap-1">
+                      <Tag className="w-4 h-4" />
+                      Promo Discount:
+                    </span>
+                    <span>-${promoDiscount.toFixed(2)}</span>
+                  </div>
+                )}
+
                 {/* Store Credit Section */}
                 {availableStoreCredit > 0 && (
                   <div className="bg-indigo-500/20 rounded-lg p-3 mb-2">

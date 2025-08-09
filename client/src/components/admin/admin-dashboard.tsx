@@ -15,7 +15,8 @@ import {
   CheckCircle,
   AlertCircle,
   Search,
-  Upload
+  Upload,
+  Link
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,6 +37,7 @@ import { AISEOManager } from './ai-seo-manager';
 import BulkProductGenerator from './bulk-product-generator';
 import { ProductVariantManager } from './product-variant-manager';
 import { PromoCodeManager } from './promo-code-manager';
+import AffiliateDashboard from './affiliate-dashboard';
 
 interface OrderWithDetails {
   id: string;
@@ -838,6 +840,16 @@ export function AdminDashboard() {
                   Promo Codes
                 </Button>
               </li>
+              <li>
+                <Button
+                  variant={activeSection === 'affiliate' ? 'secondary' : 'ghost'}
+                  className="w-full justify-start bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400"
+                  onClick={() => setActiveSection('affiliate')}
+                >
+                  <Link className="w-4 h-4 mr-3" />
+                  Affiliate Program
+                </Button>
+              </li>
             </ul>
           </nav>
         </div>
@@ -854,6 +866,7 @@ export function AdminDashboard() {
               {activeSection === 'ai-deals' && 'AI Deals Generator'}
               {activeSection === 'ai-seo' && 'AI SEO Enhancement Center'}
               {activeSection === 'promo-codes' && 'Promo Code Manager'}
+              {activeSection === 'affiliate' && 'Affiliate Program Management'}
             </h1>
           </div>
 
@@ -1391,6 +1404,7 @@ export function AdminDashboard() {
           {/* AI SEO Enhancement Section */}
           {activeSection === 'ai-seo' && <AISEOManager />}
           {activeSection === 'promo-codes' && <PromoCodeManager />}
+          {activeSection === 'affiliate' && <AffiliateDashboard />}
         </div>
       </div>
 
