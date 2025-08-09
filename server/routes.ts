@@ -15,11 +15,14 @@ const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SEC
 }) : null;
 
 // Ensure production mode for Stripe
+const STRIPE_KEY_PREFIX = process.env.STRIPE_SECRET_KEY?.substring(0, 8);
+console.log(`🔑 Stripe key detected: ${STRIPE_KEY_PREFIX}...`);
 const STRIPE_MODE = process.env.STRIPE_SECRET_KEY?.startsWith('sk_live_') ? 'production' : 'test';
 if (STRIPE_MODE === 'test') {
   console.warn('⚠️ Stripe is in TEST MODE - Switch to live keys for production');
 } else {
-  console.log('✅ Stripe is in PRODUCTION MODE');
+  console.log('🚀 Stripe is in LIVE PRODUCTION MODE - Real payments enabled');
+  console.log('💳 Live payment processing activated');
 }
 import { 
   insertUserSchema, 
