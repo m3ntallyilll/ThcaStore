@@ -2779,7 +2779,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         billingZip: '',
         billingPhone: '',
         storeCreditUsed: storeCreditUsed.toFixed(2),
-        promoCode: promoCode || undefined,
+        promoCodeUsed: promoCode || null,
         promoDiscount: promoDiscount.toFixed(2),
         affiliateCode: affiliateCode || undefined,
         productNames: productNames,
