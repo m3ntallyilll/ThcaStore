@@ -7,7 +7,7 @@ import { aiAssistant } from "./ai-assistant";
 import affiliateRoutes from "./routes/affiliate";
 
 // Cash App Pay Configuration
-const CASH_APP_CASHTAG = process.env.CASH_APP_CASHTAG || 'ThcaStore';
+const CASH_APP_CASHTAG = process.env.CASH_APP_CASHTAG || 'iLLAithegptstore';
 console.log(`💚 Cash App Pay enabled with cashtag: $${CASH_APP_CASHTAG}`);
 console.log('💳 Direct payment links activated - THCA sales supported');
 import { 
