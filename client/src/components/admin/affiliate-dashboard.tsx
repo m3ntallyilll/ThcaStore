@@ -24,8 +24,8 @@ export default function AffiliateDashboard() {
     description: '',
   });
 
-  // Fetch affiliate data
-  const { data: affiliateData, isLoading } = useQuery({
+  // Fetch referral data
+  const { data: referralData, isLoading } = useQuery({
     queryKey: ['/api/affiliate/my-affiliate'],
   });
 
@@ -64,8 +64,8 @@ export default function AffiliateDashboard() {
   });
 
   const handleCopyLink = () => {
-    if (affiliateData?.referralLink) {
-      navigator.clipboard.writeText(affiliateData.referralLink);
+    if (referralData?.referralLink) {
+      navigator.clipboard.writeText(referralData.referralLink);
       toast({
         title: 'Link Copied!',
         description: 'Your referral link has been copied to clipboard.',
@@ -100,7 +100,7 @@ export default function AffiliateDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-white">Affiliate Dashboard</h2>
+        <h2 className="text-3xl font-bold text-white">Referral Program</h2>
         <div className="flex gap-2">
           <Button
             onClick={handleCopyLink}
@@ -231,10 +231,10 @@ export default function AffiliateDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              ${affiliateData?.totalEarnings || '0.00'}
+              ${referralData?.totalEarnings || '0.00'}
             </div>
             <p className="text-xs text-gray-500">
-              {affiliateData?.commissionRate}% commission rate
+              {referralData?.commissionRate}% commission rate
             </p>
           </CardContent>
         </Card>
@@ -246,7 +246,7 @@ export default function AffiliateDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              ${affiliateData?.availableBalance || '0.00'}
+              ${referralData?.availableBalance || '0.00'}
             </div>
             <p className="text-xs text-gray-500">Ready for payout</p>
           </CardContent>
@@ -259,7 +259,7 @@ export default function AffiliateDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {affiliateData?.totalClicks || 0}
+              {referralData?.totalClicks || 0}
             </div>
             <p className="text-xs text-gray-500">Link visits</p>
           </CardContent>
@@ -272,11 +272,11 @@ export default function AffiliateDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {affiliateData?.totalConversions || 0}
+              {referralData?.totalConversions || 0}
             </div>
             <p className="text-xs text-gray-500">
-              {affiliateData?.totalClicks > 0
-                ? `${((affiliateData?.totalConversions / affiliateData?.totalClicks) * 100).toFixed(1)}% rate`
+              {referralData?.totalClicks > 0
+                ? `${((referralData?.totalConversions / referralData?.totalClicks) * 100).toFixed(1)}% rate`
                 : 'No clicks yet'}
             </p>
           </CardContent>
@@ -294,7 +294,7 @@ export default function AffiliateDashboard() {
         <CardContent>
           <div className="flex gap-2">
             <Input
-              value={affiliateData?.referralLink || ''}
+              value={referralData?.referralLink || ''}
               readOnly
               className="bg-gray-800 border-gray-700 text-white"
             />
@@ -303,13 +303,13 @@ export default function AffiliateDashboard() {
             </Button>
           </div>
           <p className="text-sm text-gray-400 mt-2">
-            Share this link to earn {affiliateData?.commissionRate}% commission on referred sales
+            Share this link to help grow our app and earn {referralData?.commissionRate}% commission on referred sales
           </p>
         </CardContent>
       </Card>
 
       {/* Promo Codes Section */}
-      {affiliateData?.promoCodes?.length > 0 && (
+      {referralData?.promoCodes?.length > 0 && (
         <Card className="bg-gray-900 border-gray-800">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
@@ -319,7 +319,7 @@ export default function AffiliateDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {affiliateData.promoCodes.map((promo: any) => (
+              {referralData.promoCodes.map((promo: any) => (
                 <div
                   key={promo.id}
                   className="flex items-center justify-between p-3 bg-gray-800 rounded-lg"

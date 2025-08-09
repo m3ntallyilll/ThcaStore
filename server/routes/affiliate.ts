@@ -7,19 +7,19 @@ import type { Request, Response, NextFunction } from 'express';
 
 const router = Router();
 
-// Generate unique affiliate code
-function generateAffiliateCode(username: string): string {
+// Generate unique referral code for user referral program
+function generateReferralCode(username: string): string {
   const random = crypto.randomBytes(3).toString('hex').toUpperCase();
   return `${username.slice(0, 3).toUpperCase()}${random}`;
 }
 
-// Track affiliate clicks via referral links
+// Track referral clicks via user referral links
 router.get('/track/:affiliateCode', async (req, res) => {
   try {
     const { affiliateCode } = req.params;
     const { redirect = '/' } = req.query;
     
-    // Find affiliate
+    // Find user's referral code
     const [affiliate] = await db
       .select()
       .from(affiliates)
@@ -61,7 +61,7 @@ router.get('/track/:affiliateCode', async (req, res) => {
   }
 });
 
-// Get or create affiliate account for logged-in user
+// Get or create referral account for logged-in user (user referral program)
 router.get('/my-affiliate', async (req: any, res) => {
   try {
     const userId = req.user?.claims?.sub;
@@ -69,7 +69,7 @@ router.get('/my-affiliate', async (req: any, res) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    // Check if user already has an affiliate account
+    // Check if user already has a referral account
     let [affiliate] = await db
       .select()
       .from(affiliates)
