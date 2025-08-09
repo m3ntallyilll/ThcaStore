@@ -4,27 +4,30 @@ import { createServer, type Server } from "http";
 import path from "path";
 import { storage } from "./storage";
 import { aiAssistant } from "./ai-assistant";
-import Stripe from "stripe";
+import { Client, Environment } from 'square';
 import affiliateRoutes from "./routes/affiliate";
 
-// Initialize Stripe in production mode
-if (!process.env.STRIPE_SECRET_KEY) {
-  console.error('⚠️ STRIPE_SECRET_KEY not found - Payment processing will not work');
+// Initialize Square Client for Cash App Pay
+if (!process.env.SQUARE_ACCESS_TOKEN) {
+  console.error('⚠️ SQUARE_ACCESS_TOKEN not found - Payment processing will not work');
 }
 
-const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-07-30.basil",
+if (!process.env.SQUARE_APPLICATION_ID) {
+  console.error('⚠️ SQUARE_APPLICATION_ID not found - Payment processing will not work');
+}
+
+const squareClient = process.env.SQUARE_ACCESS_TOKEN ? new Client({
+  accessToken: process.env.SQUARE_ACCESS_TOKEN,
+  environment: process.env.NODE_ENV === 'production' ? Environment.Production : Environment.Sandbox
 }) : null;
 
-// Ensure production mode for Stripe
-const STRIPE_KEY_PREFIX = process.env.STRIPE_SECRET_KEY?.substring(0, 8);
-console.log(`🔑 Stripe key detected: ${STRIPE_KEY_PREFIX}...`);
-const STRIPE_MODE = process.env.STRIPE_SECRET_KEY?.startsWith('sk_live_') ? 'production' : 'test';
-if (STRIPE_MODE === 'test') {
-  console.warn('⚠️ Stripe is in TEST MODE - Switch to live keys for production');
+// Ensure proper environment for Square
+const SQUARE_MODE = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
+if (SQUARE_MODE === 'sandbox') {
+  console.warn('⚠️ Square is in SANDBOX MODE - Switch to production for live payments');
 } else {
-  console.log('🚀 Stripe is in LIVE PRODUCTION MODE - Real payments enabled');
-  console.log('💳 Live payment processing activated');
+  console.log('🚀 Square is in PRODUCTION MODE - Real payments enabled');
+  console.log('💳 Cash App Pay processing activated');
 }
 import { 
   insertUserSchema, 
