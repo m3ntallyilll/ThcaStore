@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   isAdmin: boolean("is_admin").default(false),
+  storeCredit: decimal("store_credit", { precision: 10, scale: 2 }).notNull().default("0.00"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -73,6 +74,7 @@ export const orders = pgTable("orders", {
   // Payment
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   paymentStatus: text("payment_status").notNull().default("pending"),
+  storeCreditUsed: decimal("store_credit_used", { precision: 10, scale: 2 }).default("0.00"),
   
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -418,6 +420,19 @@ export const aiContextMemoryRelations = relations(aiContextMemory, ({ one }) => 
   user: one(users, { fields: [aiContextMemory.userId], references: [users.id] }),
 }));
 
+// Store Credit Transactions
+export const storeCreditTransactions = pgTable('store_credit_transactions', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id).notNull(),
+  type: text('type', { enum: ['earned', 'spent', 'points_redeemed', 'referral_bonus'] }).notNull(),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  description: text('description').notNull(),
+  orderId: varchar('order_id').references(() => orders.id),
+  referralId: varchar('referral_id').references(() => referralProgram.id),
+  pointsUsed: integer('points_used'), // For points redemption
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 // Daily Sales Promotions
 export const dailyPromotions = pgTable('daily_promotions', {
   id: text('id').primaryKey().default(sql`gen_random_uuid()`),
@@ -682,5 +697,12 @@ export const promoCodes = pgTable("promo_codes", {
 export const insertPromoCodeSchema = createInsertSchema(promoCodes);
 export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
 export type PromoCode = typeof promoCodes.$inferSelect;
+
+export const insertStoreCreditTransactionSchema = createInsertSchema(storeCreditTransactions).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertStoreCreditTransaction = z.infer<typeof insertStoreCreditTransactionSchema>;
+export type StoreCreditTransaction = typeof storeCreditTransactions.$inferSelect;
 
 

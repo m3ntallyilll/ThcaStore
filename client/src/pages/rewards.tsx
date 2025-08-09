@@ -38,6 +38,7 @@ interface UserRewards {
   totalEarned: number;
   totalSpent: number;
   streak: number;
+  storeCredit: number;
   badges: Badge[];
   achievements: Achievement[];
   availableRewards: Reward[];
@@ -69,7 +70,7 @@ interface Reward {
   name: string;
   description: string;
   pointsCost: number;
-  type: 'discount' | 'product' | 'shipping' | 'exclusive';
+  type: 'discount' | 'product' | 'shipping' | 'exclusive' | 'store_credit';
   value: string;
   available: boolean;
   expiresAt?: string;
@@ -139,11 +140,17 @@ export default function Rewards() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
+  const [storeCreditAmount, setStoreCreditAmount] = useState(100);
 
   // Fetch user rewards data
   const { data: userRewards, isLoading } = useQuery<UserRewards>({
     queryKey: ['/api/rewards/user'],
     retry: false,
+  });
+
+  // Store credit balance
+  const { data: storeCreditBalance } = useQuery({
+    queryKey: ['/api/store-credit/balance'],
   });
 
   // Redeem reward mutation
@@ -169,6 +176,31 @@ export default function Rewards() {
         variant: "destructive",
       });
     }
+  });
+
+  // Store credit redemption mutation
+  const storeCreditMutation = useMutation({
+    mutationFn: async (pointsToRedeem: number) => {
+      return await apiRequest('/api/rewards/redeem-store-credit', {
+        method: 'POST',
+        body: { pointsToRedeem }
+      });
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Store Credit Redeemed!",
+        description: `Successfully converted ${storeCreditAmount} points to $${(storeCreditAmount / 100).toFixed(2)} store credit.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/rewards/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/store-credit/balance'] });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Redemption Failed",
+        description: error.message || "Something went wrong",
+        variant: "destructive",
+      });
+    },
   });
 
   // Claim achievement reward
@@ -220,7 +252,7 @@ export default function Rewards() {
 
         {/* User Stats Overview */}
         {userRewards && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             {/* Points Balance */}
             <Card className="bg-gradient-to-br from-green-600 to-emerald-700 border-0 text-white">
               <CardContent className="p-6">
@@ -271,14 +303,27 @@ export default function Rewards() {
                 <p className="text-white/80 text-sm">Day Streak</p>
               </CardContent>
             </Card>
+
+            {/* Store Credit Balance */}
+            <Card className="bg-gradient-to-br from-indigo-600 to-purple-700 border-0 text-white">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <Coins className="w-8 h-8" />
+                  <Badge className="bg-white/20">Available</Badge>
+                </div>
+                <p className="text-3xl font-bold">${storeCreditBalance?.balance?.toFixed(2) || '0.00'}</p>
+                <p className="text-white/80 text-sm">Store Credit</p>
+              </CardContent>
+            </Card>
           </div>
         )}
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="earn" className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full max-w-2xl mx-auto">
+          <TabsList className="grid grid-cols-6 w-full max-w-3xl mx-auto">
             <TabsTrigger value="earn">Earn Points</TabsTrigger>
             <TabsTrigger value="rewards">Rewards</TabsTrigger>
+            <TabsTrigger value="credit">Store Credit</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
             <TabsTrigger value="badges">Badges</TabsTrigger>
             <TabsTrigger value="history">History</TabsTrigger>
@@ -432,6 +477,123 @@ export default function Rewards() {
                       </CardContent>
                     </Card>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Store Credit Tab */}
+          <TabsContent value="credit" className="space-y-6">
+            <Card className="bg-white/10 backdrop-blur-md border-white/20">
+              <CardHeader>
+                <CardTitle className="text-white text-2xl flex items-center gap-2">
+                  <Coins className="w-6 h-6 text-gold" />
+                  Store Credit
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Current Balance */}
+                <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-lg p-6">
+                  <div className="text-center">
+                    <h3 className="text-white text-lg mb-2">Current Store Credit Balance</h3>
+                    <div className="text-4xl font-bold text-white mb-2">
+                      ${storeCreditBalance?.balance?.toFixed(2) || '0.00'}
+                    </div>
+                    <p className="text-white/80 text-sm">Available for purchases</p>
+                  </div>
+                </div>
+
+                {/* Conversion Options */}
+                <div>
+                  <h3 className="text-gold font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    Convert Points to Store Credit
+                  </h3>
+                  <div className="bg-white/5 rounded-lg p-4 mb-4">
+                    <div className="text-white text-sm mb-3">
+                      <strong>Conversion Rate:</strong> 100 points = $1.00 store credit
+                    </div>
+                    <div className="text-white/80 text-sm mb-4">
+                      You currently have {userRewards?.points || 0} points available to convert
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      {/* Preset amounts */}
+                      <Button
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-16"
+                        onClick={() => setStoreCreditAmount(100)}
+                        disabled={!userRewards || userRewards.points < 100}
+                      >
+                        <div className="text-center">
+                          <div className="font-bold">100 points</div>
+                          <div className="text-sm text-white/80">= $1.00</div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-16"
+                        onClick={() => setStoreCreditAmount(500)}
+                        disabled={!userRewards || userRewards.points < 500}
+                      >
+                        <div className="text-center">
+                          <div className="font-bold">500 points</div>
+                          <div className="text-sm text-white/80">= $5.00</div>
+                        </div>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20 h-16"
+                        onClick={() => setStoreCreditAmount(1000)}
+                        disabled={!userRewards || userRewards.points < 1000}
+                      >
+                        <div className="text-center">
+                          <div className="font-bold">1000 points</div>
+                          <div className="text-sm text-white/80">= $10.00</div>
+                        </div>
+                      </Button>
+                    </div>
+
+                    {/* Convert Button */}
+                    <div className="flex items-center gap-3">
+                      <Button
+                        className="bg-gold text-black hover:bg-gold-600 flex-1"
+                        onClick={() => storeCreditMutation.mutate(storeCreditAmount)}
+                        disabled={storeCreditMutation.isPending || !userRewards || userRewards.points < storeCreditAmount}
+                      >
+                        {storeCreditMutation.isPending ? (
+                          "Converting..."
+                        ) : (
+                          `Convert ${storeCreditAmount} points to $${(storeCreditAmount / 100).toFixed(2)}`
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Benefits section */}
+                  <div className="bg-white/5 rounded-lg p-4">
+                    <h4 className="text-white font-semibold mb-3">Store Credit Benefits:</h4>
+                    <div className="space-y-2 text-white/80 text-sm">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span>No expiration date - use anytime</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span>Can be combined with other discounts</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span>Applied automatically at checkout</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-400" />
+                        <span>Better value than product rewards</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

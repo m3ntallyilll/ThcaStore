@@ -1,18 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
-import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy } from 'lucide-react';
+import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy, Coins } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 export default function Checkout() {
   const { items } = useCart();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [usedStoreCredit, setUsedStoreCredit] = useState(0);
   
-  const total = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
+  const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
+  
+  // Fetch store credit balance
+  const { data: storeCreditBalance } = useQuery({
+    queryKey: ['/api/store-credit/balance'],
+  });
+  
+  const availableStoreCredit = storeCreditBalance?.balance || 0;
+  const maxStoreCreditUsable = Math.min(availableStoreCredit, subtotal);
+  const total = subtotal - usedStoreCredit;
 
   const handleCheckout = async () => {
     if (items.length === 0) {
@@ -29,7 +40,10 @@ export default function Checkout() {
     try {
       const response = await apiRequest("/api/create-checkout-session", {
         method: "POST",
-        body: { items }
+        body: { 
+          items,
+          storeCreditUsed: usedStoreCredit 
+        }
       });
 
       // Redirect to Stripe's hosted checkout page
@@ -97,8 +111,52 @@ export default function Checkout() {
               <div className="border-t border-white/20 pt-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-white/80">Subtotal:</span>
-                  <span className="text-white">${total.toFixed(2)}</span>
+                  <span className="text-white">${subtotal.toFixed(2)}</span>
                 </div>
+                
+                {/* Store Credit Section */}
+                {availableStoreCredit > 0 && (
+                  <div className="bg-indigo-500/20 rounded-lg p-3 mb-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-white/80 flex items-center gap-1">
+                        <Coins className="w-4 h-4" />
+                        Store Credit Available:
+                      </span>
+                      <span className="text-green-400">${availableStoreCredit.toFixed(2)}</span>
+                    </div>
+                    
+                    {maxStoreCreditUsable > 0 && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setUsedStoreCredit(maxStoreCreditUsable)}
+                          className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                        >
+                          Apply All (${maxStoreCreditUsable.toFixed(2)})
+                        </Button>
+                        {usedStoreCredit > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setUsedStoreCredit(0)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            Remove
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {usedStoreCredit > 0 && (
+                      <div className="flex justify-between items-center mt-2 text-green-400">
+                        <span>Store Credit Applied:</span>
+                        <span>-${usedStoreCredit.toFixed(2)}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-white/80">Shipping:</span>
                   <span className="text-green-400">FREE</span>

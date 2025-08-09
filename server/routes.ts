@@ -2739,13 +2739,26 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
   // Stripe Payment Routes
   // Create Checkout Session for Stripe hosted checkout page
-  app.post("/api/create-checkout-session", async (req, res) => {
+  app.post("/api/create-checkout-session", authenticateToken, async (req, res) => {
     if (!stripe) {
       return res.status(500).json({ message: "Stripe not configured" });
     }
 
     try {
-      const { items } = req.body;
+      const { items, storeCreditUsed = 0 } = req.body;
+      const userId = req.user?.id;
+      
+      // If store credit is being used, validate the user's balance
+      if (storeCreditUsed > 0 && userId) {
+        const user = await storage.getUser(userId);
+        const userStoreCredit = parseFloat(user?.storeCredit || "0");
+        
+        if (storeCreditUsed > userStoreCredit) {
+          return res.status(400).json({ 
+            message: "Insufficient store credit balance" 
+          });
+        }
+      }
       
       // Convert cart items to Stripe line items
       const lineItems = items.map((item: any) => {
@@ -2775,6 +2788,25 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         };
       });
 
+      // Calculate total before store credit deduction
+      const subtotal = items.reduce((sum: number, item: any) => 
+        sum + (parseFloat(item.product.price) * item.quantity), 0);
+      
+      // If using store credit, add a discount line item
+      if (storeCreditUsed > 0) {
+        lineItems.push({
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Store Credit Discount',
+              description: 'Applied store credit to your order',
+            },
+            unit_amount: -Math.round(storeCreditUsed * 100), // Negative amount for discount
+          },
+          quantity: 1,
+        });
+      }
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: lineItems,
@@ -2791,7 +2823,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         metadata: {
           stripe_mode: STRIPE_MODE,
           created_at: new Date().toISOString(),
-          environment: process.env.NODE_ENV || 'production'
+          environment: process.env.NODE_ENV || 'production',
+          userId: userId || '',
+          storeCreditUsed: storeCreditUsed.toString(),
         },
         expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
         allow_promotion_codes: true,
@@ -2823,6 +2857,102 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     } catch (error: any) {
       console.error('Checkout session error:', error);
       res.status(500).json({ message: "Error creating checkout session: " + error.message });
+    }
+  });
+
+  // Stripe webhook handler for processing successful payments
+  app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), async (req, res) => {
+    if (!stripe) {
+      return res.status(500).json({ message: "Stripe not configured" });
+    }
+
+    let event;
+
+    try {
+      const signature = req.headers['stripe-signature'];
+      
+      // For development, we'll skip webhook signature verification
+      // In production, you should verify the webhook signature
+      if (process.env.NODE_ENV === 'development') {
+        event = JSON.parse(req.body);
+      } else {
+        // In production, verify the webhook signature
+        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+        if (!endpointSecret) {
+          return res.status(400).send('Webhook secret not configured');
+        }
+        event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret);
+      }
+
+      // Handle the checkout.session.completed event
+      if (event.type === 'checkout.session.completed') {
+        const session = event.data.object;
+        
+        // Process store credit deduction if used
+        const storeCreditUsed = parseFloat(session.metadata.storeCreditUsed || '0');
+        const userId = session.metadata.userId;
+        
+        if (storeCreditUsed > 0 && userId) {
+          try {
+            // Get current user store credit balance
+            const user = await storage.getUser(userId);
+            const currentCredit = parseFloat(user?.storeCredit || "0");
+            
+            if (currentCredit >= storeCreditUsed) {
+              const newCredit = currentCredit - storeCreditUsed;
+              
+              // Deduct store credit from user account
+              await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
+              
+              // Record the transaction
+              await storage.createStoreCreditTransaction({
+                userId,
+                type: 'purchase_applied',
+                amount: (-storeCreditUsed).toFixed(2),
+                description: `Store credit applied to order ${session.id}`,
+                orderId: session.id,
+              });
+              
+              console.log(`[STORE CREDIT] Deducted $${storeCreditUsed} from user ${userId}, new balance: $${newCredit.toFixed(2)}`);
+            } else {
+              console.error(`[STORE CREDIT ERROR] User ${userId} insufficient balance for deduction of $${storeCreditUsed}`);
+            }
+          } catch (error) {
+            console.error('[WEBHOOK ERROR] Store credit processing failed:', error);
+          }
+        }
+        
+        // Award points for the purchase (excluding store credit discount)
+        if (userId) {
+          try {
+            const purchaseAmount = session.amount_total ? (session.amount_total / 100) + storeCreditUsed : 0;
+            const pointsToAward = Math.floor(purchaseAmount * 10); // 10 points per dollar spent
+            
+            if (pointsToAward > 0) {
+              const userReward = await storage.getUserRewards(userId);
+              const currentPoints = userReward?.totalPoints || 0;
+              
+              await storage.updateUserPoints(userId, currentPoints + pointsToAward);
+              
+              await storage.createPointTransaction({
+                userId,
+                points: pointsToAward,
+                type: 'earned',
+                description: `Purchase reward: $${purchaseAmount.toFixed(2)} order`,
+              });
+              
+              console.log(`[POINTS] Awarded ${pointsToAward} points to user ${userId} for purchase of $${purchaseAmount.toFixed(2)}`);
+            }
+          } catch (error) {
+            console.error('[WEBHOOK ERROR] Points processing failed:', error);
+          }
+        }
+      }
+
+      res.json({received: true});
+    } catch (error: any) {
+      console.error('Webhook error:', error);
+      res.status(400).send(`Webhook Error: ${error.message}`);
     }
   });
 
@@ -3153,6 +3283,148 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Store Credit Management Routes
+  app.post("/api/rewards/redeem-store-credit", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { pointsToRedeem } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const userReward = await storage.getUserRewards(userId);
+      const currentPoints = userReward?.totalPoints || 0;
+      
+      if (pointsToRedeem > currentPoints) {
+        return res.status(400).json({ message: "Insufficient points" });
+      }
+      
+      // Convert points to store credit (100 points = $1 store credit)
+      const creditAmount = pointsToRedeem / 100;
+      
+      // Add store credit to user account
+      const user = await storage.getUser(userId);
+      const currentCredit = parseFloat(user?.storeCredit || "0");
+      const newCredit = currentCredit + creditAmount;
+      
+      await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
+      
+      // Deduct points from user rewards
+      await storage.updateUserPoints(userId, currentPoints - pointsToRedeem);
+      
+      // Record the transaction
+      await storage.createStoreCreditTransaction({
+        userId,
+        type: 'points_redeemed',
+        amount: creditAmount.toFixed(2),
+        description: `Redeemed ${pointsToRedeem} points for $${creditAmount.toFixed(2)} store credit`,
+        pointsUsed: pointsToRedeem,
+      });
+      
+      await storage.createPointTransaction({
+        userId,
+        points: -pointsToRedeem,
+        type: 'redeemed',
+        description: `Redeemed ${pointsToRedeem} points for $${creditAmount.toFixed(2)} store credit`,
+      });
+      
+      res.json({ 
+        message: `Successfully redeemed ${pointsToRedeem} points for $${creditAmount.toFixed(2)} store credit`,
+        creditAmount,
+        newBalance: newCredit,
+        pointsRemaining: currentPoints - pointsToRedeem
+      });
+    } catch (error: any) {
+      console.error('Store credit redemption error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/referral/redeem-store-credit", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { referralId } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const referral = await storage.getReferral(referralId);
+      if (!referral || referral.referrerId !== userId) {
+        return res.status(404).json({ message: "Referral not found or not owned by user" });
+      }
+      
+      if (referral.status !== 'completed') {
+        return res.status(400).json({ message: "Referral must be completed to redeem" });
+      }
+      
+      // Convert referral points to store credit ($10 store credit for completed referrals)
+      const creditAmount = 10.00;
+      
+      // Add store credit to user account
+      const user = await storage.getUser(userId);
+      const currentCredit = parseFloat(user?.storeCredit || "0");
+      const newCredit = currentCredit + creditAmount;
+      
+      await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
+      
+      // Record the transaction
+      await storage.createStoreCreditTransaction({
+        userId,
+        type: 'referral_bonus',
+        amount: creditAmount.toFixed(2),
+        description: `Referral bonus: $${creditAmount.toFixed(2)} store credit`,
+        referralId,
+      });
+      
+      // Mark referral as rewarded
+      await storage.updateReferralStatus(referralId, 'rewarded');
+      
+      res.json({ 
+        message: `Successfully redeemed referral for $${creditAmount.toFixed(2)} store credit`,
+        creditAmount,
+        newBalance: newCredit
+      });
+    } catch (error: any) {
+      console.error('Referral store credit redemption error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/store-credit/balance", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
+      const balance = parseFloat(user?.storeCredit || "0");
+      
+      res.json({ balance });
+    } catch (error: any) {
+      console.error('Store credit balance error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/store-credit/transactions", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      const transactions = await storage.getStoreCreditTransactions(userId);
+      
+      res.json(transactions);
+    } catch (error: any) {
+      console.error('Store credit transactions error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Enhanced Rewards System Routes
   app.get("/api/rewards/user", authenticateToken, async (req, res) => {
     try {
@@ -3166,6 +3438,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       const achievements = await storage.getUserAchievements(userId);
       const transactions = await storage.getPointTransactions(userId);
       const streak = await storage.getUserStreaks(userId);
+      const user = await storage.getUser(userId);
       
       // Calculate tier and level
       const points = userReward?.totalPoints || 0;
@@ -3175,9 +3448,19 @@ Provide actionable insights with specific tactics and projected outcomes.`;
                    points >= 1000 ? 'Silver' : 'Bronze';
       
       const nextLevelPoints = level * 1000;
+      const storeCredit = parseFloat(user?.storeCredit || "0");
       
-      // Get available rewards
+      // Get available rewards including store credit conversion
       const availableRewards = [
+        {
+          id: 'reward-store-credit',
+          name: 'Convert to Store Credit',
+          description: 'Convert 100 points to $1 store credit',
+          pointsCost: 100,
+          type: 'store_credit',
+          value: '$1.00',
+          available: points >= 100,
+        },
         {
           id: 'reward-1',
           name: '10% Off Next Order',

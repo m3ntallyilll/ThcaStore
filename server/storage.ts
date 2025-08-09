@@ -106,6 +106,21 @@ export interface IStorage {
   deleteDailyPromotion(id: string): Promise<boolean>;
   calculatePromotionDiscount(promotionId: string, amount: number): Promise<number>;
   recordPromotionUsage(promotionId: string, userId: string): Promise<void>;
+
+  // Store Credit System
+  updateUserStoreCredit(userId: string, newBalance: string): Promise<void>;
+  updateUserPoints(userId: string, newPoints: number): Promise<void>;
+  createStoreCreditTransaction(transaction: any): Promise<any>;
+  getStoreCreditTransactions(userId: string): Promise<any[]>;
+  createPointTransaction(transaction: any): Promise<any>;
+  getReferral(id: string): Promise<any>;
+  updateReferralStatus(id: string, status: string): Promise<void>;
+  updateReferral(id: string, updates: any): Promise<any>;
+  getUserAchievements(userId: string): Promise<any[]>;
+  getUserStreaks(userId: string): Promise<any>;
+  getUserOrderCount(userId: string): Promise<number>;
+  claimAchievementReward(userId: string, achievementId: string): Promise<any>;
+  recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {

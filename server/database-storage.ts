@@ -76,7 +76,8 @@ import {
   userChallenges,
   loyaltyStreaks,
   promoCodes,
-  loyaltyLeaderboard
+  loyaltyLeaderboard,
+  storeCreditTransactions
 } from '@shared/schema';
 
 export class DatabaseStorage {
@@ -1812,6 +1813,133 @@ export class DatabaseStorage {
     }
 
     return promoCode;
+  }
+
+  // Store Credit System Methods
+  async updateUserStoreCredit(userId: string, newBalance: string): Promise<void> {
+    await db.update(users)
+      .set({ storeCredit: newBalance })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserPoints(userId: string, newPoints: number): Promise<void> {
+    await db.update(userRewards)
+      .set({ totalPoints: newPoints })
+      .where(eq(userRewards.userId, userId));
+  }
+
+  async createStoreCreditTransaction(transaction: any): Promise<any> {
+    const result = await db.insert(storeCreditTransactions).values(transaction).returning();
+    return result[0];
+  }
+
+  async getStoreCreditTransactions(userId: string): Promise<any[]> {
+    return db.select()
+      .from(storeCreditTransactions)
+      .where(eq(storeCreditTransactions.userId, userId))
+      .orderBy(desc(storeCreditTransactions.createdAt));
+  }
+
+  async createPointTransaction(transaction: any): Promise<any> {
+    const result = await db.insert(pointTransactions).values(transaction).returning();
+    return result[0];
+  }
+
+  async getReferral(id: string): Promise<any> {
+    const result = await db.select().from(referralProgram).where(eq(referralProgram.id, id));
+    return result[0];
+  }
+
+  async updateReferralStatus(id: string, status: string): Promise<void> {
+    await db.update(referralProgram)
+      .set({ status: status as any })
+      .where(eq(referralProgram.id, id));
+  }
+
+  async updateReferral(id: string, updates: any): Promise<any> {
+    const result = await db.update(referralProgram)
+      .set(updates)
+      .where(eq(referralProgram.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async getUserAchievements(userId: string): Promise<any[]> {
+    return db.select({
+      id: userAchievements.id,
+      achievementId: userAchievements.achievementId,
+      progress: userAchievements.progress,
+      completedAt: userAchievements.completedAt,
+      achievement: {
+        name: achievements.name,
+        description: achievements.description,
+        target: achievements.maxProgress,
+        reward: achievements.rewardPoints,
+        icon: achievements.icon,
+      }
+    })
+      .from(userAchievements)
+      .leftJoin(achievements, eq(userAchievements.achievementId, achievements.id))
+      .where(eq(userAchievements.userId, userId));
+  }
+
+  async getUserStreaks(userId: string): Promise<any> {
+    const result = await db.select().from(loyaltyStreaks).where(eq(loyaltyStreaks.userId, userId));
+    return result[0] || { currentStreak: 0 };
+  }
+
+  async getUserOrderCount(userId: string): Promise<number> {
+    const result = await db.select({ count: sql`count(*)` })
+      .from(orders)
+      .where(eq(orders.userId, userId));
+    return parseInt(result[0]?.count as string || '0');
+  }
+
+  async claimAchievementReward(userId: string, achievementId: string): Promise<any> {
+    // Mark achievement as rewarded and return points
+    await db.update(userAchievements)
+      .set({ notified: true })
+      .where(and(
+        eq(userAchievements.userId, userId),
+        eq(userAchievements.achievementId, achievementId)
+      ));
+
+    // Get achievement details
+    const achievement = await db.select().from(achievements).where(eq(achievements.id, achievementId));
+    return achievement[0];
+  }
+
+  async recordAchievement(userId: string, achievementId: string, progress: number = 1): Promise<void> {
+    // Check if user achievement already exists
+    const existing = await db.select()
+      .from(userAchievements)
+      .where(and(
+        eq(userAchievements.userId, userId),
+        eq(userAchievements.achievementId, achievementId)
+      ));
+
+    if (existing.length === 0) {
+      // Create new user achievement
+      await db.insert(userAchievements).values({
+        userId,
+        achievementId,
+        progress,
+        maxProgress: progress,
+        isCompleted: null,
+        notified: false
+      });
+    } else {
+      // Update existing progress
+      await db.update(userAchievements)
+        .set({ 
+          progress: sql`${userAchievements.progress} + ${progress}`,
+          maxProgress: sql`GREATEST(${userAchievements.maxProgress}, ${userAchievements.progress} + ${progress})`
+        })
+        .where(and(
+          eq(userAchievements.userId, userId),
+          eq(userAchievements.achievementId, achievementId)
+        ));
+    }
   }
 
 
