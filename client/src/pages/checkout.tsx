@@ -25,7 +25,7 @@ export default function Checkout() {
     queryKey: ['/api/store-credit/balance'],
   });
   
-  const availableStoreCredit = storeCreditBalance?.balance || 0;
+  const availableStoreCredit = (storeCreditBalance as any)?.balance || 0;
   const maxStoreCreditUsable = Math.min(availableStoreCredit, subtotal);
   const promoDiscount = appliedPromo?.discountAmount ? parseFloat(appliedPromo.discountAmount) : 0;
   const total = subtotal - usedStoreCredit - promoDiscount;
