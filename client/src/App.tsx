@@ -120,6 +120,17 @@ function App() {
   // Google Analytics is now loaded directly in index.html
   useEffect(() => {
     console.log('✓ Google Analytics loaded with ID: G-J8CL11FFW2');
+    
+    // Register service worker for PWA functionality
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then((registration) => {
+          console.log('SW registered successfully:', registration);
+        })
+        .catch((error) => {
+          console.log('SW registration failed:', error);
+        });
+    }
   }, []);
 
   return (
