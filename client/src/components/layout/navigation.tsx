@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'wouter';
-import { User, ShoppingCart, Settings, Menu, X, LogOut, Leaf } from 'lucide-react';
+import { User, ShoppingCart, Settings, Menu, X, LogOut, Leaf, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useCart } from '@/hooks/use-cart';
 import { AuthModal } from '../auth/auth-modal';
 import { Badge } from '@/components/ui/badge';
+import { RewardsDisplay } from '@/components/rewards/rewards-display';
 
 export function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -58,6 +59,7 @@ export function Navigation() {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
+                  <RewardsDisplay compact />
                   <span className="text-sm text-gray-300">
                     Welcome, {user?.firstName || user?.username}
                   </span>

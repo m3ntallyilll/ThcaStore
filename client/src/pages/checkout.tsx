@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
-import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight } from 'lucide-react';
+import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy } from 'lucide-react';
 
 export default function Checkout() {
   const { items } = useCart();
@@ -163,6 +163,22 @@ export default function Checkout() {
                 </div>
                 <p className="text-white/80 text-sm">
                   No shipping charges on all orders. Fast, reliable delivery included.
+                </p>
+              </div>
+
+              {/* Points Earned Preview */}
+              <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-4 mb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-purple-400" />
+                    <span className="text-purple-300 font-medium">Points You'll Earn:</span>
+                  </div>
+                  <span className="text-xl font-bold text-purple-400">
+                    +{Math.floor(total * 10)} pts
+                  </span>
+                </div>
+                <p className="text-white/60 text-xs mt-1">
+                  Earn 10 points for every dollar spent
                 </p>
               </div>
 

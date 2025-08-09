@@ -3150,6 +3150,270 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Enhanced Rewards System Routes
+  app.get("/api/rewards/user", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+
+      // Get user rewards data
+      const userReward = await storage.getUserRewards(userId);
+      const achievements = await storage.getUserAchievements(userId);
+      const transactions = await storage.getPointTransactions(userId);
+      const streak = await storage.getUserStreaks(userId);
+      
+      // Calculate tier and level
+      const points = userReward?.totalPoints || 0;
+      const level = Math.floor(points / 1000) + 1;
+      const tier = points >= 10000 ? 'Platinum' : 
+                   points >= 5000 ? 'Gold' : 
+                   points >= 1000 ? 'Silver' : 'Bronze';
+      
+      const nextLevelPoints = level * 1000;
+      
+      // Get available rewards
+      const availableRewards = [
+        {
+          id: 'reward-1',
+          name: '10% Off Next Order',
+          description: 'Save 10% on your next purchase',
+          pointsCost: 500,
+          type: 'discount',
+          value: '10%',
+          available: points >= 500,
+        },
+        {
+          id: 'reward-2',
+          name: '20% Off Next Order',
+          description: 'Save 20% on your next purchase',
+          pointsCost: 1000,
+          type: 'discount',
+          value: '20%',
+          available: points >= 1000,
+        },
+        {
+          id: 'reward-3',
+          name: 'Free Shipping',
+          description: 'Free shipping on your next order',
+          pointsCost: 300,
+          type: 'shipping',
+          value: 'FREE',
+          available: points >= 300,
+        },
+        {
+          id: 'reward-4',
+          name: 'Exclusive THCA Sample',
+          description: 'Try our exclusive premium strain sample',
+          pointsCost: 2000,
+          type: 'exclusive',
+          value: 'SAMPLE',
+          available: points >= 2000,
+        },
+      ];
+      
+      // Get badges
+      const badges = [];
+      if (userReward?.totalPoints >= 100) {
+        badges.push({
+          id: 'badge-1',
+          name: 'First Steps',
+          description: 'Earned 100 points',
+          icon: 'star',
+          earnedAt: new Date().toISOString(),
+          rarity: 'common'
+        });
+      }
+      if (userReward?.totalPoints >= 1000) {
+        badges.push({
+          id: 'badge-2',
+          name: 'Silver Member',
+          description: 'Reached Silver tier',
+          icon: 'medal',
+          earnedAt: new Date().toISOString(),
+          rarity: 'rare'
+        });
+      }
+      if (userReward?.totalPoints >= 5000) {
+        badges.push({
+          id: 'badge-3',
+          name: 'Gold Member',
+          description: 'Reached Gold tier',
+          icon: 'crown',
+          earnedAt: new Date().toISOString(),
+          rarity: 'epic'
+        });
+      }
+      
+      res.json({
+        userId,
+        points: userReward?.totalPoints || 0,
+        level,
+        tier,
+        nextLevelPoints,
+        totalEarned: userReward?.lifetimePoints || 0,
+        totalSpent: userReward?.pointsSpent || 0,
+        streak: streak?.[0]?.currentStreak || 0,
+        badges,
+        achievements: achievements.map(a => ({
+          ...a,
+          progress: a.progress || 0,
+          target: a.target || 1,
+          completed: a.completed || false,
+          reward: a.rewardPoints || 100
+        })),
+        availableRewards,
+        history: transactions.slice(0, 20)
+      });
+    } catch (error: any) {
+      console.error('Error fetching user rewards:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Redeem reward endpoint
+  app.post("/api/rewards/redeem", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { rewardId } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      // Get user points
+      const userReward = await storage.getUserRewards(userId);
+      const points = userReward?.totalPoints || 0;
+      
+      // Check reward availability
+      const rewardCosts: Record<string, number> = {
+        'reward-1': 500,
+        'reward-2': 1000,
+        'reward-3': 300,
+        'reward-4': 2000,
+      };
+      
+      const cost = rewardCosts[rewardId];
+      if (!cost || points < cost) {
+        return res.status(400).json({ message: "Insufficient points or invalid reward" });
+      }
+      
+      // Deduct points and create transaction
+      await storage.updateUserPoints(userId, -cost, `Redeemed reward: ${rewardId}`);
+      
+      // Create promo code for discount rewards
+      if (rewardId === 'reward-1' || rewardId === 'reward-2') {
+        const discountValue = rewardId === 'reward-1' ? '10' : '20';
+        const promoCode = await storage.createPromoCode({
+          code: `REWARD${Date.now()}`,
+          discountType: 'percentage',
+          discountValue,
+          minPurchase: '0',
+          maxUses: 1,
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+          applicableCategories: [],
+          description: `${discountValue}% off reward redemption`
+        });
+        
+        res.json({ 
+          success: true, 
+          promoCode: promoCode.code,
+          message: `Your ${discountValue}% off code is: ${promoCode.code}` 
+        });
+      } else {
+        res.json({ success: true, message: "Reward redeemed successfully" });
+      }
+    } catch (error: any) {
+      console.error('Error redeeming reward:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Claim achievement reward
+  app.post("/api/rewards/achievements/claim", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { achievementId } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      const success = await storage.claimAchievementReward(userId, achievementId);
+      if (success) {
+        res.json({ success: true, message: "Achievement reward claimed!" });
+      } else {
+        res.status(400).json({ message: "Achievement not completed or already claimed" });
+      }
+    } catch (error: any) {
+      console.error('Error claiming achievement:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Award points on purchase completion
+  app.post("/api/rewards/purchase", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const { orderId, orderTotal, itemCount } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User not authenticated" });
+      }
+      
+      // Calculate base points (10 points per dollar)
+      let points = Math.floor(orderTotal * 10);
+      
+      // Bonus points for large orders
+      if (orderTotal >= 200) {
+        points += 2500;
+        await storage.recordAchievement(userId, 'big-spender', 'Order over $200');
+      } else if (orderTotal >= 100) {
+        points += 1000;
+        await storage.recordAchievement(userId, 'high-roller', 'Order over $100');
+      }
+      
+      // Bonus for multiple items
+      if (itemCount >= 5) {
+        points += 200;
+        await storage.recordAchievement(userId, 'bulk-buyer', 'Purchased 5+ items');
+      }
+      
+      // Check for first purchase
+      const orderCount = await storage.getUserOrderCount(userId);
+      if (orderCount === 1) {
+        points += 500;
+        await storage.recordAchievement(userId, 'first-purchase', 'Made first purchase');
+      }
+      
+      // Apply tier multiplier
+      const userReward = await storage.getUserRewards(userId);
+      const currentPoints = userReward?.totalPoints || 0;
+      const multiplier = currentPoints >= 10000 ? 2 : 
+                        currentPoints >= 5000 ? 1.5 : 
+                        currentPoints >= 1000 ? 1.25 : 1;
+      
+      points = Math.floor(points * multiplier);
+      
+      // Award points
+      await storage.updateUserPoints(userId, points, `Purchase reward for order #${orderId}`);
+      
+      // Update streak
+      await storage.updateStreak(userId, 'purchase', new Date());
+      
+      res.json({ 
+        success: true, 
+        pointsEarned: points,
+        multiplier,
+        message: `You earned ${points} points!` 
+      });
+    } catch (error: any) {
+      console.error('Error awarding purchase points:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Gamification API Routes
 
   // Achievements
