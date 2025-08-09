@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="#10b981"/>
+  
+  <!-- Cannabis Leaf Design -->
+  <g transform="translate(256,256)">
+    <!-- Central stem -->
+    <rect x="-4" y="80" width="8" height="120" fill="#047857" rx="4"/>
+    
+    <!-- Main leaf segments -->
+    <g fill="#10b981" stroke="#047857" stroke-width="2">
+      <!-- Center leaf -->
+      <ellipse cx="0" cy="-20" rx="15" ry="80" fill="#10b981"/>
+      
+      <!-- Left leaves -->
+      <ellipse cx="-25" cy="-10" rx="12" ry="70" fill="#059669" transform="rotate(-20)"/>
+      <ellipse cx="-45" cy="5" rx="10" ry="60" fill="#047857" transform="rotate(-35)"/>
+      <ellipse cx="-55" cy="25" rx="8" ry="45" fill="#065f46" transform="rotate(-50)"/>
+      
+      <!-- Right leaves -->
+      <ellipse cx="25" cy="-10" rx="12" ry="70" fill="#059669" transform="rotate(20)"/>
+      <ellipse cx="45" cy="5" rx="10" ry="60" fill="#047857" transform="rotate(35)"/>
+      <ellipse cx="55" cy="25" rx="8" ry="45" fill="#065f46" transform="rotate(50)"/>
+    </g>
+    
+    <!-- Highlight effects -->
+    <g fill="#34d399" opacity="0.6">
+      <ellipse cx="-8" cy="-25" rx="3" ry="20"/>
+      <ellipse cx="8" cy="-25" rx="3" ry="20"/>
+      <ellipse cx="-20" cy="-15" rx="2" ry="15" transform="rotate(-20)"/>
+      <ellipse cx="20" cy="-15" rx="2" ry="15" transform="rotate(20)"/>
+    </g>
+  </g>
+  
+  <!-- Text -->
+  <text x="256" y="450" font-family="Arial, sans-serif" font-size="36" font-weight="bold" text-anchor="middle" fill="white">
+    THCA
+  </text>
+</svg>

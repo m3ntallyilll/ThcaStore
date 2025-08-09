@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "@/components/ui/toaster";
 import { AIChat } from "@/components/ai/ai-chat";
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 import { ReferralBanner } from "@/components/referral/referral-banner";
 import { LegalDisclaimer } from "@/components/legal-disclaimer";
 import { CartSidebar } from "@/components/cart/cart-sidebar";
@@ -105,6 +106,9 @@ function AppContent() {
           onDecline={() => window.location.href = 'https://google.com'}
         />
       )}
+      
+      {/* Offline Indicator */}
+      <OfflineIndicator />
       
       {/* Cart Sidebar */}
       <CartSidebar />

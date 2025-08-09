@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head><title>Icon Generator</title></head>
+<body>
+<canvas id="canvas" style="display:none;"></canvas>
+<script>
+const sizes = [16, 32, 72, 96, 128, 144, 152, 167, 180, 192, 384, 512];
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+sizes.forEach(size => {
+  canvas.width = size;
+  canvas.height = size;
+  
+  // Fill background
+  ctx.fillStyle = '#10b981';
+  ctx.fillRect(0, 0, size, size);
+  
+  // Simple leaf shape
+  ctx.fillStyle = '#047857';
+  ctx.beginPath();
+  ctx.ellipse(size/2, size/2 - size/8, size/8, size/2.5, 0, 0, 2 * Math.PI);
+  ctx.fill();
+  
+  // Convert to blob and download
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `icon-${size}x${size}.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+});
+</script>
+</body>
+</html>

@@ -14,6 +14,7 @@ import { AIChat } from '@/components/ai/ai-chat';
 import { FloatingSocialShare } from '@/components/floating-social-share';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { useAuth } from '@/hooks/use-auth';
+import { PWAInstallButton } from '@/components/PWAInstallButton';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -1144,6 +1145,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* PWA Install Button */}
+      <PWAInstallButton />
       
       {/* Floating Social Share with Pot Leaf Logo */}
       <FloatingSocialShare 
