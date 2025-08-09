@@ -275,7 +275,7 @@ export default function Products() {
               THCA Hemp Products - Premium Collection
             </h1>
             <p className="text-xl max-w-3xl mx-auto mb-8 text-[#4cff4c]">
-              Expertly crafted THCA products designed to elevate your experience with uncompromising quality and purity
+              Expertly crafted THCA products designed to elevate your experience with uncompromising quality and purity. All products comply with federal regulations outlined by the <a href="https://www.congress.gov/bill/115th-congress/house-bill/2" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-400 underline">2018 Farm Bill</a> and <a href="https://www.deadiversion.usdoj.gov/schedules/" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-400 underline">DEA scheduling guidelines</a>.
             </p>
             
             {/* Social Share Section */}

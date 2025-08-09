@@ -314,13 +314,18 @@ export default function Home() {
                 transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
                 className="max-w-6xl mx-auto"
               >
-                {/* Revolutionary Title */}
+                {/* SEO-Optimized H1 Title */}
+                <div className="sr-only">
+                  <h1>Premium THCA Hemp Products - Lab-Tested & Legal - Shop THCA Flower, Pre-Rolls & Concentrates Online</h1>
+                </div>
+                
+                {/* Revolutionary Visual Title */}
                 <motion.div
                   className="relative mb-8"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <motion.h1 
+                  <motion.div 
                     className="text-7xl md:text-9xl font-black mb-4 relative"
                     initial={{ opacity: 0, y: 100 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -332,7 +337,7 @@ export default function Home() {
                     <span className="relative bg-gradient-to-r from-emerald-300 via-green-200 to-teal-300 bg-clip-text text-transparent">
                       Premium THCA Hemp Products - Lab-Tested & Legal
                     </span>
-                  </motion.h1>
+                  </motion.div>
                   
                   <motion.h2
                     className="text-2xl md:text-4xl font-light tracking-wider"
@@ -534,7 +539,7 @@ export default function Home() {
                 icon: Shield, 
                 title: "Quantum Purity", 
                 subtitle: "Hemp-Derived",
-                description: "Premium hemp-derived THCA flower and concentrates sourced from organic farms. Each product undergoes comprehensive third-party lab testing for potency verification, pesticide screening, heavy metal detection, and microbial analysis. Our rigorous quality control process ensures every batch meets pharmaceutical-grade standards while maintaining full legal compliance under federal hemp regulations.",
+                description: "Premium hemp-derived THCA flower and concentrates sourced from organic farms. Each product undergoes comprehensive third-party lab testing for potency verification, pesticide screening, heavy metal detection, and microbial analysis. Our rigorous quality control process ensures every batch meets pharmaceutical-grade standards while maintaining full legal compliance under federal hemp regulations. Learn more about hemp testing standards at the <a href='https://www.ams.usda.gov/rules-regulations/hemp' target='_blank' rel='noopener noreferrer' className='text-emerald-400 hover:text-emerald-300'>USDA Agricultural Marketing Service</a>.",
                 color: "from-emerald-500 to-green-400",
                 delay: 0
               },
@@ -542,7 +547,7 @@ export default function Home() {
                 icon: Zap, 
                 title: "Lightning Delivery", 
                 subtitle: "Same-Day Available",
-                description: "Revolutionary AI-powered logistics network featuring predictive shipping algorithms, real-time package tracking with GPS precision, and intelligent route optimization. Our advanced distribution centers utilize automated inventory management and smart packaging systems to ensure your premium THCA products arrive in perfect condition within 24-48 hours across legal states.",
+                description: "Revolutionary AI-powered logistics network featuring predictive shipping algorithms, real-time package tracking with GPS precision, and intelligent route optimization. Our advanced distribution centers utilize automated inventory management and smart packaging systems to ensure your premium THCA products arrive in perfect condition within 24-48 hours across legal states. Shipping follows guidelines from the <a href='https://pe.usps.com/text/pub52/pub52apx.htm' target='_blank' rel='noopener noreferrer' className='text-yellow-400 hover:text-yellow-300'>USPS packaging regulations</a>.",
                 color: "from-yellow-500 to-amber-400",
                 delay: 0.1
               },
@@ -550,7 +555,7 @@ export default function Home() {
                 icon: Brain, 
                 title: "AI Personalization", 
                 subtitle: "Tailored Experience",
-                description: "Cutting-edge machine learning algorithms analyze your preferences, consumption patterns, and desired effects to recommend the perfect THCA products. Our AI assistant learns from thousands of customer interactions to provide personalized strain recommendations, dosage guidance, and product selections tailored specifically to your unique needs and tolerance levels.",
+                description: "Cutting-edge machine learning algorithms analyze your preferences, consumption patterns, and desired effects to recommend the perfect THCA products. Our AI assistant learns from thousands of customer interactions to provide personalized strain recommendations, dosage guidance, and product selections tailored specifically to your unique needs and tolerance levels. Our technology follows best practices from <a href='https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6028645/' target='_blank' rel='noopener noreferrer' className='text-purple-400 hover:text-purple-300'>cannabis research publications</a>.",
                 color: "from-purple-500 to-indigo-400",
                 delay: 0.2
               },

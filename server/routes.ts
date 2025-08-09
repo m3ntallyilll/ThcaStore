@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
 import { storage } from "./storage";
@@ -2861,7 +2862,8 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   });
 
   // Stripe webhook handler for processing successful payments
-  app.post('/api/webhook/stripe', express.raw({type: 'application/json'}), async (req, res) => {
+  app.use('/api/webhook/stripe', express.raw({type: 'application/json'}));
+  app.post('/api/webhook/stripe', async (req, res) => {
     if (!stripe) {
       return res.status(500).json({ message: "Stripe not configured" });
     }
