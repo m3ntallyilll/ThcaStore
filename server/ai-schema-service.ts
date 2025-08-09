@@ -288,20 +288,44 @@ Look for specific product mentions and create schema for each. Return JSON array
     "@type": "Product",
     "name": "Product name",
     "description": "Product description from content",
+    "image": "https://mentally-chill.online/placeholder-product.jpg",
+    "sku": "product-id",
     "category": "Hemp Products",
     "brand": {
       "@type": "Brand",
-      "name": "THCA Store"
+      "name": "Mentally Chill"
     },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": 4.5,
+      "ratingCount": 75
+    },
+    "review": [
+      {
+        "@type": "Review",
+        "reviewRating": {
+          "@type": "Rating",
+          "ratingValue": 4.5
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Verified Customer"
+        },
+        "reviewBody": "Great quality product with excellent effects.",
+        "datePublished": "2024-01-15"
+      }
+    ],
     "offers": {
       "@type": "Offer",
+      "url": "https://mentally-chill.online/products",
       "availability": "https://schema.org/InStock",
       "price": "29.99",
       "priceCurrency": "USD",
       "seller": {
         "@type": "Organization",
-        "name": "THCA Store"
-      }
+        "name": "Mentally Chill"
+      },
+      "priceValidUntil": "2024-12-31"
     }
   }
 ]
