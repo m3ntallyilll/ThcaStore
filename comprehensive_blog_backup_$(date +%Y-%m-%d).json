@@ -1,0 +1,14 @@
+{
+  "backupDate": "2025-08-09",
+  "backupType": "comprehensive",
+  "description": "Complete backup of all blog content including SEO blogs, location-based content, and generated content",
+  "sources": [
+    "current_blog_api_data",
+    "seo_blogs_data",
+    "location_blogs_collection", 
+    "viral_content_strategy",
+    "individual_state_blog_files"
+  ],
+  "totalPosts": "pending_count",
+  "notes": "This backup preserves all blog content generated through AI systems and manual curation"
+}

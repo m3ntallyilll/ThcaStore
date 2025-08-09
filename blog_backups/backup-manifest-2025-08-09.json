@@ -1,0 +1,58 @@
+{
+  "backupDate": "2025-08-09",
+  "backupTime": "2025-08-09T06:50:17.947Z",
+  "sources": {
+    "seo-blogs-data.json": {
+      "backed_up": true,
+      "backup_file": "seo-blogs-data-backup-2025-08-09.json",
+      "size": 11414
+    },
+    "location_blogs_collection.json": {
+      "backed_up": true,
+      "backup_file": "location_blogs_collection-backup-2025-08-09.json",
+      "size": 36630
+    },
+    "blog_alaska_generated.json": {
+      "backed_up": true,
+      "backup_file": "blog_alaska_generated-backup-2025-08-09.json",
+      "size": 7969
+    },
+    "blog_california_generated.json": {
+      "backed_up": true,
+      "backup_file": "blog_california_generated-backup-2025-08-09.json",
+      "size": 5733
+    },
+    "blog_colorado_generated.json": {
+      "backed_up": true,
+      "backup_file": "blog_colorado_generated-backup-2025-08-09.json",
+      "size": 7905
+    },
+    "blog_oregon_generated.json": {
+      "backed_up": true,
+      "backup_file": "blog_oregon_generated-backup-2025-08-09.json",
+      "size": 6811
+    },
+    "blog_washington_generated.json": {
+      "backed_up": true,
+      "backup_file": "blog_washington_generated-backup-2025-08-09.json",
+      "size": 6311
+    },
+    "blog_post_generated.json": {
+      "backed_up": true,
+      "backup_file": "blog_post_generated-backup-2025-08-09.json",
+      "size": 5971
+    },
+    "viral_content_strategy.json": {
+      "backed_up": true,
+      "backup_file": "viral_content_strategy-backup-2025-08-09.json",
+      "size": 116461
+    },
+    "current_blog_data_backup.json": {
+      "backed_up": true,
+      "backup_file": "current_blog_data_backup-backup-2025-08-09.json",
+      "size": 574819
+    }
+  },
+  "totalFiles": 10,
+  "notes": "Complete backup of all blog content and AI-generated materials"
+}
