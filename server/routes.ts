@@ -4,31 +4,12 @@ import { createServer, type Server } from "http";
 import path from "path";
 import { storage } from "./storage";
 import { aiAssistant } from "./ai-assistant";
-import { Client, Environment } from 'square';
 import affiliateRoutes from "./routes/affiliate";
 
-// Initialize Square Client for Cash App Pay
-if (!process.env.SQUARE_ACCESS_TOKEN) {
-  console.error('⚠️ SQUARE_ACCESS_TOKEN not found - Payment processing will not work');
-}
-
-if (!process.env.SQUARE_APPLICATION_ID) {
-  console.error('⚠️ SQUARE_APPLICATION_ID not found - Payment processing will not work');
-}
-
-const squareClient = process.env.SQUARE_ACCESS_TOKEN ? new Client({
-  accessToken: process.env.SQUARE_ACCESS_TOKEN,
-  environment: process.env.NODE_ENV === 'production' ? Environment.Production : Environment.Sandbox
-}) : null;
-
-// Ensure proper environment for Square
-const SQUARE_MODE = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
-if (SQUARE_MODE === 'sandbox') {
-  console.warn('⚠️ Square is in SANDBOX MODE - Switch to production for live payments');
-} else {
-  console.log('🚀 Square is in PRODUCTION MODE - Real payments enabled');
-  console.log('💳 Cash App Pay processing activated');
-}
+// Cash App Pay Configuration
+const CASH_APP_CASHTAG = process.env.CASH_APP_CASHTAG || 'ThcaStore';
+console.log(`💚 Cash App Pay enabled with cashtag: $${CASH_APP_CASHTAG}`);
+console.log('💳 Direct payment links activated - THCA sales supported');
 import { 
   insertUserSchema, 
   loginSchema, 
@@ -2745,18 +2726,14 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
-  // Stripe Payment Routes
-  // Create Checkout Session for Stripe hosted checkout page
-  app.post("/api/create-checkout-session", authenticateToken, async (req, res) => {
-    if (!stripe) {
-      return res.status(500).json({ message: "Stripe not configured" });
-    }
-
+  // Cash App Payment Routes
+  // Create pending order for Cash App payment
+  app.post("/api/create-cash-app-order", authenticateToken, async (req, res) => {
     try {
       const { items, storeCreditUsed = 0, promoCode, promoDiscount = 0, affiliateCode } = req.body;
       const userId = req.user?.id;
       
-      // If store credit is being used, validate the user's balance
+      // Validate store credit if being used
       if (storeCreditUsed > 0 && userId) {
         const user = await storage.getUser(userId);
         const userStoreCredit = parseFloat(user?.storeCredit || "0");
@@ -2767,222 +2744,128 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           });
         }
       }
-      
-      // Convert cart items to Stripe line items
-      const lineItems = items.map((item: any) => {
-        // Convert relative image URLs to absolute URLs for Stripe
-        let imageUrl = '';
-        if (item.product.imageUrl) {
-          if (item.product.imageUrl.startsWith('http')) {
-            imageUrl = item.product.imageUrl;
-          } else {
-            // Convert relative URL to absolute URL
-            imageUrl = `${req.headers.origin}${item.product.imageUrl}`;
-          }
-        }
 
-        return {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: item.product.name,
-              description: item.product.description,
-              // Only include images if we have a valid absolute URL
-              ...(imageUrl.startsWith('http') ? { images: [imageUrl] } : {}),
-            },
-            unit_amount: Math.round(parseFloat(item.product.price) * 100), // Convert to cents
-          },
-          quantity: item.quantity,
-        };
-      });
-
-      // Calculate total before store credit deduction
+      // Calculate totals
       const subtotal = items.reduce((sum: number, item: any) => 
         sum + (parseFloat(item.product.price) * item.quantity), 0);
       
-      // If using store credit, add a discount line item
-      if (storeCreditUsed > 0) {
-        lineItems.push({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'Store Credit Discount',
-              description: 'Applied store credit to your order',
-            },
-            unit_amount: -Math.round(storeCreditUsed * 100), // Negative amount for discount
-          },
-          quantity: 1,
-        });
-      }
+      const total = subtotal - storeCreditUsed - promoDiscount;
+      
+      // Generate product names for payment note
+      const productNames = items.map((item: any) => 
+        `${item.quantity}x ${item.product.name}`
+      ).join(', ');
 
-      // If using promo code, add a discount line item
-      if (promoDiscount > 0 && promoCode) {
-        lineItems.push({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: `Promo Code: ${promoCode}`,
-              description: 'Promotional discount applied',
-            },
-            unit_amount: -Math.round(promoDiscount * 100), // Negative amount for discount
-          },
-          quantity: 1,
-        });
-      }
+      // Create pending order in database
+      const orderData = {
+        userId: userId || '',
+        status: 'pending_payment',
+        paymentMethod: 'cash_app',
+        subtotal: subtotal.toFixed(2),
+        tax: '0.00',
+        total: total.toFixed(2),
+        shippingName: '',
+        shippingEmail: '',
+        shippingAddress: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingZip: '',
+        shippingPhone: '',
+        billingName: '',
+        billingEmail: '',
+        billingAddress: '',
+        billingCity: '',
+        billingState: '',
+        billingZip: '',
+        billingPhone: '',
+        storeCreditUsed: storeCreditUsed.toFixed(2),
+        promoCode: promoCode || undefined,
+        promoDiscount: promoDiscount.toFixed(2),
+        affiliateCode: affiliateCode || undefined,
+        productNames: productNames,
+        cashAppAmount: total.toFixed(2)
+      };
 
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: lineItems,
-        mode: 'payment',
-        success_url: `${req.headers.origin}/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/cart`,
-        shipping_address_collection: {
-          allowed_countries: ['US'],
-        },
-        billing_address_collection: 'required',
-        phone_number_collection: {
-          enabled: true,
-        },
-        metadata: {
-          stripe_mode: STRIPE_MODE,
-          created_at: new Date().toISOString(),
-          environment: process.env.NODE_ENV || 'production',
-          userId: userId || '',
-          storeCreditUsed: storeCreditUsed.toString(),
-          promoCode: promoCode || '',
-          promoDiscount: promoDiscount?.toString() || '0',
-          affiliateCode: affiliateCode || '',
-        },
-        expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
-        allow_promotion_codes: true,
-        shipping_options: [
-          {
-            shipping_rate_data: {
-              type: 'fixed_amount',
-              fixed_amount: {
-                amount: 0,
-                currency: 'usd',
-              },
-              display_name: 'Free Shipping',
-              delivery_estimate: {
-                minimum: {
-                  unit: 'business_day',
-                  value: 3,
-                },
-                maximum: {
-                  unit: 'business_day',
-                  value: 7,
-                },
-              },
-            },
-          },
-        ],
+      const order = await storage.createOrder(orderData);
+
+      // Generate Cash App payment link
+      const cashAppLink = `https://cash.app/$${CASH_APP_CASHTAG}/${total.toFixed(2)}`;
+
+      res.json({ 
+        success: true,
+        orderId: order.id,
+        cashAppLink: cashAppLink,
+        total: total.toFixed(2),
+        productNames: productNames,
+        instructions: `Send $${total.toFixed(2)} via Cash App and include "${productNames}" in your payment note.`
       });
 
-      res.json({ url: session.url, sessionId: session.id });
     } catch (error: any) {
-      console.error('Checkout session error:', error);
-      res.status(500).json({ message: "Error creating checkout session: " + error.message });
+      console.error('Cash App order error:', error);
+      res.status(500).json({ message: "Error creating order: " + error.message });
     }
   });
 
-  // Stripe webhook handler for processing successful payments
-  app.use('/api/webhook/stripe', express.raw({type: 'application/json'}));
-  app.post('/api/webhook/stripe', async (req, res) => {
-    if (!stripe) {
-      return res.status(500).json({ message: "Stripe not configured" });
-    }
-
-    let event;
-
+  // Cash App order confirmation route (for manual payment verification)
+  app.post("/api/confirm-cash-app-payment", authenticateToken, async (req, res) => {
     try {
-      const signature = req.headers['stripe-signature'];
+      const { orderId, paymentConfirmation } = req.body;
+      const userId = req.user?.id;
+
+      if (!orderId || !paymentConfirmation) {
+        return res.status(400).json({ 
+          message: "Order ID and payment confirmation required" 
+        });
+      }
+
+      // Update order status to confirmed
+      const order = await storage.updateOrderStatus(orderId, 'confirmed');
       
-      // For development, we'll skip webhook signature verification
-      // In production, you should verify the webhook signature
-      if (process.env.NODE_ENV === 'development') {
-        event = JSON.parse(req.body);
-      } else {
-        // In production, verify the webhook signature
-        const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
-        if (!endpointSecret) {
-          return res.status(400).send('Webhook secret not configured');
-        }
-        event = stripe.webhooks.constructEvent(req.body, signature, endpointSecret);
-      }
-
-      // Handle the checkout.session.completed event
-      if (event.type === 'checkout.session.completed') {
-        const session = event.data.object;
+      // Process store credit deduction and point rewards after manual confirmation
+      if (order && userId) {
+        const storeCreditUsed = parseFloat(order.storeCreditUsed || '0');
+        const orderTotal = parseFloat(order.total || '0');
         
-        // Process store credit deduction if used
-        const storeCreditUsed = parseFloat(session.metadata.storeCreditUsed || '0');
-        const userId = session.metadata.userId;
-        const promoCode = session.metadata.promoCode;
-        const affiliateCode = session.metadata.affiliateCode;
-        const orderTotal = session.amount_total / 100; // Convert from cents
-        
-        if (storeCreditUsed > 0 && userId) {
-          try {
-            // Get current user store credit balance
-            const user = await storage.getUser(userId);
-            const currentCredit = parseFloat(user?.storeCredit || "0");
+        // Deduct store credit if used
+        if (storeCreditUsed > 0) {
+          const user = await storage.getUser(userId);
+          const currentCredit = parseFloat(user?.storeCredit || "0");
+          
+          if (currentCredit >= storeCreditUsed) {
+            const newCredit = currentCredit - storeCreditUsed;
+            await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
             
-            if (currentCredit >= storeCreditUsed) {
-              const newCredit = currentCredit - storeCreditUsed;
-              
-              // Deduct store credit from user account
-              await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
-              
-              // Record the transaction
-              await storage.createStoreCreditTransaction({
-                userId,
-                type: 'purchase_applied',
-                amount: (-storeCreditUsed).toFixed(2),
-                description: `Store credit applied to order ${session.id}`,
-                orderId: session.id,
-              });
-              
-              console.log(`[STORE CREDIT] Deducted $${storeCreditUsed} from user ${userId}, new balance: $${newCredit.toFixed(2)}`);
-            } else {
-              console.error(`[STORE CREDIT ERROR] User ${userId} insufficient balance for deduction of $${storeCreditUsed}`);
-            }
-          } catch (error) {
-            console.error('[WEBHOOK ERROR] Store credit processing failed:', error);
+            await storage.createStoreCreditTransaction({
+              userId,
+              type: 'purchase_applied',
+              amount: (-storeCreditUsed).toFixed(2),
+              description: `Store credit applied to Cash App order ${orderId}`,
+              orderId: orderId,
+            });
           }
         }
         
-        // Award points for the purchase (excluding store credit discount)
-        if (userId) {
-          try {
-            const purchaseAmount = session.amount_total ? (session.amount_total / 100) + storeCreditUsed : 0;
-            const pointsToAward = Math.floor(purchaseAmount * 10); // 10 points per dollar spent
-            
-            if (pointsToAward > 0) {
-              const userReward = await storage.getUserRewards(userId);
-              const currentPoints = userReward?.totalPoints || 0;
-              
-              await storage.updateUserPoints(userId, currentPoints + pointsToAward);
-              
-              await storage.createPointTransaction({
-                userId,
-                points: pointsToAward,
-                type: 'earned',
-                description: `Purchase reward: $${purchaseAmount.toFixed(2)} order`,
-              });
-              
-              console.log(`[POINTS] Awarded ${pointsToAward} points to user ${userId} for purchase of $${purchaseAmount.toFixed(2)}`);
-            }
-          } catch (error) {
-            console.error('[WEBHOOK ERROR] Points processing failed:', error);
-          }
+        // Award points for the purchase
+        const pointsToAward = Math.floor(orderTotal * 10); // 10 points per dollar spent
+        if (pointsToAward > 0) {
+          const userReward = await storage.getUserRewards(userId);
+          const currentPoints = userReward?.totalPoints || 0;
+          
+          await storage.updateUserPoints(userId, currentPoints + pointsToAward);
+          
+          await storage.createPointTransaction({
+            userId,
+            points: pointsToAward,
+            type: 'earned',
+            description: `Cash App purchase reward: $${orderTotal.toFixed(2)} order`,
+          });
         }
       }
 
-      res.json({received: true});
+      res.json({ success: true, message: "Payment confirmed and order processed" });
     } catch (error: any) {
-      console.error('Webhook error:', error);
-      res.status(400).send(`Webhook Error: ${error.message}`);
+      console.error('Cash App confirmation error:', error);
+      res.status(500).json({ message: "Error confirming payment: " + error.message });
     }
   });
 

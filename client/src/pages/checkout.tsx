@@ -96,7 +96,7 @@ export default function Checkout() {
         .find(row => row.startsWith('affiliate_ref='))
         ?.split('=')[1];
 
-      const response = await apiRequest("/api/create-checkout-session", {
+      const response = await apiRequest("/api/create-cash-app-order", {
         method: "POST",
         body: { 
           items,
@@ -107,15 +107,24 @@ export default function Checkout() {
         }
       });
 
-      // Redirect to Stripe's hosted checkout page
-      window.location.href = response.url;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
+      // Show detailed instructions toast
       toast({
-        title: "Checkout Failed",
-        description: error.message || "Unable to start checkout process. Please try again.",
+        title: "Payment Instructions",
+        description: response.instructions,
+        duration: 10000,
+      });
+      
+      // Open Cash App payment link
+      window.open(response.cashAppLink, '_blank');
+      
+    } catch (error: any) {
+      console.error('Cash App order error:', error);
+      toast({
+        title: "Order Failed",
+        description: error.message || "Unable to create order. Please try again.",
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -307,9 +316,9 @@ export default function Checkout() {
                   <div className="flex items-start space-x-3">
                     <Shield className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-white font-medium">Secure Payment Processing</p>
+                      <p className="text-white font-medium">Cash App Pay</p>
                       <p className="text-white/70 text-sm">
-                        256-bit SSL encryption with Stripe
+                        Secure payment with Cash App - THCA-friendly processing
                       </p>
                     </div>
                   </div>
@@ -365,26 +374,33 @@ export default function Checkout() {
               <Button
                 onClick={handleCheckout}
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                style={{ backgroundColor: '#00d632' }}
+                className="w-full hover:bg-[#00c02e] text-white py-4 text-lg font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200"
                 data-testid="button-proceed-to-checkout"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Redirecting to Checkout...
+                    Creating Order...
                   </>
                 ) : (
                   <>
                     <CreditCard className="mr-2 h-5 w-5" />
-                    Proceed to Secure Checkout - ${total.toFixed(2)}
+                    Pay with Cash App - ${total.toFixed(2)}
                   </>
                 )}
               </Button>
 
-              <div className="text-center">
-                <p className="text-white/60 text-xs">
-                  You'll be redirected to Stripe's secure checkout page to complete your payment
-                </p>
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mt-4">
+                <div className="text-center">
+                  <p className="text-green-400 font-medium text-sm mb-2">
+                    ✅ Payment Instructions
+                  </p>
+                  <p className="text-white/80 text-xs">
+                    After clicking the button above, include your product names in the Cash App payment note. 
+                    We'll confirm your order via email within 24 hours.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
