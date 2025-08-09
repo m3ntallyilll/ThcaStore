@@ -5,13 +5,22 @@ import { storage } from "./storage";
 import { aiAssistant } from "./ai-assistant";
 import Stripe from "stripe";
 
+// Initialize Stripe in production mode
 if (!process.env.STRIPE_SECRET_KEY) {
-  console.warn('STRIPE_SECRET_KEY not found - Stripe payments will not work');
+  console.error('⚠️ STRIPE_SECRET_KEY not found - Payment processing will not work');
 }
 
 const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2025-07-30.basil",
 }) : null;
+
+// Ensure production mode for Stripe
+const STRIPE_MODE = process.env.STRIPE_SECRET_KEY?.startsWith('sk_live_') ? 'production' : 'test';
+if (STRIPE_MODE === 'test') {
+  console.warn('⚠️ Stripe is in TEST MODE - Switch to live keys for production');
+} else {
+  console.log('✅ Stripe is in PRODUCTION MODE');
+}
 import { 
   insertUserSchema, 
   loginSchema, 
@@ -2772,9 +2781,39 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         shipping_address_collection: {
           allowed_countries: ['US'],
         },
+        billing_address_collection: 'required',
         phone_number_collection: {
           enabled: true,
         },
+        metadata: {
+          stripe_mode: STRIPE_MODE,
+          created_at: new Date().toISOString(),
+          environment: process.env.NODE_ENV || 'production'
+        },
+        expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
+        allow_promotion_codes: true,
+        shipping_options: [
+          {
+            shipping_rate_data: {
+              type: 'fixed_amount',
+              fixed_amount: {
+                amount: 0,
+                currency: 'usd',
+              },
+              display_name: 'Free Shipping',
+              delivery_estimate: {
+                minimum: {
+                  unit: 'business_day',
+                  value: 3,
+                },
+                maximum: {
+                  unit: 'business_day',
+                  value: 7,
+                },
+              },
+            },
+          },
+        ],
       });
 
       res.json({ url: session.url, sessionId: session.id });

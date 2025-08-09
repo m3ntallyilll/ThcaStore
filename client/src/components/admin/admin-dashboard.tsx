@@ -417,7 +417,7 @@ export function AdminDashboard() {
         createdAt: null,
         weight: weight || null,
         featured,
-        rating,
+        rating: rating ? rating.toString() : null,
         thcaContent: thcaContent || null,
         strainType: strainType || null,
         effects: effects ? effects.split(',').map(e => e.trim()).filter(e => e) : null,
@@ -1178,18 +1178,19 @@ export function AdminDashboard() {
 
               {/* Product Delete Confirmation Dialog */}
               <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent>
+                <DialogContent className="bg-dark-800 border-gray-600">
                   <DialogHeader>
-                    <DialogTitle>Delete Product</DialogTitle>
+                    <DialogTitle className="text-white">Delete Product</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <p className="text-gray-300">
-                      Are you sure you want to delete "{productToDelete?.name}"? This action cannot be undone.
+                      Are you sure you want to delete <span className="font-semibold text-white">"{productToDelete?.name}"</span>? This action cannot be undone.
                     </p>
                     <div className="flex justify-end gap-2">
                       <Button 
                         variant="outline" 
                         onClick={() => setIsDeleteDialogOpen(false)}
+                        className="text-gray-300 border-gray-600 hover:bg-gray-700"
                       >
                         Cancel
                       </Button>
@@ -1201,8 +1202,9 @@ export function AdminDashboard() {
                           }
                         }}
                         disabled={deleteProductMutation.isPending}
+                        className="bg-red-600 hover:bg-red-700"
                       >
-                        {deleteProductMutation.isPending ? 'Deleting...' : 'Delete'}
+                        {deleteProductMutation.isPending ? 'Deleting...' : 'Delete Product'}
                       </Button>
                     </div>
                   </div>

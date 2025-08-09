@@ -122,16 +122,35 @@ export const useCart = create<CartState>((set, get) => ({
   },
 
   removeFromCart: async (itemId: string) => {
+    // Prevent concurrent removal attempts
+    const state = get() as any;
+    if (state.removingItems?.has(itemId)) {
+      console.log('Already removing item:', itemId);
+      return;
+    }
+
+    // Mark as removing
+    set((state: any) => ({
+      ...state,
+      removingItems: new Set([...(state.removingItems || []), itemId])
+    }));
+
     // Check if item exists before attempting removal
     const currentItems = get().items;
     const itemExists = currentItems.find(item => item.id === itemId);
     
     if (!itemExists) {
-      console.warn('Item already removed from cart:', itemId);
-      return; // Don't throw error, just exit gracefully
+      console.warn('Item not found in cart:', itemId);
+      // Clear removing flag
+      set((state: any) => {
+        const removing = new Set(state.removingItems);
+        removing.delete(itemId);
+        return { ...state, removingItems: removing };
+      });
+      return;
     }
 
-    // Immediately remove from local state for responsive UI
+    // Optimistically remove from UI immediately
     set(state => ({
       items: state.items.filter(item => item.id !== itemId)
     }));
@@ -140,26 +159,47 @@ export const useCart = create<CartState>((set, get) => ({
       await apiRequest(`/api/cart/${itemId}`, { 
         method: 'DELETE' 
       });
+      
+      // Success - clear removing flag
+      set((state: any) => {
+        const removing = new Set(state.removingItems);
+        removing.delete(itemId);
+        return { ...state, removingItems: removing };
+      });
     } catch (error: any) {
       console.error('Failed to remove from cart:', error);
       
+      // Clear removing flag
+      set((state: any) => {
+        const removing = new Set(state.removingItems);
+        removing.delete(itemId);
+        return { ...state, removingItems: removing };
+      });
+      
       // If 404, item was already removed, don't revert
-      if (error.status !== 404) {
-        // Only revert if it's not a 404 error
-        await get().fetchCart();
-        throw error;
+      if (error.status === 404 || error.message?.includes('404')) {
+        console.log('Item already removed from server');
+        return;
       }
+      
+      // For other errors, revert the UI
+      await get().fetchCart();
     }
   },
 
   clearCart: async () => {
+    // Optimistically clear UI
+    set({ items: [] });
+    
     try {
       await apiRequest('/api/cart/clear', { method: 'DELETE' });
-      set({ items: [] });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to clear cart:', error);
-      // Clear locally even if API fails
-      set({ items: [] });
+      // Already cleared locally, no need to revert unless critical
+      if (error.status >= 500) {
+        // Server error - refetch to ensure consistency
+        await get().fetchCart();
+      }
     }
   },
 
