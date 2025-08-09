@@ -139,12 +139,14 @@ PRODUCTS TO FEATURE:
 - Too Tall Pre-Roll ($13.99) - Balanced hybrid strain
 
 Create a blog post that:
-1. Uses the target keyword naturally 8-12 times
-2. Features products with direct purchase links
-3. Includes external authority links (USDA, DEA, research)
-4. Has clear H2/H3 structure for SEO
-5. Converts readers into customers
-6. Is 1200-1800 words for depth
+1. Uses proper heading hierarchy: H1 (title), H2 (main sections), H3 (subsections)
+2. Uses the target keyword naturally 8-12 times
+3. Features products with direct purchase links (/products?highlight=product-id)
+4. Includes external authority links (USDA, DEA, Congress.gov, NCBI)
+5. Has clear, readable structure with short paragraphs
+6. Converts readers into customers with CTAs
+7. Is 1200-1800 words for content depth
+8. Uses bullet points and numbered lists for readability
 
 Return JSON format:
 {
