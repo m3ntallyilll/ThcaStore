@@ -4,28 +4,32 @@ import { join } from 'path';
 // Product image URL mappings for your exact inventory
 export const productImageUrls = {
   // Pre-roll strains
-  'sour-diesel-infused': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'purple-koolaid-infused': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
-  'sour-lemon-diesel': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
-  'too-tall': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
-  'runtz': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
+  'sour-diesel-infused': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
+  'purple-koolaid-infused': '/attached_assets/generated_images/Purple_Koolaid_infused_flower_jar_30067145.png',
+  'sour-lemon-diesel': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
+  'too-tall': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
+  'runtz': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
 
   // Flower strains  
-  'grape-popsicle': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'purple-koolaid-diamonds': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
-  'sour-diesel-flower': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
-  'sour-lemon-diesel-flower': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
-  'sour-diesel-popcorn': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'wedding-cake': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
-  'girl-scout-cookies': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
-  'runtz-peppermint': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
+  'grape-popsicle': '/attached_assets/generated_images/Grape_Popsicle_flower_baggie_8d86f41d.png',
+  'purple-koolaid-diamonds': '/attached_assets/generated_images/Purple_Koolaid_infused_flower_jar_30067145.png',
+  'sour-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
+  'blue-dream': '/attached_assets/generated_images/Blue_Dream_flower_jar_05b30a27.png',
+  'green-crack': '/attached_assets/generated_images/Green_Crack_flower_baggie_7c187adb.png',
+  'og-kush': '/attached_assets/generated_images/OG_Kush_flower_jar_6fb8e90e.png',
+  'purple-punch': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
+  'sour-lemon-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
+  'sour-diesel-popcorn': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
+  'wedding-cake': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
+  'girl-scout-cookies': '/attached_assets/generated_images/Green_Crack_flower_baggie_7c187adb.png',
+  'runtz-peppermint': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
 
   // Pre-roll packs
-  'preroll-pack': '/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png',
+  'preroll-pack': '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png',
   'preroll-multi-pack': '/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png',
   
   // Variety packs
-  'variety-pack': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format'
+  'variety-pack': '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png'
 };
 
 // Generate image URLs based on product name/category
@@ -54,6 +58,10 @@ export function getProductImageUrl(productName: string, category: string): strin
   if (category === 'flower') {
     if (name.includes('grape popsicle')) return productImageUrls['grape-popsicle'];
     if (name.includes('purple koolaid')) return productImageUrls['purple-koolaid-diamonds'];
+    if (name.includes('blue dream')) return productImageUrls['blue-dream'];
+    if (name.includes('green crack')) return productImageUrls['green-crack'];
+    if (name.includes('og kush')) return productImageUrls['og-kush'];
+    if (name.includes('purple punch')) return productImageUrls['purple-punch'];
     if (name.includes('sour diesel') && name.includes('popcorn')) return productImageUrls['sour-diesel-popcorn'];
     if (name.includes('sour diesel')) return productImageUrls['sour-diesel-flower'];
     if (name.includes('sour lemon diesel')) return productImageUrls['sour-lemon-diesel-flower'];
