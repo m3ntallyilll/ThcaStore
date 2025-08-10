@@ -335,6 +335,7 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
               : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white'
           }`}
+          data-testid={`button-add-to-cart-${product.id}`}
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
           {currentVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}

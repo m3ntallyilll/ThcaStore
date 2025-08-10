@@ -1,0 +1,81 @@
+Your deployment attempt had the following errors:
+Duplicate class members in database-storage.ts causing warnings during build
+Application may be failing to start properly after successful build
+Configuration or code error preventing proper initialization
+Agent suggestions
+async updateReferral(id: string, updates: any): Promise<any> {
+    // First definition at line 862
+  }
+
+  // ... other code ...
+
+  async updateReferral(id: string, updates: any): Promise<any> {
+    // Duplicate definition at line 1859
+  }
+async updateReferral(id: string, updates: any): Promise<any> {
+    // Keep only one definition - merge functionality if needed
+    const result = await db.update(referralProgram)
+      .set(updates)
+      .where(eq(referralProgram.id, id))
+      .returning();
+    return result[0];
+  }
+async getUserAchievements(userId: string): Promise<UserAchievement[]> {
+    // First definition at line 1542
+  }
+
+  // ... other code ...
+
+  async getUserAchievements(userId: string): Promise<any[]> {
+    // Duplicate definition at line 1867
+  }
+async getUserAchievements(userId: string): Promise<UserAchievement[]> {
+    return await db.select().from(userAchievements)
+      .where(eq(userAchievements.userId, userId))
+      .orderBy(desc(userAchievements.createdAt));
+  }
+async getUserStreaks(userId: string): Promise<LoyaltyStreak[]> {
+    // First definition at line 1661
+  }
+
+  // ... other code ...
+
+  async getUserStreaks(userId: string): Promise<any> {
+    // Duplicate definition at line 1886
+  }
+async getUserStreaks(userId: string): Promise<LoyaltyStreak[]> {
+    return await db.select().from(loyaltyStreaks)
+      .where(eq(loyaltyStreaks.userId, userId));
+  }
+server.listen({
+    port,
+    host: "0.0.0.0",
+    reusePort: true,
+  }, () => {
+    log(`serving on port ${port}`);
+  });
+server.listen({
+    port,
+    host: "0.0.0.0",
+    reusePort: true,
+  }, (err: any) => {
+    if (err) {
+      console.error('Failed to start server:', err);
+      process.exit(1);
+    }
+    log(`serving on port ${port}`);
+  });
+(async () => {
+  const server = await registerRoutes(app);
+(async () => {
+  try {
+    // Initialize database first
+    const { storage } = await import('./database-storage.js');
+    await storage.initialize();
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.error('Database initialization failed:', error);
+    process.exit(1);
+  }
+  
+  const server = await registerRoutes(app);
