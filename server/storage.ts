@@ -511,6 +511,7 @@ export class MemStorage implements IStorage {
       isAdmin: insertUser.isAdmin ?? false,
       firstName: insertUser.firstName ?? null,
       lastName: insertUser.lastName ?? null,
+      storeCredit: insertUser.storeCredit ?? "0.00",
       createdAt: new Date() 
     };
     this.users.set(id, user);
@@ -703,6 +704,7 @@ export class MemStorage implements IStorage {
       ...insertOrder,
       id,
       status: insertOrder.status || "pending",
+      paymentMethod: insertOrder.paymentMethod ?? null,
       shippingCost: insertOrder.shippingCost || "0.00",
       shippingMethod: insertOrder.shippingMethod || "standard",
       trackingNumber: insertOrder.trackingNumber || null,
@@ -805,11 +807,85 @@ export class MemStorage implements IStorage {
       firstName: 'Admin',
       lastName: 'User',
       isAdmin: true,
+      storeCredit: "0.00",
       createdAt: new Date()
     };
 
     this.users.set(adminUser.id, adminUser);
     console.log('✓ Default admin user created: admin@thca-store.com / admin123');
+    
+    // Create sample order for testing
+    await this.createSampleOrder(adminUser.id);
+  }
+
+  private async createSampleOrder(userId: string): Promise<void> {
+    try {
+      // Create a sample order for testing
+      const sampleOrder: Order = {
+        id: randomUUID(),
+        orderNumber: 'MC123456',
+        userId: userId,
+        status: 'processing',
+        paymentMethod: 'Cash App Pay',
+        cashAppAmount: '89.99',
+        productNames: 'Purple Koolaid 3.5g, Sour Diesel Preroll',
+        subtotal: '79.99',
+        shippingCost: '10.00',
+        tax: '0.00',
+        total: '89.99',
+        shippingMethod: 'standard',
+        trackingNumber: 'TRK789123456',
+        estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+        totalWeight: '4.75',
+        shippingName: 'John Doe',
+        shippingEmail: 'john@example.com',
+        shippingPhone: '555-0123',
+        shippingAddress: '123 Main St',
+        shippingAddress2: 'Apt 4B',
+        shippingCity: 'Las Vegas',
+        shippingState: 'NV',
+        shippingZip: '89101',
+        paymentStatus: 'paid',
+
+        affiliateCode: null,
+        createdAt: new Date()
+      };
+      
+      this.orders.set(sampleOrder.id, sampleOrder);
+
+      // Create sample order items
+      const products = Array.from(this.products.values());
+      if (products.length > 0) {
+        const purpleKoolaid = products.find(p => p.name.includes('Purple Koolaid')) || products[0];
+        const sourDiesel = products.find(p => p.name.includes('Sour Diesel')) || products[1];
+
+        if (purpleKoolaid) {
+          const orderItem1: OrderItem = {
+            id: randomUUID(),
+            orderId: sampleOrder.id,
+            productId: purpleKoolaid.id,
+            quantity: 1,
+            price: '49.99'
+          };
+          this.orderItems.set(orderItem1.id, orderItem1);
+        }
+
+        if (sourDiesel) {
+          const orderItem2: OrderItem = {
+            id: randomUUID(),
+            orderId: sampleOrder.id,
+            productId: sourDiesel.id,
+            quantity: 2,
+            price: '20.00'
+          };
+          this.orderItems.set(orderItem2.id, orderItem2);
+        }
+      }
+
+      console.log('✓ Sample order MC123456 created for testing');
+    } catch (error) {
+      console.error('Error creating sample order:', error);
+    }
   }
 
   private async initializeAISalesStrategy(): Promise<void> {
