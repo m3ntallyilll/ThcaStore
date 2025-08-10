@@ -110,18 +110,23 @@ const stateData: Record<string, StateInfo> = {
   }
 };
 
-export default function StateTHCA() {
+interface StateTHCAProps {
+  defaultState?: string;
+  defaultCity?: string;
+}
+
+export default function StateTHCA({ defaultState, defaultCity }: StateTHCAProps = {}) {
   const params = useParams();
-  const [selectedState, setSelectedState] = useState<string>('california');
+  const [selectedState, setSelectedState] = useState<string>(defaultState || 'california');
   
-  // Get state from URL parameter or default to California
+  // Get state from URL parameter, props, or default to California
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const urlState = params.state || urlParams.get('state');
+    const urlState = params.state || urlParams.get('state') || defaultState;
     if (urlState && stateData[urlState.toLowerCase()]) {
       setSelectedState(urlState.toLowerCase());
     }
-  }, [params]);
+  }, [params, defaultState]);
 
   const currentState = stateData[selectedState];
   
@@ -131,11 +136,14 @@ export default function StateTHCA() {
 
   const featuredProducts = Array.isArray(products) ? products.slice(0, 6) : [];
 
-  // Generate SEO data for current state
-  const seoTitle = `Buy THCA in ${currentState?.name} | Premium THCA Flower & Pre-Rolls | Mentally Chill`;
-  const seoDescription = `Buy premium THCA flower in ${currentState?.name}. Fast ${currentState?.shippingTime} delivery, lab-tested quality, legal hemp THCA products. ${currentState?.legalStatus}. Shop now!`;
-  const seoKeywords = `THCA ${currentState?.name}, buy THCA in ${currentState?.name}, THCA flower ${currentState?.name}, THCA delivery ${currentState?.name}, legal THCA ${currentState?.name}, THCA store ${currentState?.name}, THCA dispensary ${currentState?.name}, premium THCA ${currentState?.name}`;
-  const canonicalUrl = `https://mentally-chill.replit.app/thca/${selectedState}`;
+  // Generate SEO data for current state and optional city
+  const cityText = defaultCity ? ` ${defaultCity.replace('-', ' ')}` : '';
+  const seoTitle = `Buy THCA in${cityText} ${currentState?.name} | Premium THCA Flower & Pre-Rolls | Mentally Chill`;
+  const seoDescription = `Buy premium THCA flower in${cityText} ${currentState?.name}. Fast ${currentState?.shippingTime} delivery, lab-tested quality, legal hemp THCA products. ${currentState?.legalStatus}. Shop now!`;
+  const seoKeywords = `THCA ${currentState?.name}, buy THCA in ${currentState?.name}${defaultCity ? `, THCA ${defaultCity}` : ''}, THCA flower ${currentState?.name}, THCA delivery ${currentState?.name}, legal THCA ${currentState?.name}, THCA store ${currentState?.name}, THCA dispensary ${currentState?.name}, premium THCA ${currentState?.name}`;
+  const canonicalUrl = defaultCity ? 
+    `https://mentally-chill.replit.app/thca-${defaultCity}-${selectedState}` :
+    `https://mentally-chill.replit.app/thca/${selectedState}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-emerald-950/20 to-black">

@@ -18,6 +18,8 @@ import { Footer } from "@/components/layout/footer";
 
 // Pages
 import Home from "@/pages/home";
+import About from "@/pages/about";
+import Contact from "@/pages/contact";
 import Products from "@/pages/products";
 import Cart from "@/pages/cart";
 import Checkout from './pages/checkout';
@@ -35,11 +37,25 @@ import NotFound from "@/pages/not-found";
 import StateTHCA from "@/pages/state-thca";
 import StrainLanding from "@/pages/strain-landing";
 import ReferralsPage from "@/pages/referrals";
+import {
+  THCADenverColorado,
+  THCALasVegasNevada,
+  THCALosAngelesCalifornia,
+  THCAPortlandOregon,
+  THCASeattleWashington,
+  THCAPhoenixArizona,
+  THCAAtlantaGeorgia,
+  THCAMiamiFlorida,
+  THCAAustinTexas,
+  THCAChicagoIllinois
+} from "@/pages/thca-locations";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
       <Route path="/products" component={Products} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
@@ -53,6 +69,17 @@ function Router() {
       <Route path="/returns" component={Returns} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-service" component={TermsOfService} />
+      {/* Location-specific THCA pages */}
+      <Route path="/thca-denver-colorado" component={THCADenverColorado} />
+      <Route path="/thca-las-vegas-nevada" component={THCALasVegasNevada} />
+      <Route path="/thca-los-angeles-california" component={THCALosAngelesCalifornia} />
+      <Route path="/thca-portland-oregon" component={THCAPortlandOregon} />
+      <Route path="/thca-seattle-washington" component={THCASeattleWashington} />
+      <Route path="/thca-phoenix-arizona" component={THCAPhoenixArizona} />
+      <Route path="/thca-atlanta-georgia" component={THCAAtlantaGeorgia} />
+      <Route path="/thca-miami-florida" component={THCAMiamiFlorida} />
+      <Route path="/thca-austin-texas" component={THCAAustinTexas} />
+      <Route path="/thca-chicago-illinois" component={THCAChicagoIllinois} />
       <Route path="/thca/:state" component={StateTHCA} />
       <Route path="/thca" component={StateTHCA} />
       <Route path="/strains/:strainType" component={StrainLanding} />

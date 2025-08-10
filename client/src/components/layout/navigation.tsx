@@ -37,6 +37,12 @@ export function Navigation() {
                 <Link href="/products" className="hover:text-glow-green-400 transition-colors duration-300">
                   Products
                 </Link>
+                <Link href="/about" className="hover:text-glow-green-400 transition-colors duration-300">
+                  About
+                </Link>
+                <Link href="/contact" className="hover:text-glow-green-400 transition-colors duration-300">
+                  Contact
+                </Link>
                 <Link href="/blog" className="hover:text-glow-green-400 transition-colors duration-300">
                   Blog
                 </Link>
@@ -138,6 +144,12 @@ export function Navigation() {
             <div className="md:hidden py-4 space-y-2 border-t border-gray-700">
               <Link href="/products" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                 Products
+              </Link>
+              <Link href="/about" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
+                About
+              </Link>
+              <Link href="/contact" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
+                Contact
               </Link>
               <Link href="/blog" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                 Blog
