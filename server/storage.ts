@@ -122,6 +122,8 @@ export interface IStorage {
   getUserOrderCount(userId: string): Promise<number>;
   claimAchievementReward(userId: string, achievementId: string): Promise<any>;
   recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void>;
+  updateLeaderboard(): Promise<void>;
+  getUserPoints(userId: string): Promise<number>;
 }
 
 export class MemStorage implements IStorage {

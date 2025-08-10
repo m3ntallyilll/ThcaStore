@@ -77,7 +77,7 @@ function generateComplementaryRecommendations(products: any[], cartIds: string[]
   if (!cartIds.length) return [];
 
   const cartProducts = products.filter(p => cartIds.includes(p.id));
-  const cartCategories = [...new Set(cartProducts.map(p => p.category))];
+  const cartCategories = Array.from(new Set(cartProducts.map(p => p.category)));
 
   const complementCategories = ['flower', 'prerolls', 'concentrates', 'edibles']
     .filter(cat => !cartCategories.includes(cat));
@@ -116,7 +116,7 @@ function generateBalancedCatalog() {
 
   const effects = ['relaxing', 'energizing', 'creative', 'focused', 'euphoric', 'calming'];
 
-  const products = [];
+  const products: any[] = [];
 
   Object.entries(strains).forEach(([strainType, strainNames]) => {
     strainNames.forEach((strainName, strainIndex) => {
@@ -129,7 +129,7 @@ function generateBalancedCatalog() {
             edibles: { '100mg': 20, '250mg': 35, '500mg': 65, '1000mg': 120 }
           };
 
-          const basePrice = basePrices[category as keyof typeof basePrices][weight as keyof typeof basePrices[typeof category]];
+          const basePrice = (basePrices as any)[category][weight];
           const priceVariation = 1 + (Math.random() - 0.5) * 0.4;
           const finalPrice = Math.round(basePrice * priceVariation);
 
@@ -139,7 +139,7 @@ function generateBalancedCatalog() {
           const variants = weightList.map((w, i) => ({
             id: `variant-${Date.now()}-${Math.random().toString(36).slice(2)}`,
             weight: w,
-            price: Math.round(basePrices[category as keyof typeof basePrices][w as keyof typeof basePrices[typeof category]] * priceVariation),
+            price: Math.round((basePrices as any)[category][w] * priceVariation),
             stock: Math.floor(20 + Math.random() * 80),
             isDefault: i === weightIndex
           }));
@@ -172,6 +172,8 @@ function generateBalancedCatalog() {
           });
         });
       });
+    });
+  });
 
   return products;
 }
@@ -208,11 +210,11 @@ const authenticateToken = async (req: any, res: any, next: any) => {
       id: user.id || decoded.userId 
     };
     next();
-  } catch (error) {
+  } catch (error: any) {
     console.error('Token verification error:', error);
-    if (error.name === 'TokenExpiredError') {
+    if (error?.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Token expired - please log in again' });
-    } else if (error.name === 'JsonWebTokenError') {
+    } else if (error?.name === 'JsonWebTokenError') {
       return res.status(401).json({ message: 'Invalid token - please log in again' });
     }
     return res.status(403).json({ message: 'Authentication failed' });
