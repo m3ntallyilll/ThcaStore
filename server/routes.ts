@@ -1142,7 +1142,7 @@ function shuffleArray(array: any[]) {
         return res.status(400).json({ error: 'Invalid order number format. Order numbers should start with MC (e.g., MC123456)' });
       }
 
-      // Check for the specific test order MC123456
+      // Check for the specific test order MC123456 (Paid Shipping with Tracking)
       if (orderNumber === 'MC123456') {
         const trackingData = {
           id: 'test-order-123',
@@ -1170,15 +1170,49 @@ function shuffleArray(array: any[]) {
             }
           ],
           shippingAddress: '123 Main St, Las Vegas, NV 89101',
+          shippingMethod: 'Express Shipping (Tracked)',
+          shippingCost: 15.99,
           trackingNumber: 'TRK789123456',
-          estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+          estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
           paymentMethod: 'Cash App Pay',
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
+          hasTracking: true
         };
         return res.json(trackingData);
       }
 
-      // For other orders, try to find in storage (when that's working)
+      // Check for free envelope shipping order MC111111 (No Tracking)
+      if (orderNumber === 'MC111111') {
+        const trackingData = {
+          id: 'test-order-envelope',
+          orderNumber: 'MC111111',
+          status: 'shipped',
+          total: 25.00,
+          items: [
+            {
+              name: 'Hemp Flower Sample 1g',
+              quantity: 1,
+              price: 25.00,
+              imageUrl: '/public-objects/hemp-sample.jpg',
+              category: 'flower',
+              weight: '1g',
+              thcaContent: '18.2'
+            }
+          ],
+          shippingAddress: '456 Oak Ave, Henderson, NV 89052',
+          shippingMethod: 'Free Envelope Shipping (Untracked)',
+          shippingCost: 0.00,
+          trackingNumber: null,
+          estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+          paymentMethod: 'Cash App Pay',
+          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+          hasTracking: false,
+          shippingNote: 'Free envelope shipping - No tracking available. Allow 5-10 business days for delivery.'
+        };
+        return res.json(trackingData);
+      }
+
+      // For other orders, return not found message
       res.status(404).json({ error: 'Order not found. Please check your order number and try again.' });
     } catch (error: any) {
       console.error('Error tracking order:', error);

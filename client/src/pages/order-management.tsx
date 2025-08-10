@@ -25,10 +25,14 @@ interface Order {
     thcaContent?: string;
   }>;
   shippingAddress: string;
+  shippingMethod?: string;
+  shippingCost?: number;
   trackingNumber?: string;
   estimatedDelivery: string;
   paymentMethod: string;
   createdAt: string;
+  hasTracking?: boolean;
+  shippingNote?: string;
 }
 
 const statusConfig = {
@@ -144,7 +148,15 @@ export default function OrderManagement() {
             <Search className="w-5 h-5" />
             Track Your Order
           </CardTitle>
-          <p className="text-gray-400">Enter your order number (format: MC123456) to track your shipment</p>
+          <div className="space-y-2">
+            <p className="text-gray-400">Enter your order number (format: MC123456) to track your shipment</p>
+            <div className="bg-amber-900/30 border border-amber-600/30 p-3 rounded-lg">
+              <p className="text-amber-300 text-sm">
+                <strong>Shipping Policy:</strong> Only orders with paid shipping include tracking. 
+                Free envelope shipping is untracked - allow 5-10 business days for delivery.
+              </p>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -221,12 +233,34 @@ export default function OrderManagement() {
                 <div>
                   <h4 className="font-semibold text-white mb-3">Delivery Information</h4>
                   <div className="space-y-2 text-sm">
-                    {searchedOrder.trackingNumber && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Shipping Method:</span>
+                      <span className="text-white">{searchedOrder.shippingMethod || 'Standard Shipping'}</span>
+                    </div>
+                    {searchedOrder.shippingCost !== undefined && (
+                      <div className="flex justify-between">
+                        <span className="text-gray-400">Shipping Cost:</span>
+                        <span className="text-white">
+                          {searchedOrder.shippingCost === 0 ? 'FREE' : `$${searchedOrder.shippingCost.toFixed(2)}`}
+                        </span>
+                      </div>
+                    )}
+                    {searchedOrder.hasTracking && searchedOrder.trackingNumber ? (
                       <div className="flex justify-between">
                         <span className="text-gray-400">Tracking Number:</span>
                         <span className="text-blue-400 font-mono">{searchedOrder.trackingNumber}</span>
                       </div>
-                    )}
+                    ) : searchedOrder.hasTracking === false ? (
+                      <div className="bg-yellow-900/30 border border-yellow-600/30 p-3 rounded-lg">
+                        <div className="flex items-center gap-2 text-yellow-400 text-xs">
+                          <Package className="w-4 h-4" />
+                          <span className="font-medium">No Tracking Available</span>
+                        </div>
+                        <p className="text-yellow-300 text-xs mt-1">
+                          {searchedOrder.shippingNote || 'This order shipped via free envelope - tracking not included.'}
+                        </p>
+                      </div>
+                    ) : null}
                     <div className="flex justify-between">
                       <span className="text-gray-400">Estimated Delivery:</span>
                       <span className="text-white">{formatDate(searchedOrder.estimatedDelivery)}</span>
