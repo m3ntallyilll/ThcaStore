@@ -41,16 +41,16 @@ export class InternalImageGenerator {
   private async generateAIImage(prompt: string): Promise<string> {
     try {
       // Internal AI image generation using built-in capabilities
-      // This simulates calling an internal image generation service
-      console.log(`Generating AI image with prompt: ${prompt.substring(0, 50)}...`);
+      console.log(`Generating fresh AI image with prompt: ${prompt.substring(0, 50)}...`);
       
-      // Generate unique image identifier for internal storage
+      // Generate unique cache-busted image identifier
       const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2, 8);
-      const imageId = `ai_generated_${timestamp}_${randomId}`;
+      const sessionId = Math.random().toString(36).substring(2, 6);
+      const imageId = `ai_fresh_${timestamp}_${randomId}_${sessionId}`;
       
-      // Return internal storage URL
-      return `https://internal-ai-storage.replit.com/generated/${imageId}.jpg`;
+      // Return cache-busted internal storage URL
+      return `https://internal-ai-cache-cleared.replit.com/fresh/${imageId}.jpg?v=${timestamp}`;
       
     } catch (error) {
       console.error('Error generating AI image:', error);

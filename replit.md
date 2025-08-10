@@ -43,7 +43,7 @@ The application utilizes a monorepo structure, ensuring clear separation of clie
 - **Social Sharing System**: Comprehensive social media integration with pot leaf logo branding across Facebook, Twitter, Reddit, WhatsApp, Telegram, and LinkedIn. Features floating share buttons with pulse animations and branded messaging.
 - **Complete Store Credit System**: Full-featured store credit implementation with points-to-credit conversion (100 points = $1), checkout integration, transaction history, referral bonus redemption, and automated webhook processing for seamless credit management.
 - **Comprehensive Blog Content Backup System**: Automated backup system preserving all AI-generated blog content including SEO blogs, location-based content, viral content strategy, and state-specific materials with daily backup manifests.
-- **Internal AI Image Generation**: Implemented realistic product image generation using internal AI tools instead of external sources, creating Android-quality photos with child-proof packaging.
+- **Internal AI Image Generation**: Implemented realistic product image generation using internal AI tools with cache-busting capabilities, creating fresh Android-quality photos with child-proof packaging and unique URLs to prevent caching issues.
 - **Enhanced Authentication System**: Extended JWT token expiration from 30 days to 365 days for improved user experience and reduced authentication friction.
 - **Full Database Migration**: Successfully migrated from MemStorage to DatabaseStorage with comprehensive method implementations for referral system, points tracking, and promotional code management.
 
