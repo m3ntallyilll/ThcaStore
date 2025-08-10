@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
+import { getProductPricingConfig, calculateQuantityPrice } from '@/utils/product-pricing';
 import type { Product } from '@shared/schema';
 import { AIProductRecommendations } from '@/components/recommendations/ai-product-recommendations';
 
@@ -22,6 +23,17 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
   const { toast } = useToast();
 
   if (!product) return null;
+  
+  // Get pricing configuration for this product
+  const pricingConfig = getProductPricingConfig(product.name, product.category);
+  
+  // Calculate display price based on pricing config
+  const getDisplayPrice = () => {
+    if (pricingConfig.useQuantityScaling) {
+      return calculateQuantityPrice(parseFloat(product.price), quantity);
+    }
+    return parseFloat(product.price);
+  };
 
   const handleAddToCart = async () => {
     // Remove login requirement - cart works for guests too
@@ -35,10 +47,11 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
     // }
 
     try {
-      await addToCart(product.id, quantity);
+      const cartQuantity = pricingConfig.useQuantityScaling ? quantity : 1;
+      await addToCart(product.id, cartQuantity);
       toast({
         title: "Added to cart",
-        description: `Added ${quantity} ${product.name} to cart!`
+        description: `Added ${cartQuantity}x ${product.name} to cart!`
       });
       onClose();
     } catch (error) {
@@ -100,7 +113,16 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                 <div>
                   <h2 className="text-3xl font-display font-bold mb-2">{product.name}</h2>
                   <div className="flex items-center space-x-4 mb-4">
-                    <span className="text-3xl font-bold text-gold">${product.price}</span>
+                    <div className="flex flex-col">
+                      <span className="text-3xl font-bold text-gold">
+                        ${getDisplayPrice().toFixed(2)}
+                      </span>
+                      {pricingConfig.useQuantityScaling && quantity > 1 && (
+                        <span className="text-sm text-gray-400">
+                          ${parseFloat(product.price)} each
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center text-yellow-400">
                       <Star className="w-5 h-5 fill-current mr-1" />
                       <span>{product.rating}</span>
@@ -148,29 +170,70 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                   </div>
                 )}
 
-                {/* Quantity Selector */}
-                <div className="flex items-center space-x-4">
-                  <span className="font-semibold">Quantity:</span>
-                  <div className="flex items-center space-x-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="h-10 w-10"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <span className="w-12 text-center font-semibold">{quantity}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                      className="h-10 w-10"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                {/* Quantity Selector for quantity-scaled products */}
+                {pricingConfig.useQuantityScaling ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold">Quantity:</span>
+                      <div className="flex items-center space-x-3">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          disabled={quantity <= 1}
+                          className="bg-gray-800 border-gray-600 hover:bg-gray-700 h-10 w-10"
+                        >
+                          <Minus className="w-4 h-4" />
+                        </Button>
+                        <span className="text-xl font-bold w-12 text-center text-emerald-400">{quantity}</span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                          disabled={quantity >= product.stock}
+                          className="bg-gray-800 border-gray-600 hover:bg-gray-700 h-10 w-10"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    {quantity >= 3 && (
+                      <div className="text-center">
+                        <Badge className="bg-green-500 text-white">
+                          {quantity >= 10 ? '15% Bulk Discount Applied!' : 
+                           quantity >= 5 ? '10% Bulk Discount Applied!' : 
+                           '5% Bulk Discount Applied!'}
+                        </Badge>
+                      </div>
+                    )}
                   </div>
-                </div>
+                ) : (
+                  /* Traditional quantity selector for weight-option products */
+                  <div className="flex items-center space-x-4">
+                    <span className="font-semibold">Quantity:</span>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        disabled={quantity <= 1}
+                        className="bg-gray-800 border-gray-600 hover:bg-gray-700 h-10 w-10"
+                      >
+                        <Minus className="w-4 h-4" />
+                      </Button>
+                      <span className="w-12 text-center font-semibold text-emerald-400">{quantity}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                        disabled={quantity >= product.stock}
+                        className="bg-gray-800 border-gray-600 hover:bg-gray-700 h-10 w-10"
+                      >
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Add to Cart Button */}
                 <Button
@@ -179,7 +242,9 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                   className="w-full bg-gradient-to-r from-hemp to-hemp-600 hover:from-hemp-600 hover:to-hemp text-white py-4 rounded-xl font-semibold text-lg hover:shadow-lg hover:shadow-hemp/30 transition-all duration-300"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
-                  {product.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}
+                  {product.stock === 0 ? 'Out of Stock' : 
+                   pricingConfig.useQuantityScaling ? `Add ${quantity}x to Cart - $${getDisplayPrice().toFixed(2)}` :
+                   `Add ${quantity} to Cart`}
                 </Button>
               </div>
             </div>
