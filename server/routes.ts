@@ -2780,9 +2780,13 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         `${item.quantity}x ${item.product.name}`
       ).join(', ');
 
+      // Generate human-readable order number
+      const orderNumber = `MC${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 100).toString().padStart(2, '0')}`;
+
       // Create pending order in database
       const orderData = {
         userId: userId || '',
+        orderNumber: orderNumber,
         status: 'pending_payment',
         paymentMethod: 'cash_app',
         subtotal: subtotal.toFixed(2),
@@ -2821,12 +2825,114 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         cashAppLink: cashAppLink,
         total: total.toFixed(2),
         productNames: productNames,
-        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.id}\n\n💬 Include your order number in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
+        orderNumber: order.orderNumber,
+        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.orderNumber}\n\n💬 Include order #${order.orderNumber} in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
       });
 
     } catch (error: any) {
       console.error('Cash App order error:', error);
       res.status(500).json({ message: "Error creating order: " + error.message });
+    }
+  });
+
+  // Order Management Routes
+  // Get user's orders
+  app.get("/api/orders", authenticateToken, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      const orders = await storage.getUserOrders(userId);
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get specific order by ID or order number
+  app.get("/api/orders/:identifier", authenticateToken, async (req, res) => {
+    try {
+      const { identifier } = req.params;
+      const userId = req.user?.id;
+      const isAdmin = req.user?.isAdmin;
+      
+      let order;
+      if (identifier.startsWith('MC')) {
+        // Search by order number
+        order = await storage.getOrderByNumber(identifier);
+      } else {
+        // Search by order ID
+        order = await storage.getOrder(identifier);
+      }
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Check if user owns this order or is admin
+      if (!isAdmin && order.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      res.json(order);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Update order status (admin only)
+  app.put("/api/orders/:orderId/status", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { status, trackingNumber, notes } = req.body;
+      
+      const order = await storage.updateOrderStatus(orderId, status, trackingNumber, notes);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      res.json({ success: true, order });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Search orders by order number (for quick lookup)
+  app.get("/api/orders/search/:orderNumber", authenticateToken, async (req, res) => {
+    try {
+      const { orderNumber } = req.params;
+      const userId = req.user?.id;
+      const isAdmin = req.user?.isAdmin;
+      
+      const order = await storage.getOrderByNumber(orderNumber.toUpperCase());
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Check if user owns this order or is admin
+      if (!isAdmin && order.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      res.json(order);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin: Get all orders with filtering
+  app.get("/api/admin/orders", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { status, paymentMethod, limit = '50', offset = '0' } = req.query;
+      const orders = await storage.getAllOrders({
+        status: status as string,
+        paymentMethod: paymentMethod as string,
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string)
+      });
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 
@@ -2863,7 +2969,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
               userId,
               type: 'purchase_applied',
               amount: (-storeCreditUsed).toFixed(2),
-              description: `Store credit applied to Cash App order ${orderId}`,
+              description: `Store credit applied to Cash App order ${order.orderNumber}`,
               orderId: orderId,
             });
           }

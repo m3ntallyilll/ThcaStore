@@ -40,14 +40,15 @@ export interface IStorage {
 
   // Order methods
   getOrders(userId?: string): Promise<Order[]>;
-  getAllOrders(): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]>;
+  getAllOrders(filters?: { status?: string; paymentMethod?: string; limit?: number; offset?: number }): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]>;
   getAllOrdersWithDetails(): Promise<any[]>;
   getUserOrders(userId: string): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
+  getOrderByNumber(orderNumber: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   getOrderItems(orderId: string): Promise<(OrderItem & { product: Product })[]>;
-  updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
+  updateOrderStatus(id: string, status: string, trackingNumber?: string, notes?: string): Promise<Order | undefined>;
 
   // Cart methods extensions
   removeCartItem(id: string): Promise<boolean>;
@@ -650,8 +651,29 @@ export class MemStorage implements IStorage {
     return Array.from(this.orders.values());
   }
 
-  async getAllOrders(): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]> {
-    const ordersWithUsers = Array.from(this.orders.values()).map(order => {
+  async getAllOrders(filters?: { status?: string; paymentMethod?: string; limit?: number; offset?: number }): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]> {
+    let orders = Array.from(this.orders.values());
+    
+    // Apply filters
+    if (filters?.status) {
+      orders = orders.filter(order => order.status === filters.status);
+    }
+    if (filters?.paymentMethod) {
+      orders = orders.filter(order => order.paymentMethod === filters.paymentMethod);
+    }
+    
+    // Sort by creation date (newest first)
+    orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    
+    // Apply pagination
+    if (filters?.offset) {
+      orders = orders.slice(filters.offset);
+    }
+    if (filters?.limit) {
+      orders = orders.slice(0, filters.limit);
+    }
+    
+    const ordersWithUsers = orders.map(order => {
       const user = this.users.get(order.userId);
       if (!user) throw new Error(`User not found: ${order.userId}`);
       return { 
@@ -669,6 +691,10 @@ export class MemStorage implements IStorage {
 
   async getOrder(id: string): Promise<Order | undefined> {
     return this.orders.get(id);
+  }
+
+  async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
+    return Array.from(this.orders.values()).find(order => order.orderNumber === orderNumber);
   }
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
@@ -708,11 +734,15 @@ export class MemStorage implements IStorage {
     return orderItemsWithProducts;
   }
 
-  async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
+  async updateOrderStatus(id: string, status: string, trackingNumber?: string, notes?: string): Promise<Order | undefined> {
     const order = this.orders.get(id);
     if (!order) return undefined;
     
     order.status = status;
+    if (trackingNumber !== undefined) {
+      order.trackingNumber = trackingNumber;
+    }
+    // Note: Adding notes field would require schema update, for now just update status and tracking
     this.orders.set(id, order);
     return order;
   }

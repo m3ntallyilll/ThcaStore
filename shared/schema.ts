@@ -47,8 +47,12 @@ export const cartItems = pgTable("cart_items", {
 
 export const orders = pgTable("orders", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  orderNumber: text("order_number").unique().notNull(), // Human-readable order number like "MC001234"
   userId: varchar("user_id").references(() => users.id).notNull(),
   status: text("status").notNull().default("pending"),
+  paymentMethod: text("payment_method").default("cash_app"), // cash_app, stripe, etc.
+  cashAppAmount: decimal("cash_app_amount", { precision: 10, scale: 2 }),
+  productNames: text("product_names"), // Quick reference for Cash App payments
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
   shippingCost: decimal("shipping_cost", { precision: 10, scale: 2 }).notNull().default("0.00"),
   tax: decimal("tax", { precision: 10, scale: 2 }).notNull(),
