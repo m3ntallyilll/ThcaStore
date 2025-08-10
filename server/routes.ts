@@ -1151,13 +1151,14 @@ function shuffleArray(array: any[]) {
           total: 89.99,
           items: [
             {
-              name: 'Purple Koolaid 3.5g Premium Flower',
+              name: 'Purple Koolaid Infused Premium Flower',
               quantity: 1,
               price: 49.99,
               imageUrl: '/public-objects/purple-koolaid-flower.jpg',
               category: 'flower',
               weight: '3.5g',
-              thcaContent: '28.5'
+              thcaContent: '28.5',
+              productType: 'infused flower'
             },
             {
               name: 'Sour Diesel Preroll 1.25g',

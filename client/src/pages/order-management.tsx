@@ -23,6 +23,7 @@ interface Order {
     category?: string;
     weight?: string;
     thcaContent?: string;
+    productType?: string;
   }>;
   shippingAddress: string;
   shippingMethod?: string;
@@ -302,6 +303,11 @@ export default function OrderManagement() {
                         {item.category && (
                           <span className="bg-gray-800 px-2 py-1 rounded capitalize">
                             {item.category}
+                          </span>
+                        )}
+                        {item.productType && (
+                          <span className="bg-purple-800 px-2 py-1 rounded">
+                            {item.productType}
                           </span>
                         )}
                         {item.weight && (
