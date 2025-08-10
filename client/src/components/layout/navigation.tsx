@@ -43,6 +43,9 @@ export function Navigation() {
                 <Link href="/contact" className="hover:text-glow-green-400 transition-colors duration-300">
                   Contact
                 </Link>
+                <Link href="/order-management" className="hover:text-glow-green-400 transition-colors duration-300">
+                  Track Order
+                </Link>
                 <Link href="/blog" className="hover:text-glow-green-400 transition-colors duration-300">
                   Blog
                 </Link>
@@ -150,6 +153,9 @@ export function Navigation() {
               </Link>
               <Link href="/contact" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                 Contact
+              </Link>
+              <Link href="/order-management" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
+                Track Order
               </Link>
               <Link href="/blog" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                 Blog

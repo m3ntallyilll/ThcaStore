@@ -20,6 +20,7 @@ import { Footer } from "@/components/layout/footer";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
+import OrderManagement from "@/pages/order-management";
 import Products from "@/pages/products";
 import Cart from "@/pages/cart";
 import Checkout from './pages/checkout';
@@ -56,6 +57,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
+      <Route path="/order-management" component={OrderManagement} />
+      <Route path="/track-order" component={OrderManagement} />
       <Route path="/products" component={Products} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />

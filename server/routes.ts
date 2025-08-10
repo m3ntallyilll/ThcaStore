@@ -1133,6 +1133,53 @@ function shuffleArray(array: any[]) {
     }
   });
 
+  // Order tracking route
+  app.get('/api/orders/track/:orderNumber', async (req, res) => {
+    try {
+      const { orderNumber } = req.params;
+      
+      if (!orderNumber || !orderNumber.startsWith('MC')) {
+        return res.status(400).json({ error: 'Invalid order number format. Order numbers should start with MC (e.g., MC123456)' });
+      }
+
+      const order = await storage.getOrderByNumber(orderNumber);
+      
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found. Please check your order number and try again.' });
+      }
+
+      // Get order items
+      const orderItems = await storage.getOrderItems(order.id);
+      
+      // Format order data for tracking
+      const trackingData = {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        status: order.status,
+        total: parseFloat(order.total),
+        items: orderItems.map(item => ({
+          name: item.product?.name || 'Product',
+          quantity: item.quantity,
+          price: parseFloat(item.price)
+        })),
+        shippingAddress: `${order.shippingAddress}, ${order.shippingCity}, ${order.shippingState} ${order.shippingZip}`,
+        trackingNumber: order.trackingNumber,
+        estimatedDelivery: order.estimatedDelivery || (() => {
+          const orderDate = new Date(order.createdAt);
+          const estimatedDelivery = new Date(orderDate.getTime() + (5 * 24 * 60 * 60 * 1000)); // 5 days from order
+          return estimatedDelivery.toISOString();
+        })(),
+        paymentMethod: order.paymentMethod || 'Cash App Pay',
+        createdAt: order.createdAt
+      };
+
+      res.json(trackingData);
+    } catch (error: any) {
+      console.error('Error tracking order:', error);
+      res.status(500).json({ error: 'Failed to retrieve order information' });
+    }
+  });
+
   app.put("/api/orders/:id/status", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const { status } = req.body;
