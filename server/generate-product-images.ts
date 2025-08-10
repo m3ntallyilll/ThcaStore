@@ -25,6 +25,7 @@ export const productImageUrls = {
   'runtz-peppermint': '/attached_assets/generated_images/Runtz_THCA_flower_22bdedde.png',
   'gelato': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
   'granddaddy-purple': '/attached_assets/generated_images/Purple_Punch_strain_cb63660e.png',
+  'premium-hemp-flower': '/attached_assets/generated_images/Premium_hemp_flower_buds_568629db.png',
 
   // Additional strains with realistic hemp quality
   'northern-lights': '/attached_assets/generated_images/Northern_Lights_hemp_strain_f76fb796.png',
@@ -58,15 +59,30 @@ export function getProductImageUrl(productName: string, category: string): strin
     if (name.includes('pack') && (name.includes('x4') || name.includes('x5') || name.includes('x6') || 
         name.includes('x7') || name.includes('x8') || name.includes('x9') || name.includes('x10') ||
         name.includes('4x') || name.includes('5x') || name.includes('6x') || 
-        name.includes('7x') || name.includes('8x') || name.includes('9x') || name.includes('10x'))) {
+        name.includes('7x') || name.includes('8x') || name.includes('9x') || name.includes('10x') ||
+        name.includes('2-pack') || name.includes('3-pack') || name.includes('5-pack') || 
+        name.includes('10-pack') || name.includes('15-pack') || name.includes('50-pack') || 
+        name.includes('100-pack'))) {
       return productImageUrls['preroll-multi-pack'];
     }
     
-    if (name.includes('sour diesel infused')) return productImageUrls['sour-diesel-infused'];
-    if (name.includes('purple koolaid infused')) return productImageUrls['purple-koolaid-infused'];
-    if (name.includes('sour lemon diesel')) return productImageUrls['sour-lemon-diesel'];
-    if (name.includes('too tall')) return productImageUrls['too-tall'];
-    if (name.includes('runtz')) return productImageUrls['runtz'];
+    if (name.includes('northern lights')) return productImageUrls['northern-lights'];
+    if (name.includes('jack herer')) return productImageUrls['jack-herer'];
+    if (name.includes('zkittlez')) return productImageUrls['sour-lemon-diesel'];
+    if (name.includes('sativa')) return productImageUrls['sativa-strain'];
+    if (name.includes('indica')) return productImageUrls['indica-strain'];
+    if (name.includes('hybrid')) return productImageUrls['variety-pack'];
+    if (name.includes('blue dream')) return productImageUrls['blue-dream'];
+    if (name.includes('og kush')) return productImageUrls['og-kush'];
+    if (name.includes('green crack')) return productImageUrls['green-crack'];
+    if (name.includes('purple punch')) return productImageUrls['purple-punch'];
+    if (name.includes('girl scout cookies')) return productImageUrls['girl-scout-cookies'];
+    if (name.includes('sour diesel')) return productImageUrls['sour-diesel-infused'];
+    if (name.includes('granddaddy purple')) return productImageUrls['granddaddy-purple'];
+    if (name.includes('gelato')) return productImageUrls['gelato'];
+    if (name.includes('wedding cake')) return productImageUrls['wedding-cake'];
+    if (name.includes('mixed weight')) return productImageUrls['variety-pack'];
+    if (name.includes('king size')) return productImageUrls['preroll-multi-pack'];
     if (name.includes('pack')) return productImageUrls['preroll-pack'];
   }
   
@@ -78,6 +94,11 @@ export function getProductImageUrl(productName: string, category: string): strin
     if (name.includes('green crack')) return productImageUrls['green-crack'];
     if (name.includes('og kush')) return productImageUrls['og-kush'];
     if (name.includes('purple punch')) return productImageUrls['purple-punch'];
+    if (name.includes('granddaddy purple')) return productImageUrls['granddaddy-purple'];
+    if (name.includes('gelato')) return productImageUrls['gelato'];
+    if (name.includes('northern lights')) return productImageUrls['northern-lights'];
+    if (name.includes('jack herer')) return productImageUrls['jack-herer'];
+    if (name.includes('white widow')) return productImageUrls['white-widow'];
     if (name.includes('sour diesel') && name.includes('popcorn')) return productImageUrls['sour-diesel-popcorn'];
     if (name.includes('sour diesel')) return productImageUrls['sour-diesel-flower'];
     if (name.includes('sour lemon diesel')) return productImageUrls['sour-lemon-diesel-flower'];
@@ -91,8 +112,19 @@ export function getProductImageUrl(productName: string, category: string): strin
     return productImageUrls['variety-pack'];
   }
   
-  // Default fallback
-  return productImageUrls['sour-diesel-infused'];
+  // Check for additional categories
+  if (category === 'popcorn' || name.includes('popcorn') || name.includes('mini') || name.includes('smalls')) {
+    if (name.includes('sour lemon')) return productImageUrls['sour-lemon-diesel-flower'];
+    if (name.includes('sour diesel')) return productImageUrls['sour-diesel-popcorn'];
+    return productImageUrls['premium-hemp-flower'];
+  }
+  
+  if (category === 'shake' || name.includes('shake')) {
+    return productImageUrls['sour-diesel-flower'];
+  }
+
+  // Default fallback - use hemp strain images
+  return productImageUrls['premium-hemp-flower'] || productImageUrls['sour-diesel-infused'];
 }
 
 // Create image endpoint list for user
