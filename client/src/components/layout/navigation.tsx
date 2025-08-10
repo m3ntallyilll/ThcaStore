@@ -148,6 +148,11 @@ export function Navigation() {
               <Link href="/rewards" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                 Rewards
               </Link>
+              {isAuthenticated && (
+                <Link href="/referrals" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
+                  Referrals
+                </Link>
+              )}
               {user?.isAdmin && (
                 <Link href="/ai-sales" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                   Sales Strategy

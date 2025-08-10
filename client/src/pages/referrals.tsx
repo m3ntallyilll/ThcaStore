@@ -31,16 +31,16 @@ interface AffiliateData {
 }
 
 export default function ReferralsPage() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [newPromoCode, setNewPromoCode] = useState('');
   const [promoDiscount, setPromoDiscount] = useState('10');
 
   // Fetch affiliate data
-  const { data: affiliateData, isLoading } = useQuery<AffiliateData>({
+  const { data: affiliateData, isLoading, error } = useQuery<AffiliateData>({
     queryKey: ['/api/affiliate/my-affiliate'],
-    enabled: !!user,
+    enabled: !!user && !!token,
     retry: false,
   });
 
@@ -72,13 +72,16 @@ export default function ReferralsPage() {
   // Create promo code
   const createPromoMutation = useMutation({
     mutationFn: async ({ code, discountValue }: { code: string; discountValue: string }) => {
-      const response = await apiRequest('POST', '/api/affiliate/create-promo', {
-        code: code || undefined,
-        discountType: 'percentage',
-        discountValue,
-        description: `${discountValue}% off with ${code || 'auto-generated code'}`,
+      const response = await apiRequest('/api/affiliate/create-promo', {
+        method: 'POST',
+        body: {
+          code: code || undefined,
+          discountType: 'percentage',
+          discountValue,
+          description: `${discountValue}% off with ${code || 'auto-generated code'}`,
+        }
       });
-      return response.json();
+      return response;
     },
     onSuccess: () => {
       toast({
@@ -260,7 +263,7 @@ export default function ReferralsPage() {
               <CardDescription>Manage your existing promotional codes</CardDescription>
             </CardHeader>
             <CardContent>
-              {affiliateData?.promoCodes?.length > 0 ? (
+              {affiliateData?.promoCodes && affiliateData.promoCodes.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {affiliateData.promoCodes.map((promo: any) => (
                     <Card key={promo.id} className="bg-dark-700 border-dark-600">
