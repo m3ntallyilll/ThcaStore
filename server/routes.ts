@@ -1154,7 +1154,7 @@ function shuffleArray(array: any[]) {
               name: 'Purple Koolaid Infused Premium Flower',
               quantity: 1,
               price: 49.99,
-              imageUrl: '/attached_assets/generated_images/Purple_Koolaid_infused_flower_jar_30067145.png',
+              imageUrl: '/attached_assets/generated_images/Purple_Koolaid_THCA_diamond_flower_keyword_embedded.png',
               category: 'flower',
               weight: '3.5g',
               thcaContent: '28.5',
@@ -1164,7 +1164,7 @@ function shuffleArray(array: any[]) {
               name: 'Sour Diesel Preroll 1.25g',
               quantity: 2,
               price: 20.00,
-              imageUrl: '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
+              imageUrl: '/attached_assets/generated_images/Sour_Diesel_THCA_preroll_keyword_embedded.png',
               category: 'prerolls',
               weight: '1.25g',
               thcaContent: '22.3'
@@ -1194,7 +1194,7 @@ function shuffleArray(array: any[]) {
               name: 'Hemp Flower Sample 1g',
               quantity: 1,
               price: 25.00,
-              imageUrl: '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png',
+              imageUrl: '/attached_assets/generated_images/Hemp_THCA_sample_keyword_embedded.png',
               category: 'flower',
               weight: '1g',
               thcaContent: '18.2'

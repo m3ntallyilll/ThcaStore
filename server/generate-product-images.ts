@@ -3,33 +3,33 @@ import { join } from 'path';
 
 // Product image URL mappings for your exact inventory
 export const productImageUrls = {
-  // Pre-roll strains
-  'sour-diesel-infused': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
-  'purple-koolaid-infused': '/attached_assets/generated_images/Purple_Koolaid_infused_flower_jar_30067145.png',
-  'sour-lemon-diesel': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
-  'too-tall': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
-  'runtz': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
+  // Pre-roll strains with embedded keywords
+  'sour-diesel-infused': '/attached_assets/generated_images/Sour_Diesel_THCA_preroll_keyword_embedded.png',
+  'purple-koolaid-infused': '/attached_assets/generated_images/Purple_Koolaid_THCA_preroll_keyword_embedded.png',
+  'sour-lemon-diesel': '/attached_assets/generated_images/Sour_Lemon_Diesel_THCA_preroll_keyword_embedded.png',
+  'too-tall': '/attached_assets/generated_images/Too_Tall_THCA_preroll_keyword_embedded.png',
+  'runtz': '/attached_assets/generated_images/Runtz_THCA_preroll_keyword_embedded.png',
 
-  // Flower strains  
-  'grape-popsicle': '/attached_assets/generated_images/Grape_Popsicle_flower_baggie_8d86f41d.png',
-  'purple-koolaid-diamonds': '/attached_assets/generated_images/Purple_Koolaid_infused_flower_jar_30067145.png',
-  'sour-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
-  'blue-dream': '/attached_assets/generated_images/Blue_Dream_flower_jar_05b30a27.png',
-  'green-crack': '/attached_assets/generated_images/Green_Crack_flower_baggie_7c187adb.png',
-  'og-kush': '/attached_assets/generated_images/OG_Kush_flower_jar_6fb8e90e.png',
-  'purple-punch': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
-  'sour-lemon-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
-  'sour-diesel-popcorn': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
-  'wedding-cake': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
-  'girl-scout-cookies': '/attached_assets/generated_images/Green_Crack_flower_baggie_7c187adb.png',
-  'runtz-peppermint': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
+  // Flower strains with embedded keywords
+  'grape-popsicle': '/attached_assets/generated_images/Grape_Popsicle_THCA_flower_keyword_embedded.png',
+  'purple-koolaid-diamonds': '/attached_assets/generated_images/Purple_Koolaid_THCA_diamond_flower_keyword_embedded.png',
+  'sour-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_THCA_flower_keyword_embedded.png',
+  'blue-dream': '/attached_assets/generated_images/Blue_Dream_THCA_flower_keyword_embedded.png',
+  'green-crack': '/attached_assets/generated_images/Green_Crack_THCA_flower_keyword_embedded.png',
+  'og-kush': '/attached_assets/generated_images/OG_Kush_THCA_flower_keyword_embedded.png',
+  'purple-punch': '/attached_assets/generated_images/Purple_Punch_THCA_flower_keyword_embedded.png',
+  'sour-lemon-diesel-flower': '/attached_assets/generated_images/Sour_Lemon_Diesel_THCA_flower_keyword_embedded.png',
+  'sour-diesel-popcorn': '/attached_assets/generated_images/Sour_Diesel_Popcorn_THCA_flower_keyword_embedded.png',
+  'wedding-cake': '/attached_assets/generated_images/Wedding_Cake_THCA_flower_keyword_embedded.png',
+  'girl-scout-cookies': '/attached_assets/generated_images/Girl_Scout_Cookies_THCA_flower_keyword_embedded.png',
+  'runtz-peppermint': '/attached_assets/generated_images/Runtz_Peppermint_THCA_flower_keyword_embedded.png',
 
-  // Pre-roll packs
-  'preroll-pack': '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png',
-  'preroll-multi-pack': '/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png',
+  // Pre-roll packs with embedded keywords
+  'preroll-pack': '/attached_assets/generated_images/THCA_preroll_pack_keyword_embedded.png',
+  'preroll-multi-pack': '/attached_assets/generated_images/THCA_multi_preroll_pack_keyword_embedded.png',
   
-  // Variety packs
-  'variety-pack': '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png'
+  // Variety packs with embedded keywords
+  'variety-pack': '/attached_assets/generated_images/THCA_variety_pack_keyword_embedded.png'
 };
 
 // Generate image URLs based on product name/category
