@@ -354,7 +354,7 @@ const inventoryProducts = [
     category: "flower",
     imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 40, // 2.5 lbs = 40 eighths
-    weight: "0.22",
+    weight: "3.5g",
     featured: true,
     rating: "4.8",
     thcaContent: "24.9",
@@ -368,7 +368,7 @@ const inventoryProducts = [
     category: "flower",
     imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 20, // 2.5 lbs = 20 quarters
-    weight: "0.44",
+    weight: "7g",
     featured: false,
     rating: "4.8",
     thcaContent: "24.9",
@@ -382,7 +382,7 @@ const inventoryProducts = [
     category: "flower",
     imageUrl: "/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png",
     stock: 10, // 2.5 lbs = 10 halfs
-    weight: "0.88",
+    weight: "14g",
     featured: false,
     rating: "4.8",
     thcaContent: "24.9",

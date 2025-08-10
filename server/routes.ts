@@ -2818,7 +2818,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         cashAppLink: cashAppLink,
         total: total.toFixed(2),
         productNames: productNames,
-        instructions: `Send $${total.toFixed(2)} via Cash App and include "${productNames}" in your payment note.`
+        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.id}\n\n💬 Include your order number in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
       });
 
     } catch (error: any) {
