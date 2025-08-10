@@ -1148,7 +1148,7 @@ function shuffleArray(array: any[]) {
         return res.status(404).json({ error: 'Order not found. Please check your order number and try again.' });
       }
 
-      // Get order items
+      // Get order items with product details
       const orderItems = await storage.getOrderItems(order.id);
       
       // Format order data for tracking
@@ -1158,9 +1158,13 @@ function shuffleArray(array: any[]) {
         status: order.status,
         total: parseFloat(order.total),
         items: orderItems.map(item => ({
-          name: item.product?.name || 'Product',
+          name: item.product.name,
           quantity: item.quantity,
-          price: parseFloat(item.price)
+          price: parseFloat(item.price),
+          imageUrl: item.product.imageUrl,
+          category: item.product.category,
+          weight: item.product.weight,
+          thcaContent: item.product.thcaContent
         })),
         shippingAddress: `${order.shippingAddress}, ${order.shippingCity}, ${order.shippingState} ${order.shippingZip}`,
         trackingNumber: order.trackingNumber,

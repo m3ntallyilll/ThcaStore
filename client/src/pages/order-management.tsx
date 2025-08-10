@@ -19,6 +19,10 @@ interface Order {
     name: string;
     quantity: number;
     price: number;
+    imageUrl?: string;
+    category?: string;
+    weight?: string;
+    thcaContent?: string;
   }>;
   shippingAddress: string;
   trackingNumber?: string;
@@ -245,12 +249,43 @@ export default function OrderManagement() {
             <CardContent>
               <div className="space-y-4">
                 {searchedOrder.items.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center py-2">
+                  <div key={index} className="flex gap-4 py-3 border-b border-gray-700 last:border-b-0">
+                    {/* Product Image */}
+                    {item.imageUrl && (
+                      <div className="flex-shrink-0 w-16 h-16">
+                        <img 
+                          src={item.imageUrl} 
+                          alt={item.name}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Product Details */}
                     <div className="flex-1">
                       <h5 className="text-white font-medium">{item.name}</h5>
-                      <p className="text-gray-400 text-sm">Quantity: {item.quantity}</p>
+                      <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-400">
+                        {item.category && (
+                          <span className="bg-gray-800 px-2 py-1 rounded capitalize">
+                            {item.category}
+                          </span>
+                        )}
+                        {item.weight && (
+                          <span className="bg-gray-800 px-2 py-1 rounded">
+                            {item.weight}
+                          </span>
+                        )}
+                        {item.thcaContent && (
+                          <span className="bg-green-800 px-2 py-1 rounded">
+                            {item.thcaContent}% THCA
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-400 text-sm mt-1">Quantity: {item.quantity}</p>
                     </div>
-                    <div className="text-right">
+                    
+                    {/* Price */}
+                    <div className="text-right flex-shrink-0">
                       <p className="text-green-400 font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
                       <p className="text-gray-400 text-sm">${item.price.toFixed(2)} each</p>
                     </div>
