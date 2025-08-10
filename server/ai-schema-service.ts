@@ -35,7 +35,7 @@ class AISchemaService {
         "name": "THCA Store",
         "logo": {
           "@type": "ImageObject",
-          "url": `${baseUrl}/logo.png`
+          "url": `${baseUrl}/social-thumbnail.png`
         },
         "sameAs": [
           "https://twitter.com/THCAStore",

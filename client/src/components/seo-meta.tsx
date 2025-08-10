@@ -56,9 +56,7 @@ export function SEOMeta({ title, description, keywords, canonicalUrl, ogImage }:
     updateOGMeta('og:description', description);
     updateOGMeta('og:url', canonicalUrl || window.location.href);
     updateOGMeta('og:type', 'website');
-    if (ogImage) {
-      updateOGMeta('og:image', ogImage);
-    }
+    updateOGMeta('og:image', ogImage || `${window.location.origin}/social-thumbnail.png`);
     
     // Update Twitter meta tags
     const updateTwitterMeta = (name: string, content: string) => {
@@ -74,9 +72,7 @@ export function SEOMeta({ title, description, keywords, canonicalUrl, ogImage }:
     updateTwitterMeta('twitter:title', title);
     updateTwitterMeta('twitter:description', description);
     updateTwitterMeta('twitter:card', 'summary_large_image');
-    if (ogImage) {
-      updateTwitterMeta('twitter:image', ogImage);
-    }
+    updateTwitterMeta('twitter:image', ogImage || `${window.location.origin}/social-thumbnail.png`);
     
   }, [title, description, keywords, canonicalUrl, ogImage]);
   

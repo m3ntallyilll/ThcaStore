@@ -47,7 +47,7 @@ export function SchemaInjector({ postSlug, postId }: SchemaInjectorProps) {
         "name": "THCA Store",
         "logo": {
           "@type": "ImageObject",
-          "url": `${window.location.origin}/logo.png`
+          "url": `${window.location.origin}/social-thumbnail.png`
         },
         "sameAs": [
           "https://twitter.com/THCAStore",

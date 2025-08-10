@@ -170,7 +170,7 @@ interface ShareMenuItemsProps {
 function ShareMenuItems({ onNativeShare, onSocialShare, onCopyLink }: ShareMenuItemsProps) {
   return (
     <>
-      {navigator.share && (
+      {typeof navigator !== 'undefined' && navigator.share && (
         <DropdownMenuItem onClick={onNativeShare} className="cursor-pointer">
           <Share2 className="h-4 w-4 mr-2" />
           Share

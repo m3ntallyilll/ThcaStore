@@ -177,7 +177,7 @@ export default function StrainLanding() {
         <meta property="og:description" content={strain.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={`https://mentally-chill.online/strains/${strainType}`} />
-        <meta property="og:image" content="https://mentally-chill.online/logo.png" />
+        <meta property="og:image" content="https://mentally-chill.online/social-thumbnail.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={strain.metaTitle} />
         <meta name="twitter:description" content={strain.description} />

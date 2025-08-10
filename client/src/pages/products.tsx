@@ -227,11 +227,11 @@ export default function Products() {
         <meta property="og:description" content={seoData.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://mentally-chill.online/products" />
-        <meta property="og:image" content="https://mentally-chill.online/logo.png" />
+        <meta property="og:image" content="https://mentally-chill.online/social-thumbnail.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={seoData.title} />
         <meta name="twitter:description" content={seoData.description} />
-        <meta name="twitter:image" content="https://mentally-chill.online/logo.png" />
+        <meta name="twitter:image" content="https://mentally-chill.online/social-thumbnail.png" />
         <link rel="canonical" href="https://mentally-chill.online/products" />
         {/* Schema.org structured data for products */}
         <script type="application/ld+json">
