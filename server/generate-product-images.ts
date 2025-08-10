@@ -1,35 +1,51 @@
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
-// Product image URL mappings for your exact inventory
+// Product image URL mappings - Updated to use more realistic low-grain quality images
 export const productImageUrls = {
-  // Pre-roll strains - realistic Android camera quality
-  'sour-diesel-infused': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
-  'purple-koolaid-infused': '/attached_assets/generated_images/Purple_Koolaid_infused_flower_jar_30067145.png',
-  'sour-lemon-diesel': '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
-  'too-tall': '/attached_assets/generated_images/Too_Tall_THCA_flower_8b45913e.png',
-  'runtz': '/attached_assets/generated_images/Runtz_THCA_flower_22bdedde.png',
+  // Pre-roll strains - realistic low-grain Android camera quality
+  'sour-diesel-infused': '/attached_assets/generated_images/Hemp_pre-roll_joints_e0e992fe.png',
+  'purple-koolaid-infused': '/attached_assets/generated_images/THCA_hemp_pre-rolls_56c5fd30.png',
+  'sour-lemon-diesel': '/attached_assets/generated_images/THCA_hemp_pre-rolls_70e0ccf9.png',
+  'too-tall': '/attached_assets/generated_images/Premium_hemp_flower_buds_568629db.png',
+  'runtz': '/attached_assets/generated_images/Runtz_strain_close-up_a6f9eea1.png',
 
-  // Flower strains - realistic Android camera quality
-  'grape-popsicle': '/attached_assets/generated_images/Grape_Popsicle_flower_baggie_8d86f41d.png',
-  'purple-koolaid-diamonds': '/attached_assets/generated_images/Purple_Koolaid_THCA_flower_a7e52253.png',
-  'sour-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
-  'blue-dream': '/attached_assets/generated_images/Blue_Dream_flower_jar_05b30a27.png',
-  'green-crack': '/attached_assets/generated_images/Green_Crack_flower_baggie_7c187adb.png',
-  'og-kush': '/attached_assets/generated_images/OG_Kush_flower_jar_6fb8e90e.png',
-  'purple-punch': '/attached_assets/generated_images/Purple_Punch_flower_container_5eafd532.png',
+  // Flower strains - realistic low-grain Android camera quality
+  'grape-popsicle': '/attached_assets/generated_images/Premium_hemp_flower_ee290031.png',
+  'purple-koolaid-diamonds': '/attached_assets/generated_images/Purple_Koolaid_strain_buds_682334e7.png',
+  'sour-diesel-flower': '/attached_assets/generated_images/Sour_Diesel_hemp_strain_5ff2c237.png',
+  'blue-dream': '/attached_assets/generated_images/Blue_Dream_hemp_strain_ee2cf878.png',
+  'green-crack': '/attached_assets/generated_images/Green_Crack_hemp_strain_d16ab8e0.png',
+  'og-kush': '/attached_assets/generated_images/OG_Kush_hemp_strain_970f7637.png',
+  'purple-punch': '/attached_assets/generated_images/Purple_Punch_hemp_strain_5a390f11.png',
   'sour-lemon-diesel-flower': '/attached_assets/generated_images/Sour_Lemon_Diesel_flower_c1f2a950.png',
-  'sour-diesel-popcorn': '/attached_assets/generated_images/Sour_Diesel_flower_container_02c12524.png',
+  'sour-diesel-popcorn': '/attached_assets/generated_images/Sour_Diesel_THCA_flower_218b58ff.png',
   'wedding-cake': '/attached_assets/generated_images/Wedding_Cake_strain_buds_b1c7b8d7.png',
-  'girl-scout-cookies': '/attached_assets/generated_images/Girl_Scout_Cookies_strain_79b13530.png',
-  'runtz-peppermint': '/attached_assets/generated_images/Runtz_strain_close-up_a6f9eea1.png',
+  'girl-scout-cookies': '/attached_assets/generated_images/Girl_Scout_Cookies_strain_a5a5b84e.png',
+  'runtz-peppermint': '/attached_assets/generated_images/Runtz_THCA_flower_22bdedde.png',
+  'gelato': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
+  'granddaddy-purple': '/attached_assets/generated_images/Purple_Punch_strain_cb63660e.png',
 
-  // Pre-roll packs
-  'preroll-pack': '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png',
-  'preroll-multi-pack': '/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png',
+  // Additional strains with realistic hemp quality
+  'northern-lights': '/attached_assets/generated_images/Northern_Lights_hemp_strain_f76fb796.png',
+  'jack-herer': '/attached_assets/generated_images/Jack_Herer_hemp_strain_bae15f39.png',
+  'white-widow': '/attached_assets/generated_images/White_Widow_hemp_strain_1f35747f.png',
+  'indica-strain': '/attached_assets/generated_images/Indica_hemp_flower_d4c0d165.png',
+  'sativa-strain': '/attached_assets/generated_images/Sativa_hemp_flower_61fa5cdb.png',
+
+  // Pre-roll packs - realistic low-grain quality
+  'preroll-pack': '/attached_assets/generated_images/Hemp_pre-roll_joints_e0e992fe.png',
+  'preroll-multi-pack': '/attached_assets/generated_images/THCA_hemp_pre-rolls_56c5fd30.png',
   
-  // Variety packs
-  'variety-pack': '/attached_assets/generated_images/THCA_variety_pack_1a80a6e5.png'
+  // Variety packs - realistic low-grain quality
+  'variety-pack': '/attached_assets/generated_images/Hemp_product_variety_showcase_667244b5.png',
+  'starter-pack': '/attached_assets/generated_images/Hemp_starter_product_pack_c3d6c659.png',
+
+  // Concentrates and extracts
+  'diamond-concentrates': '/attached_assets/generated_images/THCA_diamond_concentrates_93d26771.png',
+  'live-resin': '/attached_assets/generated_images/Hemp_live_resin_51ce0e4a.png',
+  'rosin': '/attached_assets/generated_images/Hemp_rosin_concentrate_9d2bcb2d.png',
+  'wax-concentrate': '/attached_assets/generated_images/Hemp_wax_concentrate_1309cfeb.png'
 };
 
 // Generate image URLs based on product name/category
