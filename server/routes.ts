@@ -964,38 +964,15 @@ function shuffleArray(array: any[]) {
     }
   });
 
-  // Modified cart POST to allow guest users or authenticated users
-  app.post("/api/cart", async (req: any, res) => {
+  // Simplified cart POST for authenticated users
+  app.post("/api/cart", authenticateToken, async (req: any, res) => {
     try {
-      let userId = req.body.userId;
-      
-      // Check if user is authenticated
-      const authHeader = req.headers['authorization'];
-      const token = authHeader && authHeader.split(' ')[1];
-      
-      if (token) {
-        try {
-          const decoded = jwt.verify(token, JWT_SECRET) as any;
-          const user = await storage.getUser(decoded.userId);
-          if (user) {
-            userId = user.id; // Use authenticated user ID
-          }
-        } catch (error) {
-          // Token invalid, continue as guest
-        }
+      const userId = req.user.id;
+      const { productId, quantity, variant } = req.body;
+
+      if (!productId || !quantity) {
+        return res.status(400).json({ message: 'Product ID and quantity are required' });
       }
-      
-      // If no userId provided and not authenticated, use guest session
-      if (!userId) {        
-        const guestId = req.headers['x-guest-id'] as string;
-        if (!guestId) {
-          return res.status(400).json({ message: 'Guest session ID required' });
-        }
-        
-        // Ensure the guest user exists in the database
-        let guestUser = await storage.getUser(guestId);
-        if (!guestUser) {
-          // Create guest user with the provided guest ID
           guestUser = await storage.createUser({
             id: guestId,
             email: `${guestId}@guest.temp`,
