@@ -973,18 +973,6 @@ function shuffleArray(array: any[]) {
       if (!productId || !quantity) {
         return res.status(400).json({ message: 'Product ID and quantity are required' });
       }
-          guestUser = await storage.createUser({
-            id: guestId,
-            email: `${guestId}@guest.temp`,
-            password: await bcrypt.hash('guest', 10),
-            firstName: 'Guest',
-            lastName: 'User', 
-            username: guestId,
-            isAdmin: false
-          });
-        }
-        userId = guestUser.id;
-      }
 
       const cartItemData = insertCartItemSchema.parse({
         ...req.body,
@@ -992,7 +980,7 @@ function shuffleArray(array: any[]) {
       });
 
       const cartItem = await storage.addToCart(cartItemData);
-      res.status(201).json({ ...cartItem, guestSession: !token, userId });
+      res.status(201).json(cartItem);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
