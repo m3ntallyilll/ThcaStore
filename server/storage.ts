@@ -1229,8 +1229,11 @@ import {
   orders, 
   orderItems,
   blogPosts,
-  referrals,
-  offers
+  referralProgram as referrals,
+  specialOffers,
+  userRewards,
+  pointTransactions,
+  rewardTiers
 } from "@shared/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 
@@ -1475,81 +1478,208 @@ export class DatabaseStorage implements IStorage {
     return order;
   }
 
-  // Stub implementations for other methods
-  async getUserRewards(userId: string): Promise<any> {
-    return { points: 0, tier: 'Bronze', transactions: [] };
-  }
-
-  async getRewardTiers(): Promise<any[]> {
-    return [];
-  }
-
-  async getPointTransactions(userId: string): Promise<any[]> {
-    return [];
-  }
-
-  async addPointTransaction(transaction: any): Promise<any> {
-    return transaction;
-  }
-
+  // Referral System Methods
   async getUserReferrals(userId: string): Promise<any[]> {
-    return [];
+    return await db.select().from(referrals).where(eq(referrals.referrerId, userId));
   }
 
   async createReferral(referral: any): Promise<any> {
-    return referral;
+    const [newReferral] = await db.insert(referrals).values(referral).returning();
+    return newReferral;
   }
 
   async getReferralByCode(code: string): Promise<any> {
-    return null;
+    const [referral] = await db.select().from(referrals).where(eq(referrals.referralCode, code));
+    return referral;
   }
 
-  async getActiveOffers(): Promise<any[]> {
+  async getReferral(id: string): Promise<any> {
+    const [referral] = await db.select().from(referrals).where(eq(referrals.id, id));
+    return referral;
+  }
+
+  async updateReferral(id: string, updates: any): Promise<any> {
+    const [referral] = await db.update(referrals).set(updates).where(eq(referrals.id, id)).returning();
+    return referral;
+  }
+
+  async updateReferralStatus(id: string, status: string): Promise<void> {
+    await db.update(referrals).set({ status }).where(eq(referrals.id, id));
+  }
+
+  // Points and Rewards Methods
+  async getUserRewards(userId: string): Promise<any> {
+    const [userReward] = await db.select().from(userRewards).where(eq(userRewards.userId, userId));
+    return userReward || { points: 0, tier: 'Bronze', transactions: [] };
+  }
+
+  async getUserPoints(userId: string): Promise<number> {
+    const rewards = await this.getUserRewards(userId);
+    return rewards?.totalPoints || 0;
+  }
+
+  async updateUserPoints(userId: string, points: number): Promise<void> {
+    const [existing] = await db.select().from(userRewards).where(eq(userRewards.userId, userId));
+    
+    if (existing) {
+      await db.update(userRewards).set({ totalPoints: points }).where(eq(userRewards.userId, userId));
+    } else {
+      await db.insert(userRewards).values({
+        userId,
+        totalPoints: points
+      });
+    }
+  }
+
+  async getRewardTiers(): Promise<any[]> {
+    return await db.select().from(rewardTiers);
+  }
+
+  async getPointTransactions(userId: string): Promise<any[]> {
+    return await db.select().from(pointTransactions).where(eq(pointTransactions.userId, userId));
+  }
+
+  async createPointTransaction(transaction: any): Promise<any> {
+    const [newTransaction] = await db.insert(pointTransactions).values(transaction).returning();
+    return newTransaction;
+  }
+
+  // Promo Code Methods
+  async getPromoCodes(): Promise<any[]> {
+    return await db.select().from(specialOffers);
+  }
+
+  async getPromoCodeByCode(code: string): Promise<any> {
+    const [promoCode] = await db.select().from(specialOffers).where(eq(specialOffers.name, code));
+    return promoCode;
+  }
+
+  async createPromoCode(promoCode: any): Promise<any> {
+    const [newPromo] = await db.insert(specialOffers).values(promoCode).returning();
+    return newPromo;
+  }
+
+  async validatePromoCode(code: string): Promise<{ valid: boolean; promoCode?: any; error?: string }> {
+    const promoCode = await this.getPromoCodeByCode(code);
+    if (!promoCode) {
+      return { valid: false, error: 'Promo code not found' };
+    }
+    if (!promoCode.isActive) {
+      return { valid: false, error: 'Promo code is not active' };
+    }
+    if (promoCode.expiresAt && new Date() > new Date(promoCode.expiresAt)) {
+      return { valid: false, error: 'Promo code has expired' };
+    }
+    return { valid: true, promoCode };
+  }
+
+  // Store Credit Methods
+  async updateUserStoreCredit(userId: string, amount: string): Promise<any> {
+    const [user] = await db
+      .update(users)
+      .set({ storeCredit: amount })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async createStoreCreditTransaction(transaction: any): Promise<any> {
+    // For now, just return the transaction since we don't have a specific table
+    return { id: `tx_${Date.now()}`, ...transaction, createdAt: new Date() };
+  }
+
+  async getStoreCreditTransactions(userId: string): Promise<any[]> {
+    // Return empty array for now - would need proper transaction table
     return [];
+  }
+
+  // Special Offers Methods
+  async getActiveOffers(): Promise<any[]> {
+    const now = new Date();
+    return await db.select().from(specialOffers).where(
+      and(
+        eq(specialOffers.isActive, true),
+        sql`${specialOffers.startDate} <= ${now}`,
+        sql`${specialOffers.endDate} >= ${now}`
+      )
+    );
   }
 
   async getSpecialOffers(): Promise<any[]> {
-    return [];
+    return await db.select().from(specialOffers);
   }
 
   async createSpecialOffer(offer: any): Promise<any> {
-    return offer;
+    const [newOffer] = await db.insert(specialOffers).values(offer).returning();
+    return newOffer;
   }
 
+  // Blog Methods  
   async getAllBlogPosts(): Promise<any[]> {
-    return [];
+    return await db.select().from(blogPosts);
   }
 
   async getBlogPost(id: string): Promise<any> {
-    return null;
-  }
-
-  async createBlogPost(post: any): Promise<any> {
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
     return post;
   }
 
-  async updateBlogPost(id: string, updates: any): Promise<any> {
-    return null;
+  async getBlogPosts(): Promise<any[]> {
+    return await db.select().from(blogPosts);
   }
 
-  async deleteBlogPost(id: string): Promise<boolean> {
-    return false;
-  }
-
-  async getPublishedBlogPosts(): Promise<any[]> {
-    return [];
-  }
-
-  async getBlogPostBySlug(slug: string): Promise<any> {
-    return null;
+  async getBlogsByCategory(category: string): Promise<any[]> {
+    return await db.select().from(blogPosts).where(eq(blogPosts.category, category));
   }
 
   async getBlogPostsByCategory(category: string): Promise<any[]> {
-    return [];
+    return await db.select().from(blogPosts).where(eq(blogPosts.category, category));
   }
 
+  async createBlogPost(post: any): Promise<any> {
+    const [newPost] = await db.insert(blogPosts).values(post).returning();
+    return newPost;
+  }
+
+  async updateBlogPost(id: string, updates: any): Promise<any> {
+    const [post] = await db.update(blogPosts).set(updates).where(eq(blogPosts.id, id)).returning();
+    return post;
+  }
+
+  async deleteBlogPost(id: string): Promise<boolean> {
+    const result = await db.delete(blogPosts).where(eq(blogPosts.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async getPublishedBlogPosts(): Promise<any[]> {
+    return await db.select().from(blogPosts).where(eq(blogPosts.status, 'published'));
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<any> {
+    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
+    return post;
+  }
+
+  async incrementBlogViewCount(id: string): Promise<void> {
+    await db.update(blogPosts)
+      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
+      .where(eq(blogPosts.id, id));
+  }
+
+  async getBlogCategories(): Promise<string[]> {
+    const results = await db.selectDistinct({ category: blogPosts.category }).from(blogPosts);
+    return results.map(r => r.category).filter(Boolean);
+  }
+
+  async searchBlogPosts(query: string): Promise<any[]> {
+    return await db.select().from(blogPosts).where(
+      sql`${blogPosts.title} ILIKE ${`%${query}%`} OR ${blogPosts.content} ILIKE ${`%${query}%`}`
+    );
+  }
+
+  // Achievement Methods (Stubs)
   async claimAchievementReward(userId: string, achievementId: string): Promise<any> {
-    return null;
+    return { success: true, pointsAwarded: 100 };
   }
 
   async getUserAchievements(userId: string): Promise<any[]> {
@@ -1564,17 +1694,127 @@ export class DatabaseStorage implements IStorage {
     return [];
   }
 
+  async getAchievements(): Promise<any[]> {
+    return [];
+  }
+
   async checkAndUnlockAchievements(userId: string): Promise<any[]> {
     return [];
   }
 
-  async updateUserStoreCredit(userId: string, amount: string): Promise<any> {
-    const [user] = await db
-      .update(users)
-      .set({ storeCredit: amount })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
+  async recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void> {
+    // Stub implementation
+  }
+
+  async getUserOrderCount(userId: string): Promise<number> {
+    const orders = await this.getUserOrders(userId);
+    return orders.length;
+  }
+
+  // Daily Promotions Methods
+  async getTodaysPromotions(): Promise<any[]> {
+    const today = new Date().toISOString().split('T')[0];
+    return await db.select().from(specialOffers).where(
+      and(
+        eq(specialOffers.isActive, true),
+        sql`DATE(${specialOffers.startDate}) <= ${today}`,
+        sql`DATE(${specialOffers.endDate}) >= ${today}`
+      )
+    );
+  }
+
+  async getDailyPromotions(): Promise<any[]> {
+    return await this.getSpecialOffers();
+  }
+
+  async getPromotionByDay(dayOfWeek: number): Promise<any[]> {
+    // For simplicity, return all active promotions
+    return await this.getActiveOffers();
+  }
+
+  async getDailyPromotionsByDay(dayOfWeek: number): Promise<any[]> {
+    return await this.getPromotionByDay(dayOfWeek);
+  }
+
+  async getDailyPromotion(id: string): Promise<any> {
+    const [promotion] = await db.select().from(specialOffers).where(eq(specialOffers.id, id));
+    return promotion;
+  }
+
+  async createDailyPromotion(promotion: any): Promise<any> {
+    return await this.createSpecialOffer(promotion);
+  }
+
+  async updateDailyPromotion(id: string, updates: any): Promise<any> {
+    const [promotion] = await db.update(specialOffers).set(updates).where(eq(specialOffers.id, id)).returning();
+    return promotion;
+  }
+
+  async deleteDailyPromotion(id: string): Promise<boolean> {
+    const result = await db.delete(specialOffers).where(eq(specialOffers.id, id));
+    return result.rowCount ? result.rowCount > 0 : false;
+  }
+
+  async calculatePromotionDiscount(promotionId: string, amount: number): Promise<number> {
+    const promotion = await this.getDailyPromotion(promotionId);
+    if (!promotion) return 0;
+    
+    const value = parseFloat(promotion.value);
+    return promotion.type === 'discount' ? (amount * value) / 100 : value;
+  }
+
+  async recordPromotionUsage(promotionId: string, userId: string): Promise<void> {
+    await db.update(specialOffers)
+      .set({ currentUses: sql`${specialOffers.currentUses} + 1` })
+      .where(eq(specialOffers.id, promotionId));
+  }
+
+  // Shipping and other stubs
+  async getShippingRates(): Promise<any[]> {
+    return [
+      { method: 'standard', name: 'Standard Shipping (5-7 days)', baseRate: '9.99' },
+      { method: 'expedited', name: 'Expedited Shipping (2-3 days)', baseRate: '19.99' },
+      { method: 'overnight', name: 'Overnight Shipping', baseRate: '39.99' }
+    ];
+  }
+
+  async calculateShippingCost(weight: number, method: string): Promise<number> {
+    const rates = await this.getShippingRates();
+    const rate = rates.find(r => r.method === method);
+    return rate ? parseFloat(rate.baseRate) : 9.99;
+  }
+
+  async getUserStreaks(userId: string): Promise<any> {
+    return { currentStreak: 0, longestStreak: 0, lastActivity: null };
+  }
+
+  async updateStreak(userId: string, updates: any): Promise<void> {
+    // Stub implementation
+  }
+
+  async getLeaderboard(): Promise<any[]> {
+    return [];
+  }
+
+  // Additional stubs for other methods referenced in routes
+  async updateUserAchievementProgress(userId: string, achievementId: string, progress: any): Promise<void> {
+    // Stub
+  }
+
+  async getDailyChallenges(): Promise<any[]> {
+    return [];
+  }
+
+  async getUserChallenges(userId: string): Promise<any[]> {
+    return [];
+  }
+
+  async updateUserChallengeProgress(userId: string, challengeId: string, progress: any): Promise<void> {
+    // Stub
+  }
+
+  async claimChallengeReward(userId: string, challengeId: string): Promise<any> {
+    return { success: true, pointsAwarded: 50 };
   }
 }
 
