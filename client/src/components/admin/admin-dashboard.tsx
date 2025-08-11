@@ -38,7 +38,6 @@ import BulkProductGenerator from './bulk-product-generator';
 import { ProductVariantManager } from './product-variant-manager';
 import { PromoCodeManager } from './promo-code-manager';
 import AffiliateDashboard from './affiliate-dashboard';
-import { ObjectUploader } from '@/components/ObjectUploader';
 
 interface OrderWithDetails {
   id: string;
@@ -330,7 +329,7 @@ export function AdminDashboard() {
     const [stock, setStock] = useState(product?.stock || 0);
     const [category, setCategory] = useState(product?.category || '');
     const [imageUrl, setImageUrl] = useState(product?.imageUrl || '');
-    // Removed uploading state since we're using ObjectUploader
+    const [uploading, setUploading] = useState(false);
     
     // THCA-specific fields
     const [weight, setWeight] = useState(product?.weight || '');
@@ -362,7 +361,51 @@ export function AdminDashboard() {
       }
     }, [product]);
 
-    // Removed old handleImageUpload function - now using ObjectUploader component
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setUploading(true);
+      try {
+        // Get upload URL from backend
+        const response = await apiRequest('/api/objects/upload', { 
+          method: 'POST' 
+        });
+        const { uploadURL } = await response.json();
+
+        // Upload file to object storage
+        const uploadResponse = await fetch(uploadURL, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error('Upload failed');
+        }
+
+        // Extract the object path from the upload URL
+        const objectPath = uploadURL.split('?')[0].split('/').slice(-2).join('/');
+        const finalPath = `/objects/${objectPath}`;
+        
+        setImageUrl(finalPath);
+        toast({
+          title: "Image Uploaded",
+          description: "Product image has been uploaded successfully.",
+        });
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Upload Failed",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setUploading(false);
+      }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
       e.preventDefault();
@@ -468,63 +511,25 @@ export function AdminDashboard() {
             </div>
           )}
           
-          {/* File Upload Section with ObjectUploader */}
+          {/* File Upload Section */}
           <div className="space-y-2">
-            <Label className="text-gray-300 text-sm">Upload Image File</Label>
-            <ObjectUploader
-              maxNumberOfFiles={1}
-              maxFileSize={10485760} // 10MB
-              onGetUploadParameters={async () => {
-                try {
-                  const response = await apiRequest('POST', '/api/admin/objects/upload');
-                  const data = await response.json();
-                  return {
-                    method: 'PUT' as const,
-                    url: data.uploadURL,
-                  };
-                } catch (error) {
-                  toast({
-                    title: "Upload Error",
-                    description: "Failed to get upload URL",
-                    variant: "destructive",
-                  });
-                  throw error;
-                }
-              }}
-              onComplete={async (result) => {
-                try {
-                  if (result.successful && result.successful.length > 0) {
-                    const uploadedFile = result.successful[0];
-                    // The uploadURL contains the path to the uploaded file
-                    const uploadUrl = uploadedFile.uploadURL as string;
-                    
-                    // Extract the object path from the upload URL
-                    const urlParts = new URL(uploadUrl);
-                    const pathParts = urlParts.pathname.split('/');
-                    const objectPath = `/objects/uploads/${pathParts[pathParts.length - 1]}`;
-                    
-                    setImageUrl(objectPath);
-                    
-                    toast({
-                      title: "Upload Successful",
-                      description: "Image uploaded successfully",
-                    });
-                  }
-                } catch (error) {
-                  toast({
-                    title: "Upload Error",
-                    description: "Failed to process uploaded image",
-                    variant: "destructive",
-                  });
-                }
-              }}
-              buttonClassName="w-full bg-gold text-black hover:bg-gold-600 font-semibold"
-            >
-              <div className="flex items-center gap-2">
-                <Upload className="w-4 h-4" />
-                <span>Upload New Image</span>
-              </div>
-            </ObjectUploader>
+            <Label htmlFor="imageUpload" className="text-gray-300 text-sm">Upload Image File</Label>
+            <div className="flex items-center gap-2">
+              <input
+                id="imageUpload"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="w-full p-2 border border-gray-600 rounded bg-[#000000] text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-gold file:text-black hover:file:bg-gold-600 disabled:opacity-50"
+              />
+              {uploading && (
+                <div className="flex items-center gap-2 text-gold">
+                  <Upload className="w-4 h-4 animate-pulse" />
+                  <span className="text-sm">Uploading...</span>
+                </div>
+              )}
+            </div>
             <p className="text-xs text-gray-400">
               Upload JPG, PNG, or WEBP images up to 10MB
             </p>

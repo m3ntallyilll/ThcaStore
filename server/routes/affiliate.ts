@@ -7,6 +7,41 @@ import type { Request, Response, NextFunction } from 'express';
 
 const router = Router();
 
+// Import the same authentication from main routes
+import { storage } from '../storage.js';
+import jwt from 'jsonwebtoken';
+
+// Authentication middleware - simplified version
+const authenticateToken = async (req: any, res: any, next: any) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+  
+  try {
+    const JWT_SECRET = process.env.JWT_SECRET || "thca-store-secret-key-2025";
+    const decoded = jwt.verify(token, JWT_SECRET);
+    
+    // Get user from storage
+    const user = await storage.getUser(decoded.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    
+    req.user = { 
+      ...user, 
+      isAdmin: user.isAdmin || false,
+      id: user.id || decoded.userId 
+    };
+    next();
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return res.status(403).json({ message: 'Invalid token' });
+  }
+};
+
 // Generate unique referral code for user referral program
 function generateReferralCode(username: string): string {
   const random = crypto.randomBytes(3).toString('hex').toUpperCase();
@@ -62,9 +97,9 @@ router.get('/track/:affiliateCode', async (req, res) => {
 });
 
 // Get or create referral account for logged-in user (user referral program)
-router.get('/my-affiliate', async (req: any, res) => {
+router.get('/my-affiliate', authenticateToken, async (req: any, res) => {
   try {
-    const userId = req.user?.claims?.sub;
+    const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
@@ -78,8 +113,8 @@ router.get('/my-affiliate', async (req: any, res) => {
     
     // Create affiliate account if doesn't exist
     if (!affiliate) {
-      const username = req.user?.claims?.email?.split('@')[0] || 'user';
-      const affiliateCode = generateAffiliateCode(username);
+      const username = req.user?.email?.split('@')[0] || 'user';
+      const affiliateCode = generateReferralCode(username);
       
       [affiliate] = await db
         .insert(affiliates)
@@ -121,9 +156,9 @@ router.get('/my-affiliate', async (req: any, res) => {
 });
 
 // Create promo code linked to affiliate
-router.post('/create-promo', async (req: any, res) => {
+router.post('/create-promo', authenticateToken, async (req: any, res) => {
   try {
-    const userId = req.user?.claims?.sub;
+    const userId = req.user?.id;
     if (!userId) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
@@ -284,7 +319,7 @@ router.post('/track-conversion', async (req, res) => {
         })
         .where(eq(affiliates.id, affiliate.id));
       
-      res.json({ success: true, commissionAmount });
+      res.json({ success: true, commissionAmount: commissionAmount.toFixed(2) });
     } else {
       res.json({ success: false, message: 'No affiliate found' });
     }

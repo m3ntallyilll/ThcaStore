@@ -90,10 +90,19 @@ export default function OrderConfirmation() {
                 </div>
               </div>
 
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 space-y-3">
+                <h4 className="text-blue-200 font-semibold">📞 Contact Information</h4>
+                <div className="space-y-2 text-blue-100">
+                  <p><strong>Phone:</strong> (702) 482-9794</p>
+                  <p><strong>Email:</strong> support@mentally-chill.com</p>
+                  <p><strong>Business Hours:</strong> 9 AM - 8 PM PST</p>
+                </div>
+              </div>
+
               <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                 <p className="text-yellow-200 text-sm">
-                  <strong>Important:</strong> A confirmation email has been sent to your email address. 
-                  Please check your spam folder if you don't see it within 5 minutes.
+                  <strong>Payment Verification:</strong> After sending payment via Cash App, 
+                  text your order number to (702) 482-9794 for fastest processing.
                 </p>
               </div>
 

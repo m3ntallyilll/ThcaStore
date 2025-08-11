@@ -233,6 +233,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Affiliate routes
   app.use('/api/affiliate', affiliateRoutes);
   
+  // Missing rewards and store credit routes
+  app.get('/api/rewards/user', authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      const userPoints = await storage.getUserPoints(userId);
+      res.json({ points: userPoints || 0 });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch user rewards' });
+    }
+  });
+  
+  app.get('/api/store-credit/balance', authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user?.id;
+      const user = await storage.getUser(userId);
+      res.json({ balance: user?.storeCredit || 0 });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch store credit balance' });
+    }
+  });
+  
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -2797,7 +2818,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         cashAppLink: cashAppLink,
         total: total.toFixed(2),
         productNames: productNames,
-        instructions: `Send $${total.toFixed(2)} via Cash App and include "${productNames}" in your payment note.`
+        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.id}\n\n💬 Include your order number in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
       });
 
     } catch (error: any) {
@@ -3934,47 +3955,6 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         return res.sendStatus(404);
       }
       return res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Admin Object Storage Routes for Product Image Management
-  app.post("/api/admin/objects/upload", authenticateToken, requireAdmin, async (req, res) => {
-    try {
-      const { ObjectStorageService } = await import('./objectStorage');
-      const objectStorageService = new ObjectStorageService();
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      res.json({ uploadURL });
-    } catch (error: any) {
-      console.error("Error generating upload URL:", error);
-      res.status(500).json({ error: "Failed to generate upload URL" });
-    }
-  });
-
-  // Update product image after upload
-  app.put("/api/admin/products/:id/image", authenticateToken, requireAdmin, async (req, res) => {
-    try {
-      const { imageUrl } = req.body;
-      const productId = req.params.id;
-
-      if (!imageUrl) {
-        return res.status(400).json({ error: "Image URL is required" });
-      }
-
-      // Update product with new image URL
-      const updatedProduct = await storage.updateProduct(productId, { imageUrl });
-      
-      if (!updatedProduct) {
-        return res.status(404).json({ error: "Product not found" });
-      }
-
-      res.json({
-        success: true,
-        product: updatedProduct,
-        message: "Product image updated successfully"
-      });
-    } catch (error: any) {
-      console.error("Error updating product image:", error);
-      res.status(500).json({ error: "Failed to update product image" });
     }
   });
 
