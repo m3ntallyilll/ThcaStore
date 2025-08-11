@@ -34,7 +34,6 @@ import Returns from "@/pages/returns";
 import NotFound from "@/pages/not-found";
 import StateTHCA from "@/pages/state-thca";
 import StrainLanding from "@/pages/strain-landing";
-import ReferralsPage from "@/pages/referrals";
 
 function Router() {
   return (
@@ -45,7 +44,6 @@ function Router() {
       <Route path="/checkout" component={Checkout} />
       <Route path="/order-confirmation" component={OrderConfirmation} />
       <Route path="/rewards" component={Rewards} />
-      <Route path="/referrals" component={ReferralsPage} />
       <Route path="/blog/:id" component={BlogPost} />
       <Route path="/blog" component={Blog} />
       <Route path="/ai-sales" component={AISalesPage} />
@@ -56,11 +54,6 @@ function Router() {
       <Route path="/thca/:state" component={StateTHCA} />
       <Route path="/thca" component={StateTHCA} />
       <Route path="/strains/:strainType" component={StrainLanding} />
-      <Route path="/ref/:code" component={() => { 
-        // Redirect to affiliate tracking endpoint
-        window.location.href = `/api/affiliate/track/${window.location.pathname.split('/')[2]}?redirect=/`;
-        return null;
-      }} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
     </Switch>

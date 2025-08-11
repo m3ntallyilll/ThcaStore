@@ -233,27 +233,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Affiliate routes
   app.use('/api/affiliate', affiliateRoutes);
   
-  // Missing rewards and store credit routes
-  app.get('/api/rewards/user', authenticateToken, async (req: any, res) => {
-    try {
-      const userId = req.user?.id;
-      const userPoints = await storage.getUserPoints(userId);
-      res.json({ points: userPoints || 0 });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch user rewards' });
-    }
-  });
-  
-  app.get('/api/store-credit/balance', authenticateToken, async (req: any, res) => {
-    try {
-      const userId = req.user?.id;
-      const user = await storage.getUser(userId);
-      res.json({ balance: user?.storeCredit || 0 });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch store credit balance' });
-    }
-  });
-  
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -2818,7 +2797,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         cashAppLink: cashAppLink,
         total: total.toFixed(2),
         productNames: productNames,
-        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.id}\n\n💬 Include your order number in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
+        instructions: `Send $${total.toFixed(2)} via Cash App and include "${productNames}" in your payment note.`
       });
 
     } catch (error: any) {

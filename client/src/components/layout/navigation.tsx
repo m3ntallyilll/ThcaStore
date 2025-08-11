@@ -53,12 +53,6 @@ export function Navigation() {
                 <Link href="/rewards" className="hover:text-glow-green-400 transition-colors duration-300">
                   Rewards
                 </Link>
-                {isAuthenticated && (
-                  <Link href="/referrals" className="hover:text-glow-green-400 transition-colors duration-300 flex items-center gap-1">
-                    <span className="text-xs bg-blue-600 px-2 py-1 rounded">EARN</span>
-                    Referrals
-                  </Link>
-                )}
               </div>
             </div>
 
@@ -148,11 +142,6 @@ export function Navigation() {
               <Link href="/rewards" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                 Rewards
               </Link>
-              {isAuthenticated && (
-                <Link href="/referrals" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
-                  Referrals
-                </Link>
-              )}
               {user?.isAdmin && (
                 <Link href="/ai-sales" className="block px-4 py-2 hover:text-glow-green-400 transition-colors">
                   Sales Strategy
