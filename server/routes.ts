@@ -230,9 +230,6 @@ const requireAdmin = (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Serve static assets from attached_assets folder
-  app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
-  
   // Affiliate routes
   app.use('/api/affiliate', affiliateRoutes);
   
