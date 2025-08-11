@@ -168,7 +168,7 @@ export class MemStorage implements IStorage {
         description: "Premium Sour Diesel flower infused with THCA diamonds for maximum potency and flavor.",
         price: "15.99",
         category: "prerolls",
-        imageUrl: `https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format`,
+        imageUrl: `/src/assets/generated_images/White_Widow_hemp_strain_1f35747f.png`,
         stock: 25,
         weight: "1.25g",
         featured: true,
@@ -188,7 +188,7 @@ export class MemStorage implements IStorage {
         description: "Sweet Purple Koolaid strain infused with THCA diamonds for a flavorful and potent experience.",
         price: "17.99",
         category: "prerolls",
-        imageUrl: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`,
+        imageUrl: `/src/assets/generated_images/Indica_hemp_flower_d4c0d165.png`,
         stock: 20,
         weight: "1.45g",
         featured: true,
@@ -208,7 +208,7 @@ export class MemStorage implements IStorage {
         description: "Zesty Sour Lemon Diesel strain with citrus terpenes and energizing effects.",
         price: "12.99",
         category: "prerolls",
-        imageUrl: `https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format`,
+        imageUrl: `/src/assets/generated_images/Premium_hemp_flower_ee290031.png`,
         stock: 30,
         weight: "1.25g",
         featured: false,
@@ -337,6 +337,24 @@ export class MemStorage implements IStorage {
         effects: ["sweet", "minty", "refreshing"],
         subcategory: "hybrid",
         potency: "High"
+      },
+      {
+        name: "Sour Blue Diesel",
+        description: "A potent sativa-dominant hybrid combining Sour Diesel with Blueberry for a fruity diesel experience.",
+        strainType: "Sativa",
+        thcaContent: "29.1",
+        effects: ["energizing", "fruity", "diesel"],
+        subcategory: "sativa",
+        potency: "High"
+      },
+      {
+        name: "Strawberry Diesel",
+        description: "Sweet strawberry flavors combined with diesel undertones for a unique sativa experience.",
+        strainType: "Sativa",
+        thcaContent: "27.6",
+        effects: ["sweet", "energizing", "strawberry"],
+        subcategory: "sativa",
+        potency: "Medium"
       }
     ];
 
@@ -358,12 +376,14 @@ export class MemStorage implements IStorage {
         const price = (weightOption.basePrice * priceMultiplier).toFixed(2);
         
         const flowerImageUrl = strain.name.includes('Grape') ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format' :
-                             strain.name.includes('Purple Koolaid') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
-                             strain.name.includes('Sour Diesel') && strain.name.includes('Popcorn') ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format' :
-                             strain.name.includes('Sour Diesel') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
-                             strain.name.includes('Sour Lemon') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Purple Koolaid') ? '/src/assets/generated_images/Indica_hemp_flower_d4c0d165.png' :
+                             strain.name.includes('Sour Diesel') && strain.name.includes('Popcorn') ? '/src/assets/generated_images/White_Widow_hemp_strain_1f35747f.png' :
+                             strain.name.includes('Sour Diesel') ? '/src/assets/generated_images/White_Widow_hemp_strain_1f35747f.png' :
+                             strain.name.includes('Sour Blue Diesel') ? '/src/assets/generated_images/OG_Kush_hemp_strain_970f7637.png' :
+                             strain.name.includes('Sour Lemon') ? '/src/assets/generated_images/Premium_hemp_flower_ee290031.png' :
+                             strain.name.includes('Strawberry Diesel') ? '/src/assets/generated_images/Gelato_strain_buds_a20df8c2.png' :
                              strain.name.includes('Wedding Cake') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
-                             strain.name.includes('Girl Scout') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
+                             strain.name.includes('Girl Scout') ? '/src/assets/generated_images/OG_Kush_hemp_strain_970f7637.png' :
                              'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format';
         
         sampleProducts.push({
@@ -399,9 +419,9 @@ export class MemStorage implements IStorage {
         const discountRate = packSize >= 10 ? 0.15 : packSize >= 5 ? 0.10 : 0.05;
         const totalPrice = (basePrice * packSize * (1 - discountRate)).toFixed(2);
         
-        const packImageUrl = strain.includes('Sour Diesel') ? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format' :
-                             strain.includes('Purple Koolaid') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
-                             strain.includes('Lemon') ? 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format' :
+        const packImageUrl = strain.includes('Sour Diesel') ? '/src/assets/generated_images/White_Widow_hemp_strain_1f35747f.png' :
+                             strain.includes('Purple Koolaid') ? '/src/assets/generated_images/Indica_hemp_flower_d4c0d165.png' :
+                             strain.includes('Lemon') ? '/src/assets/generated_images/Premium_hemp_flower_ee290031.png' :
                              strain.includes('Too Tall') ? 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format' :
                              'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format';
         
