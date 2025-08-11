@@ -3937,6 +3937,47 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Admin Object Storage Routes for Product Image Management
+  app.post("/api/admin/objects/upload", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { ObjectStorageService } = await import('./objectStorage');
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error: any) {
+      console.error("Error generating upload URL:", error);
+      res.status(500).json({ error: "Failed to generate upload URL" });
+    }
+  });
+
+  // Update product image after upload
+  app.put("/api/admin/products/:id/image", authenticateToken, requireAdmin, async (req, res) => {
+    try {
+      const { imageUrl } = req.body;
+      const productId = req.params.id;
+
+      if (!imageUrl) {
+        return res.status(400).json({ error: "Image URL is required" });
+      }
+
+      // Update product with new image URL
+      const updatedProduct = await storage.updateProduct(productId, { imageUrl });
+      
+      if (!updatedProduct) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      res.json({
+        success: true,
+        product: updatedProduct,
+        message: "Product image updated successfully"
+      });
+    } catch (error: any) {
+      console.error("Error updating product image:", error);
+      res.status(500).json({ error: "Failed to update product image" });
+    }
+  });
+
   // Set up global storage for seed functions
   (global as any).storage = storage;
 
