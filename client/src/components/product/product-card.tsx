@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Star, ShoppingCart, Package, Zap, Plus, Minus } from 'lucide-react';
+import { Heart, Star, ShoppingCart, Package, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { ProductVariantSelector } from './product-variant-selector';
-import { getProductPricingConfig, calculateQuantityPrice, getQuantityOptions } from '@/utils/product-pricing';
 import type { Product, ProductVariant } from '@shared/schema';
 
 interface ProductCardProps {
@@ -19,14 +18,10 @@ interface ProductCardProps {
 export function ProductCard({ product, onProductClick, isHighlighted = false }: ProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
-  const [quantity, setQuantity] = useState(1);
   const [showVariants, setShowVariants] = useState(false);
   const { addToCart } = useCart();
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  // Get pricing configuration for this product
-  const pricingConfig = getProductPricingConfig(product.name, product.category);
 
   // Get product variants or create default variant
   const variants = product.variants && product.variants.length > 0 
@@ -41,14 +36,6 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
 
   const currentVariant = selectedVariant || variants.find(v => v.isDefault) || variants[0];
   const priceRange = product.priceRange || { min: parseFloat(product.price), max: parseFloat(product.price) };
-  
-  // Calculate display price based on pricing config
-  const getDisplayPrice = () => {
-    if (pricingConfig.useQuantityScaling) {
-      return calculateQuantityPrice(parseFloat(product.price), quantity);
-    }
-    return currentVariant.price;
-  };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -73,12 +60,11 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
     }
 
     try {
-      // Use quantity for quantity-scaled products, otherwise use variant info
-      const cartQuantity = pricingConfig.useQuantityScaling ? quantity : 1;
-      await addToCart(product.id, cartQuantity);
+      // For now, use the product ID. In a full implementation, you'd pass variant info
+      await addToCart(product.id);
       toast({
         title: "Added to cart",
-        description: `${cartQuantity}x ${product.name} added to cart!`
+        description: `${currentVariant.weight} ${product.name} added to cart!`
       });
       
       // Trigger recommendation popup after adding to cart
@@ -205,18 +191,7 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
         
         <div className="flex items-center justify-between mb-2">
           <div>
-            {pricingConfig.useQuantityScaling ? (
-              <div className="flex flex-col">
-                <span className="text-2xl font-bold text-emerald-400">
-                  ${getDisplayPrice().toFixed(2)}
-                </span>
-                {quantity > 1 && (
-                  <span className="text-xs text-gray-400">
-                    ${parseFloat(product.price)} each
-                  </span>
-                )}
-              </div>
-            ) : priceRange.min === priceRange.max ? (
+            {priceRange.min === priceRange.max ? (
               <span className="text-2xl font-bold text-emerald-400">
                 ${currentVariant.price}
               </span>
@@ -237,60 +212,15 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
           </div>
         </div>
         
-        {/* Quantity Selector for quantity-scaled products */}
-        {pricingConfig.useQuantityScaling ? (
+        {/* Variant Selector for products with multiple sizes */}
+        {variants.length > 1 && (
           <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-300">Quantity:</span>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-800 border-gray-600 hover:bg-gray-700"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setQuantity(Math.max(1, quantity - 1));
-                  }}
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-                <span className="text-lg font-bold text-emerald-400 min-w-[2rem] text-center">
-                  {quantity}
-                </span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 bg-gray-800 border-gray-600 hover:bg-gray-700"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setQuantity(Math.min(currentVariant.stock, quantity + 1));
-                  }}
-                  disabled={quantity >= currentVariant.stock}
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-              </div>
-            </div>
-            {quantity >= 3 && (
-              <div className="text-xs text-green-400 mt-1 text-center">
-                {quantity >= 10 ? '15% bulk discount applied!' : 
-                 quantity >= 5 ? '10% bulk discount applied!' : 
-                 '5% bulk discount applied!'}
-              </div>
-            )}
+            <ProductVariantSelector
+              variants={variants}
+              onVariantChange={setSelectedVariant}
+              selectedVariant={currentVariant}
+            />
           </div>
-        ) : (
-          /* Variant Selector for products with multiple sizes */
-          variants.length > 1 && pricingConfig.showWeightOptions && (
-            <div className="mb-4">
-              <ProductVariantSelector
-                variants={variants}
-                onVariantChange={setSelectedVariant}
-                selectedVariant={currentVariant}
-              />
-            </div>
-          )
         )}
 
         <div className="flex items-center justify-between mb-4">
@@ -335,7 +265,6 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
               ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
               : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white'
           }`}
-          data-testid={`button-add-to-cart-${product.id}`}
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
           {currentVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart'}

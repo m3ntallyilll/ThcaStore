@@ -37,7 +37,7 @@ function generatePersonalizedRecommendations(products: any[], viewedIds: string[
       return bScore - aScore;
     })
     .slice(0, 8);
-
+  
   return recommended;
 }
 
@@ -54,10 +54,10 @@ function generateSimilarRecommendations(products: any[], currentId?: string, vie
       .filter(p => !viewedIds.includes(p.id))
       .slice(0, 8);
   }
-
+  
   const currentProduct = products.find(p => p.id === currentId);
   if (!currentProduct) return [];
-
+  
   return products
     .filter(p => p.id !== currentId && !viewedIds.includes(p.id))
     .filter(p => p.category === currentProduct.category)
@@ -75,13 +75,13 @@ function generateSimilarRecommendations(products: any[], currentId?: string, vie
 
 function generateComplementaryRecommendations(products: any[], cartIds: string[] = []) {
   if (!cartIds.length) return [];
-
+  
   const cartProducts = products.filter(p => cartIds.includes(p.id));
-  const cartCategories = Array.from(new Set(cartProducts.map(p => p.category)));
-
+  const cartCategories = [...new Set(cartProducts.map(p => p.category))];
+  
   const complementCategories = ['flower', 'prerolls', 'concentrates', 'edibles']
     .filter(cat => !cartCategories.includes(cat));
-
+  
   return products
     .filter(p => !cartIds.includes(p.id))
     .filter(p => complementCategories.includes(p.category))
@@ -100,24 +100,24 @@ function generateBalancedCatalog() {
     sativa: ['Green Crack', 'Sour Diesel', 'Jack Herer', 'Durban Poison', 'Maui Wowie'],
     hybrid: ['Blue Dream', 'Girl Scout Cookies', 'Wedding Cake', 'Gelato', 'White Widow']
   };
-
+  
   const weights = {
     flower: ['1g', '3.5g', '7g', '14g', '28g'],
     prerolls: ['1.1g', '1.25g', '1.45g', '1.5g'],
     concentrates: ['0.5g', '1g', '2g'],
     edibles: ['100mg', '250mg', '500mg', '1000mg']
   };
-
+  
   const baseImages = [
     'https://images.unsplash.com/photo-1605185020742-f6b9c93eef31?w=400',
     'https://images.unsplash.com/photo-1583912086096-8c60d75a53d0?w=400',
     'https://images.unsplash.com/photo-1605185020656-ac2c5a9eff9d?w=400'
   ];
-
+  
   const effects = ['relaxing', 'energizing', 'creative', 'focused', 'euphoric', 'calming'];
-
-  const products: any[] = [];
-
+  
+  const products = [];
+  
   Object.entries(strains).forEach(([strainType, strainNames]) => {
     strainNames.forEach((strainName, strainIndex) => {
       Object.entries(weights).forEach(([category, weightList]) => {
@@ -128,27 +128,27 @@ function generateBalancedCatalog() {
             concentrates: { '0.5g': 35, '1g': 65, '2g': 120 },
             edibles: { '100mg': 20, '250mg': 35, '500mg': 65, '1000mg': 120 }
           };
-
-          const basePrice = (basePrices as any)[category][weight];
+          
+          const basePrice = basePrices[category as keyof typeof basePrices][weight as keyof typeof basePrices[typeof category]];
           const priceVariation = 1 + (Math.random() - 0.5) * 0.4;
           const finalPrice = Math.round(basePrice * priceVariation);
-
+          
           const thcaContent = Math.round(15 + Math.random() * 20);
           const rating = (4.0 + Math.random() * 1.0).toFixed(1);
-
+          
           const variants = weightList.map((w, i) => ({
             id: `variant-${Date.now()}-${Math.random().toString(36).slice(2)}`,
             weight: w,
-            price: Math.round((basePrices as any)[category][w] * priceVariation),
+            price: Math.round(basePrices[category as keyof typeof basePrices][w as keyof typeof basePrices[typeof category]] * priceVariation),
             stock: Math.floor(20 + Math.random() * 80),
             isDefault: i === weightIndex
           }));
-
+          
           const priceRange = {
             min: Math.min(...variants.map(v => v.price)),
             max: Math.max(...variants.map(v => v.price))
           };
-
+          
           products.push({
             name: `${strainName} ${category === 'flower' ? 'Flower' : category === 'prerolls' ? 'Pre-Roll' : category === 'concentrates' ? 'Concentrate' : 'Edibles'}`,
             description: `Premium ${strainType} ${category} with ${thcaContent}% THCA. Perfect for ${effects[Math.floor(Math.random() * effects.length)]} and ${effects[Math.floor(Math.random() * effects.length)]} effects.`,
@@ -174,7 +174,7 @@ function generateBalancedCatalog() {
       });
     });
   });
-
+  
   return products;
 }
 
@@ -210,11 +210,11 @@ const authenticateToken = async (req: any, res: any, next: any) => {
       id: user.id || decoded.userId 
     };
     next();
-  } catch (error: any) {
+  } catch (error) {
     console.error('Token verification error:', error);
-    if (error?.name === 'TokenExpiredError') {
+    if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ message: 'Token expired - please log in again' });
-    } else if (error?.name === 'JsonWebTokenError') {
+    } else if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ message: 'Invalid token - please log in again' });
     }
     return res.status(403).json({ message: 'Authentication failed' });
@@ -232,10 +232,10 @@ const requireAdmin = (req: any, res: any, next: any) => {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Serve static assets from attached_assets folder
   app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
-
+  
   // Affiliate routes
   app.use('/api/affiliate', affiliateRoutes);
-
+  
   // Missing rewards and store credit routes
   app.get('/api/rewards/user', authenticateToken, async (req: any, res) => {
     try {
@@ -246,7 +246,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to fetch user rewards' });
     }
   });
-
+  
   app.get('/api/store-credit/balance', authenticateToken, async (req: any, res) => {
     try {
       const userId = req.user?.id;
@@ -256,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Failed to fetch store credit balance' });
     }
   });
-
+  
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -276,8 +276,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
       });
 
-      // Generate JWT token (Extended expiration for better user experience)
-      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '365d' });
+      // Generate JWT token
+      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '30d' });
 
       res.json({
         user: { ...user, password: undefined },
@@ -302,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '365d' });
+      const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '30d' });
 
       res.json({
         user: { ...user, password: undefined },
@@ -397,7 +397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/products/bulk-update-variants", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       console.log('🚀 Starting bulk variant update...');
-
+      
       const CATEGORY_VARIANTS = {
         flower: {
           weights: ['1g', '3.5g', '7g', '14g', '28g'],
@@ -420,7 +420,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       function generateVariants(basePrice: number, category: string, stock: number) {
         const categoryData = CATEGORY_VARIANTS[category as keyof typeof CATEGORY_VARIANTS];
         if (!categoryData) return [];
-
+        
         return categoryData.weights.map((weight, index) => ({
           id: `${Date.now()}-${index}-${Math.random().toString(36).slice(2)}`,
           weight,
@@ -469,23 +469,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       for (const product of products) {
         // Skip if already has variants
         if (product.variants && product.variants.length > 0) continue;
-
+        
         const basePrice = parseFloat(product.price);
         const variants = generateVariants(basePrice, product.category, product.stock);
         const subcategory = determineSubcategory(product.name, product.category);
         const potency = determinePotency(product.thcaContent);
-
+        
         if (variants.length > 0) {
           const prices = variants.map(v => v.price);
           const priceRange = { min: Math.min(...prices), max: Math.max(...prices) };
-
+          
           await storage.updateProduct(product.id, {
             variants,
             subcategory,
             potency,
             priceRange
           });
-
+          
           updatedCount++;
         }
       }
@@ -496,7 +496,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         updatedCount,
         message: `Successfully updated ${updatedCount} products with size/weight variants` 
       });
-
+      
     } catch (error: any) {
       console.error('Bulk update error:', error);
       res.status(500).json({ message: error.message });
@@ -506,69 +506,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Bulk update product images
   app.post("/api/admin/products/bulk-update-images", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      console.log('📱 Starting realistic Android-quality image update...');
-
-      // Realistic Android phone camera quality images with child-proof packaging
-      const realisticImageMap = {
-        flower: [
-          'https://images.unsplash.com/photo-1583912267550-3888c9bc53da?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1571167530149-ba87c2aab8b9?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1582538885592-e70a5d7ab3d3?w=600&h=600&fit=crop&auto=format&q=75'
-        ],
-        prerolls: [
-          'https://images.unsplash.com/photo-1571167530149-ba87c2aab8b9?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1582538885592-e70a5d7ab3d3?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1585609241917-7a32a8be6a0a?w=600&h=600&fit=crop&auto=format&q=75'
-        ],
-        concentrates: [
-          'https://images.unsplash.com/photo-1587985124042-3e4dc0c6c761?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1585609241917-7a32a8be6a0a?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&h=600&fit=crop&auto=format&q=75'
-        ],
-        edibles: [
-          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1587985058438-5eaa6b2c9e45?w=600&h=600&fit=crop&auto=format&q=75',
-          'https://images.unsplash.com/photo-1585609241917-7a32a8be6a0a?w=600&h=600&fit=crop&auto=format&q=75'
-        ]
+      console.log('🎨 Starting bulk image update...');
+      
+      // High-quality strain-specific image mappings
+      const strainImageMap = {
+        'sour diesel': 'https://images.leafly.com/flower/sour-diesel/primary?width=1000',
+        'purple koolaid': 'https://moonrockcanada.co/wp-content/uploads/2021/03/Buy-Purple-Koolaid-AAAA-Indica-Hybrid-online-canada-5-510x510.jpg',
+        'purple': 'https://moonrockcanada.co/wp-content/uploads/2021/03/Buy-Purple-Koolaid-AAAA-Indica-Hybrid-online-canada-5-510x510.jpg',
+        'runtz': 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800',
+        'lemon': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        'sour lemon': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        'too tall': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800',
+        'og kush': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800',
+        'gelato': 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800',
+        'blue dream': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800',
+        'white widow': 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+        'girl scout cookies': 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800',
+        'zkittlez': 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800'
       };
 
-      function getRealisticImage(category: string): string {
-        const categoryImages = realisticImageMap[category as keyof typeof realisticImageMap] || realisticImageMap.flower;
-        return categoryImages[Math.floor(Math.random() * categoryImages.length)];
+      function getStrainImage(productName: string, category: string) {
+        const nameLower = productName.toLowerCase();
+        
+        // Check for exact strain matches first
+        for (const [strain, imageUrl] of Object.entries(strainImageMap)) {
+          if (nameLower.includes(strain)) {
+            return imageUrl;
+          }
+        }
+        
+        // Category-specific defaults
+        switch (category) {
+          case 'flower':
+            return 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800';
+          case 'prerolls':
+            return 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800';
+          case 'concentrates':
+            return 'https://images.unsplash.com/photo-1586464051019-e45c73b51fcf?w=800';
+          case 'edibles':
+            return 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800';
+          default:
+            return 'https://images.unsplash.com/photo-1516975410437-bdb7d81b7d2e?w=800';
+        }
       }
 
       const products = await storage.getProducts();
       let updatedCount = 0;
 
       for (const product of products) {
-        try {
-          const newImageUrl = getRealisticImage(product.category);
-
+        const newImageUrl = getStrainImage(product.name, product.category);
+        
+        // Only update if the image URL is different
+        if (product.imageUrl !== newImageUrl) {
           await storage.updateProduct(product.id, {
             imageUrl: newImageUrl
           });
-
           updatedCount++;
-          console.log(`📱 Updated ${product.name} with Android-quality image`);
-
-          // Small delay to prevent overwhelming the system
-          await new Promise(resolve => setTimeout(resolve, 50));
-
-        } catch (error) {
-          console.error(`❌ Failed to update ${product.name}:`, error);
+          console.log(`📸 Updated image for: ${product.name}`);
         }
       }
 
-      console.log(`📱 Updated ${updatedCount} products with realistic Android-quality images`);
+      console.log(`✅ Updated ${updatedCount} product images`);
       res.json({ 
         success: true, 
         updatedCount,
-        message: `Successfully updated ${updatedCount} product images with realistic Android phone camera quality` 
+        message: `Successfully updated ${updatedCount} product images with strain-specific URLs` 
       });
-
+      
     } catch (error: any) {
       console.error('Bulk image update error:', error);
       res.status(500).json({ message: error.message });
@@ -579,12 +583,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai/recommendations", async (req, res) => {
     try {
       const { userId, currentProductId, viewedProductIds = [], cartProductIds = [], preferences = {} } = req.body;
-
+      
       console.log('🤖 Generating AI recommendations for user:', userId);
-
+      
       // Get all products for recommendation engine
       const allProducts = await storage.getProducts();
-
+      
       // AI-powered recommendation logic
       const recommendationCategories = [
         {
@@ -618,7 +622,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       ].filter(category => category.products.length > 0);
 
       res.json({ categories: recommendationCategories });
-
+      
     } catch (error: any) {
       console.error('AI recommendations error:', error);
       res.status(500).json({ message: error.message });
@@ -629,15 +633,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/ai/track-interaction", async (req, res) => {
     try {
       const { userId, action, productId, metadata = {} } = req.body;
-
+      
       // Store interaction for AI learning (would integrate with AI service)
       console.log('📊 Tracked interaction:', { userId, action, productId, metadata });
-
+      
       // In a real implementation, this would:
       // 1. Store interaction in AI memory database
       // 2. Update user preference models
       // 3. Improve future recommendations
-
+      
       res.json({ success: true });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -648,37 +652,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
 function generatePersonalizedRecommendations(products: any[], viewedProductIds: string[], preferences: any) {
   const viewedProducts = products.filter(p => viewedProductIds.includes(p.id));
   const unviewedProducts = products.filter(p => !viewedProductIds.includes(p.id));
-
+  
   if (viewedProducts.length === 0) {
     return shuffleArray(unviewedProducts.filter(p => p.featured)).slice(0, 6);
   }
-
+  
   // Extract categories and strain types from viewed products
   const viewedCategories = new Set(viewedProducts.map(p => p.category));
   const viewedStrainTypes = new Set(viewedProducts.map(p => p.strainType));
-
+  
   // Score products based on similarity to viewed products
   const scored = unviewedProducts.map(product => {
     let score = 0;
-
+    
     // Category preference (40% weight)
     if (viewedCategories.has(product.category)) score += 40;
-
+    
     // Strain type preference (30% weight)
     if (viewedStrainTypes.has(product.strainType)) score += 30;
-
+    
     // Price range preference (20% weight)
     const avgViewedPrice = viewedProducts.reduce((sum, p) => sum + parseFloat(p.price), 0) / viewedProducts.length;
     const priceDistance = Math.abs(parseFloat(product.price) - avgViewedPrice);
     const maxPrice = Math.max(...products.map(p => parseFloat(p.price)));
     score += (1 - priceDistance / maxPrice) * 20;
-
+    
     // Rating boost (10% weight)
     score += parseFloat(product.rating || '0') * 2;
-
+    
     return { ...product, score };
   });
-
+  
   return scored.sort((a, b) => b.score - a.score).slice(0, 6);
 }
 
@@ -693,37 +697,37 @@ function generateSimilarRecommendations(products: any[], currentProductId?: stri
   if (!currentProductId) {
     return generateTrendingRecommendations(products);
   }
-
+  
   const currentProduct = products.find(p => p.id === currentProductId);
   if (!currentProduct) {
     return generateTrendingRecommendations(products);
   }
-
+  
   const otherProducts = products.filter(p => p.id !== currentProductId);
-
+  
   const scored = otherProducts.map(product => {
     let score = 0;
-
+    
     // Same category (40% weight)
     if (product.category === currentProduct.category) score += 40;
-
+    
     // Same strain type (30% weight)
     if (product.strainType === currentProduct.strainType) score += 30;
-
+    
     // Similar price range (20% weight)
     const priceDistance = Math.abs(parseFloat(product.price) - parseFloat(currentProduct.price));
     const maxPrice = Math.max(...products.map(p => parseFloat(p.price)));
     score += (1 - priceDistance / maxPrice) * 20;
-
+    
     // Similar effects (10% weight)
     const currentEffects = new Set(currentProduct.effects || []);
     const productEffects = new Set(product.effects || []);
     const commonEffects = [...currentEffects].filter(effect => productEffects.has(effect));
     score += (commonEffects.length / Math.max(currentEffects.size, 1)) * 10;
-
+    
     return { ...product, score };
   });
-
+  
   return scored.sort((a, b) => b.score - a.score).slice(0, 6);
 }
 
@@ -731,33 +735,33 @@ function generateComplementaryRecommendations(products: any[], cartProductIds: s
   if (cartProductIds.length === 0) {
     return generateTrendingRecommendations(products);
   }
-
+  
   const cartProducts = products.filter(p => cartProductIds.includes(p.id));
   const otherProducts = products.filter(p => !cartProductIds.includes(p.id));
-
+  
   // Extract cart characteristics
   const cartCategories = new Set(cartProducts.map(p => p.category));
   const cartStrainTypes = new Set(cartProducts.map(p => p.strainType));
-
+  
   const scored = otherProducts.map(product => {
     let score = 0;
-
+    
     // Complementary categories (50% weight)
     if (cartCategories.has('flower') && product.category === 'prerolls') score += 50;
     if (cartCategories.has('prerolls') && product.category === 'flower') score += 50;
     if (cartCategories.has('flower') && product.category === 'variety-packs') score += 40;
     if (!cartCategories.has(product.category)) score += 20; // Diversity bonus
-
+    
     // Different strain types for variety (30% weight)
     if (!cartStrainTypes.has(product.strainType)) score += 30;
-
+    
     // Higher tier products (20% weight)
     if (parseFloat(product.thcaContent || '0') > 28) score += 20;
     if (product.featured) score += 10;
-
+    
     return { ...product, score };
   });
-
+  
   return scored.sort((a, b) => b.score - a.score).slice(0, 6);
 }
 
@@ -774,9 +778,9 @@ function shuffleArray(array: any[]) {
   app.post("/api/admin/generate-balanced-catalog", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       console.log('🎯 Generating balanced product catalog...');
-
+      
       const balancedProducts = generateBalancedCatalog();
-
+      
       // Create products in batches
       let createdCount = 0;
       for (const productData of balancedProducts) {
@@ -787,14 +791,14 @@ function shuffleArray(array: any[]) {
           console.error(`Failed to create product: ${productData.name}`);
         }
       }
-
+      
       console.log(`✅ Created ${createdCount} balanced products`);
       res.json({ 
         success: true, 
         createdCount,
         message: `Successfully created ${createdCount} balanced products covering all strains, weights, and price ranges`
       });
-
+      
     } catch (error: any) {
       console.error('Balanced catalog generation error:', error);
       res.status(500).json({ message: error.message });
@@ -814,10 +818,10 @@ function shuffleArray(array: any[]) {
         applicableCategories = [],
         description 
       } = req.body;
-
+      
       // Generate unique code if not provided
       const promoCode = code || generatePromoCode();
-
+      
       const newPromo = await storage.createPromoCode({
         code: promoCode.toUpperCase(),
         discountType, // 'percentage' | 'fixed' | 'free_shipping'
@@ -832,7 +836,7 @@ function shuffleArray(array: any[]) {
         createdAt: new Date(),
         updatedAt: new Date()
       });
-
+      
       res.json(newPromo);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
@@ -851,31 +855,31 @@ function shuffleArray(array: any[]) {
   app.post("/api/promo-codes/validate", async (req, res) => {
     try {
       const { code, cartTotal, categories = [] } = req.body;
-
+      
       const promoCode = await storage.getPromoCodeByCode(code.toUpperCase());
-
+      
       if (!promoCode) {
         return res.status(404).json({ message: "Invalid promo code" });
       }
-
+      
       if (!promoCode.isActive) {
         return res.status(400).json({ message: "Promo code is inactive" });
       }
-
+      
       if (promoCode.expiresAt && new Date() > promoCode.expiresAt) {
         return res.status(400).json({ message: "Promo code has expired" });
       }
-
+      
       if (promoCode.maxUses && promoCode.currentUses >= promoCode.maxUses) {
         return res.status(400).json({ message: "Promo code usage limit reached" });
       }
-
+      
       if (cartTotal < promoCode.minPurchase) {
         return res.status(400).json({ 
           message: `Minimum purchase of $${promoCode.minPurchase} required` 
         });
       }
-
+      
       // Check category restrictions
       if (promoCode.applicableCategories.length > 0) {
         const hasApplicableItems = categories.some(cat => 
@@ -887,7 +891,7 @@ function shuffleArray(array: any[]) {
           });
         }
       }
-
+      
       // Calculate discount
       let discountAmount = 0;
       if (promoCode.discountType === 'percentage') {
@@ -895,14 +899,14 @@ function shuffleArray(array: any[]) {
       } else if (promoCode.discountType === 'fixed') {
         discountAmount = Math.min(promoCode.discountValue, cartTotal);
       }
-
+      
       res.json({
         valid: true,
         discountAmount,
         discountType: promoCode.discountType,
         description: promoCode.description
       });
-
+      
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -915,7 +919,7 @@ function shuffleArray(array: any[]) {
       const authHeader = req.headers['authorization'];
       const token = authHeader && authHeader.split(' ')[1];
       let userId = null;
-
+      
       if (token) {
         try {
           const decoded = jwt.verify(token, JWT_SECRET) as any;
@@ -927,7 +931,7 @@ function shuffleArray(array: any[]) {
           // Token invalid, continue as guest
         }
       }
-
+      
       // Use guest session ID from header if not authenticated
       if (!userId) {
         const guestId = req.headers['x-guest-id'] as string;
@@ -935,7 +939,59 @@ function shuffleArray(array: any[]) {
           // Return empty cart for new guest users without session ID
           return res.json([]);
         }
+        
+        // Ensure the guest user exists in the database
+        let guestUser = await storage.getUser(guestId);
+        if (!guestUser) {
+          // Create guest user with the provided guest ID
+          guestUser = await storage.createUser({
+            id: guestId,
+            email: `${guestId}@guest.temp`,
+            password: await bcrypt.hash('guest', 10),
+            firstName: 'Guest',
+            lastName: 'User', 
+            username: guestId,
+            isAdmin: false
+          });
+        }
+        userId = guestUser.id;
+      }
+      
+      const cartItems = await storage.getCartItems(userId);
+      res.json(cartItems);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
+  // Modified cart POST to allow guest users or authenticated users
+  app.post("/api/cart", async (req: any, res) => {
+    try {
+      let userId = req.body.userId;
+      
+      // Check if user is authenticated
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, JWT_SECRET) as any;
+          const user = await storage.getUser(decoded.userId);
+          if (user) {
+            userId = user.id; // Use authenticated user ID
+          }
+        } catch (error) {
+          // Token invalid, continue as guest
+        }
+      }
+      
+      // If no userId provided and not authenticated, use guest session
+      if (!userId) {        
+        const guestId = req.headers['x-guest-id'] as string;
+        if (!guestId) {
+          return res.status(400).json({ message: 'Guest session ID required' });
+        }
+        
         // Ensure the guest user exists in the database
         let guestUser = await storage.getUser(guestId);
         if (!guestUser) {
@@ -953,30 +1009,13 @@ function shuffleArray(array: any[]) {
         userId = guestUser.id;
       }
 
-      const cartItems = await storage.getCartItems(userId);
-      res.json(cartItems);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Simplified cart POST for authenticated users
-  app.post("/api/cart", authenticateToken, async (req: any, res) => {
-    try {
-      const userId = req.user.id;
-      const { productId, quantity, variant } = req.body;
-
-      if (!productId || !quantity) {
-        return res.status(400).json({ message: 'Product ID and quantity are required' });
-      }
-
       const cartItemData = insertCartItemSchema.parse({
         ...req.body,
         userId: userId,
       });
 
       const cartItem = await storage.addToCart(cartItemData);
-      res.status(201).json(cartItem);
+      res.status(201).json({ ...cartItem, guestSession: !token, userId });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -990,7 +1029,7 @@ function shuffleArray(array: any[]) {
       if (!guestId || (guestId.length < 10)) {
         return res.status(400).json({ message: "Invalid guest session" });
       }
-
+      
       const cartItems = await storage.getCartItems(guestId);
       res.json(cartItems);
     } catch (error: any) {
@@ -1094,95 +1133,7 @@ function shuffleArray(array: any[]) {
     }
   });
 
-  // Order tracking route - SIMPLIFIED VERSION
-  app.get('/api/orders/track/:orderNumber', async (req, res) => {
-    try {
-      const { orderNumber } = req.params;
-
-      if (!orderNumber || !orderNumber.startsWith('MC')) {
-        return res.status(400).json({ error: 'Invalid order number format. Order numbers should start with MC (e.g., MC123456)' });
-      }
-
-      // Check for the specific test order MC123456 (Paid Shipping with Tracking)
-      if (orderNumber === 'MC123456') {
-        const trackingData = {
-          id: 'test-order-123',
-          orderNumber: 'MC123456',
-          status: 'processing',
-          total: 89.99,
-          items: [
-            {
-              name: 'Purple Koolaid Infused Premium Flower',
-              quantity: 1,
-              price: 49.99,
-              imageUrl: '/attached_assets/generated_images/Purple_Koolaid_THCA_flower_a7e52253.png',
-              category: 'flower',
-              weight: '3.5g',
-              thcaContent: '28.5',
-              productType: 'infused flower'
-            },
-            {
-              name: 'Sour Diesel Preroll 1.25g',
-              quantity: 2,
-              price: 20.00,
-              imageUrl: '/attached_assets/generated_images/Sour_Diesel_preroll_joint_f03dfc66.png',
-              category: 'prerolls',
-              weight: '1.25g',
-              thcaContent: '22.3'
-            }
-          ],
-          shippingAddress: '123 Main St, Las Vegas, NV 89101',
-          shippingMethod: 'Express Shipping (Tracked)',
-          shippingCost: 15.99,
-          trackingNumber: 'TRK789123456',
-          estimatedDelivery: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
-          paymentMethod: 'Cash App Pay',
-          createdAt: new Date().toISOString(),
-          hasTracking: true
-        };
-        return res.json(trackingData);
-      }
-
-      // Check for free envelope shipping order MC111111 (No Tracking)
-      if (orderNumber === 'MC111111') {
-        const trackingData = {
-          id: 'test-order-envelope',
-          orderNumber: 'MC111111',
-          status: 'shipped',
-          total: 25.00,
-          items: [
-            {
-              name: 'Hemp Flower Sample 1g',
-              quantity: 1,
-              price: 25.00,
-              imageUrl: '/attached_assets/generated_images/Hemp_flower_sample_baggie_e951c218.png',
-              category: 'flower',
-              weight: '1g',
-              thcaContent: '18.2'
-            }
-          ],
-          shippingAddress: '456 Oak Ave, Henderson, NV 89052',
-          shippingMethod: 'Free Envelope Shipping (Untracked)',
-          shippingCost: 0.00,
-          trackingNumber: null,
-          estimatedDelivery: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          paymentMethod: 'Cash App Pay',
-          createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          hasTracking: false,
-          shippingNote: 'Free envelope shipping - No tracking available. Allow 5-10 business days for delivery.'
-        };
-        return res.json(trackingData);
-      }
-
-      // For other orders, return not found message
-      res.status(404).json({ error: 'Order not found. Please check your order number and try again.' });
-    } catch (error: any) {
-      console.error('Error tracking order:', error);
-      res.status(500).json({ error: 'Failed to retrieve order information' });
-    }
-  });
-
-  app.put("/api/orders/:id/status", authenticateToken, requireAdmin, async (req, res) => {
+  app.put("/api/orders/:id/status", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const { status } = req.body;
       const order = await storage.updateOrderStatus(req.params.id, status);
@@ -1287,7 +1238,7 @@ function shuffleArray(array: any[]) {
   });
 
   // Referral Program routes
-  app.get("/api/referrals", authenticateToken, async (req, res) => {
+  app.get("/api/referrals", authenticateToken, async (req: any, res) => {
     try {
       const referrals = await storage.getUserReferrals(req.user.id);
       res.json(referrals);
@@ -1296,7 +1247,7 @@ function shuffleArray(array: any[]) {
     }
   });
 
-  app.post("/api/referrals", authenticateToken, async (req, res) => {
+  app.post("/api/referrals", authenticateToken, async (req: any, res) => {
     try {
       // Generate a truly unique referral code with collision detection
       let referralCode: string;
@@ -1615,7 +1566,7 @@ function shuffleArray(array: any[]) {
               // Actually add the item to the cart
               const quantity = action.data.quantity || 1;
               let productId = action.data.productId || action.data.product_id;
-
+              
               // If it's a product name, find the actual product ID
               if (productId && typeof productId === 'string' && !productId.includes('-')) {
                 const products = await storage.getProducts();
@@ -1624,7 +1575,7 @@ function shuffleArray(array: any[]) {
                   productId = product.id;
                 }
               }
-
+              
               // Use guest user if no userId provided
               let cartUserId = userId;
               if (!cartUserId) {
@@ -1662,7 +1613,7 @@ function shuffleArray(array: any[]) {
                   cartUserId = guestUser.id;
                 }
               }
-
+              
               const cartItemData = {
                 userId: cartUserId,
                 productId,
@@ -2430,7 +2381,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   });
 
   // Bulk Blog Generation Route
-  app.post("/api/blog/ai/bulk-generate", async (req, res) => {
+  app.post("/api/blog/ai/bulk-generate", async (req: any, res) => {
     try {
       const { bulkBlogGenerator } = await import('./bulk-blog-generator');
       const { 
@@ -2517,7 +2468,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       }
 
       console.log(`🚀 Starting bulk generation of ${count} ${productType} products (${strainType})`);
-
+      
       // Generate products
       const products = await bulkProductGenerator.generateBulkProducts({
         productType,
@@ -2531,7 +2482,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       // Save all products to database
       const savedResults = await bulkProductGenerator.saveBulkProducts(products);
-
+      
       const successCount = savedResults.filter((r: any) => !r.error).length;
       const failCount = savedResults.filter((r: any) => r.error).length;
 
@@ -2544,7 +2495,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           console.warn('Failed to generate deals:', dealError);
         }
       }
-
+      
       res.json({
         success: true,
         message: `Bulk product generation completed: ${successCount} successful, ${failCount} failed`,
@@ -2561,9 +2512,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           price: r.price || null
         }))
       });
-
+      
       console.log(`✅ Bulk product generation complete: ${successCount}/${count} products saved successfully`);
-
+      
     } catch (error: any) {
       console.error('Bulk product generation error:', error);
       res.status(500).json({ 
@@ -2577,9 +2528,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.post("/api/admin/products/ai/quick-setup", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
       const { bulkProductGenerator } = await import('./bulk-product-generator');
-
+      
       console.log(`🚀 Starting MASSIVE inventory setup: 100,000 pre-rolls + 25 pounds flower`);
-
+      
       const inventoryPlan = [
         // 50,000 Indica Pre-rolls
         { productType: 'pre-roll' as const, strainType: 'indica' as const, count: 5000, priceRange: { min: 8, max: 18 }, thcRange: { min: 18, max: 32 } },
@@ -2600,26 +2551,26 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       for (const plan of inventoryPlan) {
         try {
           console.log(`📦 Generating ${plan.count} ${plan.strainType} ${plan.productType}s...`);
-
+          
           const products = await bulkProductGenerator.generateBulkProducts(plan);
           const savedResults = await bulkProductGenerator.saveBulkProducts(products);
-
+          
           const successCount = savedResults.filter((r: any) => !r.error).length;
           const failCount = savedResults.filter((r: any) => r.error).length;
-
+          
           totalGenerated += successCount;
           totalFailed += failCount;
-
+          
           allResults.push({
             type: `${plan.strainType} ${plan.productType}`,
             requested: plan.count,
             generated: successCount,
             failed: failCount
           });
-
+          
           // Small delay between inventory batches
           await new Promise(resolve => setTimeout(resolve, 2000));
-
+          
         } catch (batchError) {
           console.error(`Failed batch for ${plan.strainType} ${plan.productType}:`, batchError);
           allResults.push({
@@ -2631,7 +2582,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           });
         }
       }
-
+      
       res.json({
         success: true,
         message: `MASSIVE inventory setup completed: ${totalGenerated} products created, ${totalFailed} failed`,
@@ -2644,9 +2595,9 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           estimatedValue: `$${(totalGenerated * 35).toLocaleString()}` // Average $35 per product
         }
       });
-
+      
       console.log(`🎉 MASSIVE inventory setup complete: ${totalGenerated} total products created!`);
-
+      
     } catch (error: any) {
       console.error('Quick inventory setup error:', error);
       res.status(500).json({ 
@@ -2801,210 +2752,81 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
   // Cash App Payment Routes
   // Create pending order for Cash App payment
-  app.post("/api/create-cash-app-order", async (req, res) => {
+  app.post("/api/create-cash-app-order", authenticateToken, async (req, res) => {
     try {
-      const { items, storeCreditUsed = 0, promoCode = null, promoDiscount = 0, affiliateCode = null } = req.body;
-
-      if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ message: "No items in cart" });
+      const { items, storeCreditUsed = 0, promoCode, promoDiscount = 0, affiliateCode } = req.body;
+      const userId = req.user?.id;
+      
+      // Validate store credit if being used
+      if (storeCreditUsed > 0 && userId) {
+        const user = await storage.getUser(userId);
+        const userStoreCredit = parseFloat(user?.storeCredit || "0");
+        
+        if (storeCreditUsed > userStoreCredit) {
+          return res.status(400).json({ 
+            message: "Insufficient store credit balance" 
+          });
+        }
       }
 
       // Calculate totals
-      let subtotal = 0;
-      let productNames = [];
-      let totalWeight = 0;
+      const subtotal = items.reduce((sum: number, item: any) => 
+        sum + (parseFloat(item.product.price) * item.quantity), 0);
+      
+      const total = subtotal - storeCreditUsed - promoDiscount;
+      
+      // Generate product names for payment note
+      const productNames = items.map((item: any) => 
+        `${item.quantity}x ${item.product.name}`
+      ).join(', ');
 
-      for (const item of items) {
-        const product = await storage.getProduct(item.productId);
-        if (!product) {
-          return res.status(400).json({ message: `Product not found: ${item.productId}` });
-        }
-
-        const price = parseFloat(product.price);
-        const quantity = item.quantity || 1;
-
-        subtotal += price * quantity;
-        productNames.push(`${product.name} (${quantity})`);
-
-        // Extract weight for shipping calculation
-        if (product.weight) {
-          const weightMatch = product.weight.match(/(\d+\.?\d*)/);
-          if (weightMatch) {
-            totalWeight += parseFloat(weightMatch[1]) * quantity;
-          }
-        }
-      }
-
-      // Apply promo discount
-      const discount = promoDiscount || 0;
-      const discountedSubtotal = subtotal - discount;
-
-      // Apply store credit
-      const finalSubtotal = Math.max(0, discountedSubtotal - storeCreditUsed);
-
-      // Calculate shipping (simplified)
-      const shippingCost = finalSubtotal >= 75 ? 0 : 9.99;
-      const tax = 0; // No tax for hemp products in most states
-      const total = finalSubtotal + shippingCost + tax;
-
-      // Generate order number
-      const orderNumber = `MC${Math.random().toString().slice(2, 8)}`;
-
-      // Create order with proper error handling - only include orderNumber if supported
+      // Create pending order in database
       const orderData = {
-        userId: req.user?.id || 'guest',
-        status: 'pending',
+        userId: userId || '',
+        status: 'pending_payment',
         paymentMethod: 'cash_app',
-        cashAppAmount: total.toFixed(2),
-        productNames: productNames.join(', '),
-        subtotal: discountedSubtotal.toFixed(2),
-        shippingCost: shippingCost.toFixed(2),
-        tax: tax.toFixed(2),
+        subtotal: subtotal.toFixed(2),
+        tax: '0.00',
         total: total.toFixed(2),
-        shippingMethod: shippingCost === 0 ? 'free' : 'standard',
-        shippingName: 'Customer Name',
-        shippingEmail: req.user?.email || 'guest@example.com',
-        shippingAddress: 'To be updated',
-        shippingCity: 'To be updated',
-        shippingState: 'To be updated',
-        shippingZip: 'To be updated',
-        paymentStatus: 'pending',
-        storeCreditUsed: storeCreditUsed.toString(),
-        promoCodeUsed: promoCode,
-        promoDiscount: discount.toString(),
-        affiliateCode
+        shippingName: '',
+        shippingEmail: '',
+        shippingAddress: '',
+        shippingCity: '',
+        shippingState: '',
+        shippingZip: '',
+        shippingPhone: '',
+        billingName: '',
+        billingEmail: '',
+        billingAddress: '',
+        billingCity: '',
+        billingState: '',
+        billingZip: '',
+        billingPhone: '',
+        storeCreditUsed: storeCreditUsed.toFixed(2),
+        promoCodeUsed: promoCode || null,
+        promoDiscount: promoDiscount.toFixed(2),
+        affiliateCode: affiliateCode || undefined,
+        productNames: productNames,
+        cashAppAmount: total.toFixed(2)
       };
 
-      // Try to add orderNumber if the storage supports it
-      try {
-        // The storage.createOrder function will handle the orderNumber field if it exists in the schema.
-        // If it does not exist, it will be silently ignored or cause an error depending on the database implementation.
-        // To ensure robustness, we only assign it if the field is expected.
-        // For now, we'll assume createOrder might handle it or we need to ensure it's in insertOrderSchema
-        // and handled by the storage layer. If `insertOrderSchema` doesn't include `orderNumber`,
-        // this line might not be necessary, but it's good practice to attempt to set it if available.
-        // The actual check for schema support should be within storage.createOrder or the ORM.
-        // For this change, we are adding the orderNumber to orderData as it's generated.
-        orderData.orderNumber = orderNumber; 
-      } catch (e) {
-        console.warn('orderNumber field not supported by storage layer, continuing without it');
-      }
-
       const order = await storage.createOrder(orderData);
+
+      // Generate Cash App payment link
+      const cashAppLink = `https://cash.app/$${CASH_APP_CASHTAG}/${total.toFixed(2)}`;
 
       res.json({ 
         success: true,
         orderId: order.id,
-        cashAppLink: `https://cash.app/$${CASH_APP_CASHTAG}/${total.toFixed(2)}`,
+        cashAppLink: cashAppLink,
         total: total.toFixed(2),
-        productNames: productNames.join(', '),
-        orderNumber: order.orderNumber, // Ensure order.orderNumber is available if created
-        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $${CASH_APP_CASHTAG}\n\n📝 ORDER NUMBER: ${order.orderNumber || 'N/A'}\n\n💬 Include order #${order.orderNumber || 'N/A'} in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
+        productNames: productNames,
+        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.id}\n\n💬 Include your order number in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
       });
 
     } catch (error: any) {
       console.error('Cash App order error:', error);
       res.status(500).json({ message: "Error creating order: " + error.message });
-    }
-  });
-
-  // Order Management Routes
-  // Get user's orders
-  app.get("/api/orders", authenticateToken, async (req, res) => {
-    try {
-      const orders = await storage.getUserOrders(req.user?.id);
-      res.json(orders);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Get specific order by ID or order number
-  app.get("/api/orders/:identifier", authenticateToken, async (req, res) => {
-    try {
-      const { identifier } = req.params;
-      const userId = req.user?.id;
-      const isAdmin = req.user?.isAdmin;
-
-      let order;
-      if (identifier.startsWith('MC')) {
-        // Search by order number
-        order = await storage.getOrderByNumber(identifier);
-      } else {
-        // Search by order ID
-        order = await storage.getOrder(identifier);
-      }
-
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-
-      // Check if user owns this order or is admin
-      if (!isAdmin && order.userId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      res.json(order);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Update order status (admin only)
-  app.put("/api/orders/:orderId/status", authenticateToken, requireAdmin, async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const { status, trackingNumber, notes } = req.body;
-
-      const order = await storage.updateOrderStatus(orderId, status, trackingNumber, notes);
-
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-
-      res.json({ success: true, order });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Search orders by order number (for quick lookup)
-  app.get("/api/orders/search/:orderNumber", authenticateToken, async (req, res) => {
-    try {
-      const { orderNumber } = req.params;
-      const userId = req.user?.id;
-      const isAdmin = req.user?.isAdmin;
-
-      const order = await storage.getOrderByNumber(orderNumber.toUpperCase());
-
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-
-      // Check if user owns this order or is admin
-      if (!isAdmin && order.userId !== userId) {
-        return res.status(403).json({ message: "Access denied" });
-      }
-
-      res.json(order);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Admin: Get all orders with filtering
-  app.get("/api/admin/orders", authenticateToken, requireAdmin, async (req, res) => {
-    try {
-      const { status, paymentMethod, limit = '50', offset = '0' } = req.query;
-      const orders = await storage.getAllOrders({
-        status: status as string,
-        paymentMethod: paymentMethod as string,
-        limit: parseInt(limit as string),
-        offset: parseInt(offset as string)
-      });
-      res.json(orders);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
     }
   });
 
@@ -3022,39 +2844,39 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       // Update order status to confirmed
       const order = await storage.updateOrderStatus(orderId, 'confirmed');
-
+      
       // Process store credit deduction and point rewards after manual confirmation
       if (order && userId) {
         const storeCreditUsed = parseFloat(order.storeCreditUsed || '0');
         const orderTotal = parseFloat(order.total || '0');
-
+        
         // Deduct store credit if used
         if (storeCreditUsed > 0) {
           const user = await storage.getUser(userId);
           const currentCredit = parseFloat(user?.storeCredit || "0");
-
+          
           if (currentCredit >= storeCreditUsed) {
             const newCredit = currentCredit - storeCreditUsed;
             await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
-
+            
             await storage.createStoreCreditTransaction({
               userId,
               type: 'purchase_applied',
               amount: (-storeCreditUsed).toFixed(2),
-              description: `Store credit applied to Cash App order ${order.orderNumber}`,
+              description: `Store credit applied to Cash App order ${orderId}`,
               orderId: orderId,
             });
           }
         }
-
+        
         // Award points for the purchase
         const pointsToAward = Math.floor(orderTotal * 10); // 10 points per dollar spent
         if (pointsToAward > 0) {
           const userReward = await storage.getUserRewards(userId);
           const currentPoints = userReward?.totalPoints || 0;
-
+          
           await storage.updateUserPoints(userId, currentPoints + pointsToAward);
-
+          
           await storage.createPointTransaction({
             userId,
             points: pointsToAward,
@@ -3403,28 +3225,31 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const userId = req.user?.id;
       const { pointsToRedeem } = req.body;
-
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
 
       const userReward = await storage.getUserRewards(userId);
       const currentPoints = userReward?.totalPoints || 0;
-
+      
       if (pointsToRedeem > currentPoints) {
         return res.status(400).json({ message: "Insufficient points" });
       }
-
+      
       // Convert points to store credit (100 points = $1 store credit)
       const creditAmount = pointsToRedeem / 100;
-
+      
       // Add store credit to user account
       const user = await storage.getUser(userId);
       const currentCredit = parseFloat(user?.storeCredit || "0");
       const newCredit = currentCredit + creditAmount;
-
+      
       await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
-
+      
+      // Deduct points from user rewards
+      await storage.updateUserPoints(userId, currentPoints - pointsToRedeem);
+      
       // Record the transaction
       await storage.createStoreCreditTransaction({
         userId,
@@ -3433,14 +3258,14 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         description: `Redeemed ${pointsToRedeem} points for $${creditAmount.toFixed(2)} store credit`,
         pointsUsed: pointsToRedeem,
       });
-
+      
       await storage.createPointTransaction({
         userId,
         points: -pointsToRedeem,
         type: 'redeemed',
         description: `Redeemed ${pointsToRedeem} points for $${creditAmount.toFixed(2)} store credit`,
       });
-
+      
       res.json({ 
         message: `Successfully redeemed ${pointsToRedeem} points for $${creditAmount.toFixed(2)} store credit`,
         creditAmount,
@@ -3457,7 +3282,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const userId = req.user?.id;
       const { referralId } = req.body;
-
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
@@ -3466,21 +3291,21 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       if (!referral || referral.referrerId !== userId) {
         return res.status(404).json({ message: "Referral not found or not owned by user" });
       }
-
+      
       if (referral.status !== 'completed') {
         return res.status(400).json({ message: "Referral must be completed to redeem" });
       }
-
+      
       // Convert referral points to store credit ($10 store credit for completed referrals)
       const creditAmount = 10.00;
-
+      
       // Add store credit to user account
       const user = await storage.getUser(userId);
       const currentCredit = parseFloat(user?.storeCredit || "0");
       const newCredit = currentCredit + creditAmount;
-
+      
       await storage.updateUserStoreCredit(userId, newCredit.toFixed(2));
-
+      
       // Record the transaction
       await storage.createStoreCreditTransaction({
         userId,
@@ -3489,10 +3314,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         description: `Referral bonus: $${creditAmount.toFixed(2)} store credit`,
         referralId,
       });
-
+      
       // Mark referral as rewarded
       await storage.updateReferralStatus(referralId, 'rewarded');
-
+      
       res.json({ 
         message: `Successfully redeemed referral for $${creditAmount.toFixed(2)} store credit`,
         creditAmount,
@@ -3513,7 +3338,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       const user = await storage.getUser(userId);
       const balance = parseFloat(user?.storeCredit || "0");
-
+      
       res.json({ balance });
     } catch (error: any) {
       console.error('Store credit balance error:', error);
@@ -3529,7 +3354,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       }
 
       const transactions = await storage.getStoreCreditTransactions(userId);
-
+      
       res.json(transactions);
     } catch (error: any) {
       console.error('Store credit transactions error:', error);
@@ -3551,17 +3376,17 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       const transactions = await storage.getPointTransactions(userId);
       const streak = await storage.getUserStreaks(userId);
       const user = await storage.getUser(userId);
-
+      
       // Calculate tier and level
       const points = userReward?.totalPoints || 0;
       const level = Math.floor(points / 1000) + 1;
       const tier = points >= 10000 ? 'Platinum' : 
                    points >= 5000 ? 'Gold' : 
                    points >= 1000 ? 'Silver' : 'Bronze';
-
+      
       const nextLevelPoints = level * 1000;
       const storeCredit = parseFloat(user?.storeCredit || "0");
-
+      
       // Get available rewards including store credit conversion
       const availableRewards = [
         {
@@ -3610,7 +3435,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           available: points >= 2000,
         },
       ];
-
+      
       // Get badges
       const badges = [];
       if (userReward?.totalPoints >= 100) {
@@ -3643,7 +3468,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           rarity: 'epic'
         });
       }
-
+      
       res.json({
         userId,
         points: userReward?.totalPoints || 0,
@@ -3675,15 +3500,15 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const userId = req.user?.id;
       const { rewardId } = req.body;
-
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
-
+      
       // Get user points
       const userReward = await storage.getUserRewards(userId);
       const points = userReward?.totalPoints || 0;
-
+      
       // Check reward availability
       const rewardCosts: Record<string, number> = {
         'reward-1': 500,
@@ -3691,15 +3516,15 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         'reward-3': 300,
         'reward-4': 2000,
       };
-
+      
       const cost = rewardCosts[rewardId];
       if (!cost || points < cost) {
         return res.status(400).json({ message: "Insufficient points or invalid reward" });
       }
-
+      
       // Deduct points and create transaction
       await storage.updateUserPoints(userId, -cost, `Redeemed reward: ${rewardId}`);
-
+      
       // Create promo code for discount rewards
       if (rewardId === 'reward-1' || rewardId === 'reward-2') {
         const discountValue = rewardId === 'reward-1' ? '10' : '20';
@@ -3713,7 +3538,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           applicableCategories: [],
           description: `${discountValue}% off reward redemption`
         });
-
+        
         res.json({ 
           success: true, 
           promoCode: promoCode.code,
@@ -3733,11 +3558,11 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const userId = req.user?.id;
       const { achievementId } = req.body;
-
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
-
+      
       const success = await storage.claimAchievementReward(userId, achievementId);
       if (success) {
         res.json({ success: true, message: "Achievement reward claimed!" });
@@ -3755,14 +3580,14 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const userId = req.user?.id;
       const { orderId, orderTotal, itemCount } = req.body;
-
+      
       if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
       }
-
+      
       // Calculate base points (10 points per dollar)
       let points = Math.floor(orderTotal * 10);
-
+      
       // Bonus points for large orders
       if (orderTotal >= 200) {
         points += 2500;
@@ -3771,35 +3596,35 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         points += 1000;
         await storage.recordAchievement(userId, 'high-roller', 'Order over $100');
       }
-
+      
       // Bonus for multiple items
       if (itemCount >= 5) {
         points += 200;
         await storage.recordAchievement(userId, 'bulk-buyer', 'Purchased 5+ items');
       }
-
+      
       // Check for first purchase
       const orderCount = await storage.getUserOrderCount(userId);
       if (orderCount === 1) {
         points += 500;
         await storage.recordAchievement(userId, 'first-purchase', 'Made first purchase');
       }
-
+      
       // Apply tier multiplier
       const userReward = await storage.getUserRewards(userId);
       const currentPoints = userReward?.totalPoints || 0;
       const multiplier = currentPoints >= 10000 ? 2 : 
                         currentPoints >= 5000 ? 1.5 : 
                         currentPoints >= 1000 ? 1.25 : 1;
-
+      
       points = Math.floor(points * multiplier);
-
+      
       // Award points
       await storage.updateUserPoints(userId, points, `Purchase reward for order #${orderId}`);
-
+      
       // Update streak
       await storage.updateStreak(userId, 'purchase', new Date());
-
+      
       res.json({ 
         success: true, 
         pointsEarned: points,
@@ -4027,10 +3852,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.post('/api/admin/promo-codes', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
     try {
       const { code, discountType, discountValue, minPurchase, maxUses, expiresAt, applicableCategories, description } = req.body;
-
+      
       // Generate code if not provided
       const promoCode = code || generatePromoCode();
-
+      
       const newPromoCode = await storage.createPromoCode({
         code: promoCode.toUpperCase(),
         discountType,
@@ -4041,7 +3866,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         applicableCategories: applicableCategories || [],
         description: description || ''
       });
-
+      
       res.status(201).json(newPromoCode);
     } catch (error) {
       console.error('Error creating promo code:', error);
@@ -4053,13 +3878,13 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   app.post('/api/promo-codes/validate', async (req: Request, res: Response) => {
     try {
       const { code, orderTotal } = req.body;
-
+      
       if (!code) {
         return res.status(400).json({ message: 'Promo code is required' });
       }
 
       const promoCode = await storage.validatePromoCode(code.toUpperCase(), parseFloat(orderTotal || '0'));
-
+      
       if (!promoCode) {
         return res.status(400).json({ message: 'Invalid or expired promo code' });
       }
@@ -4089,7 +3914,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     try {
       const posts = await storage.getBlogPosts();
       const enhanced = [];
-
+      
       for (const post of posts.slice(0, 5)) { // Limit to 5 posts to avoid timeout
         try {
           const { AISEOService } = await import('./ai-seo-service');
@@ -4100,7 +3925,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
           console.error(`Failed to enhance ${post.title}:`, error);
         }
       }
-
+      
       res.json({ 
         message: `Enhanced ${enhanced.length} blog posts with AI SEO`,
         enhanced 

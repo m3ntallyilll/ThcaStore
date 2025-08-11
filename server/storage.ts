@@ -40,15 +40,14 @@ export interface IStorage {
 
   // Order methods
   getOrders(userId?: string): Promise<Order[]>;
-  getAllOrders(filters?: { status?: string; paymentMethod?: string; limit?: number; offset?: number }): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]>;
+  getAllOrders(): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]>;
   getAllOrdersWithDetails(): Promise<any[]>;
   getUserOrders(userId: string): Promise<Order[]>;
   getOrder(id: string): Promise<Order | undefined>;
-  getOrderByNumber(orderNumber: string): Promise<Order | undefined>;
   createOrder(order: InsertOrder): Promise<Order>;
   createOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
   getOrderItems(orderId: string): Promise<(OrderItem & { product: Product })[]>;
-  updateOrderStatus(id: string, status: string, trackingNumber?: string, notes?: string): Promise<Order | undefined>;
+  updateOrderStatus(id: string, status: string): Promise<Order | undefined>;
 
   // Cart methods extensions
   removeCartItem(id: string): Promise<boolean>;
@@ -122,8 +121,6 @@ export interface IStorage {
   getUserOrderCount(userId: string): Promise<number>;
   claimAchievementReward(userId: string, achievementId: string): Promise<any>;
   recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void>;
-  updateLeaderboard(): Promise<void>;
-  getUserPoints(userId: string): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
@@ -513,7 +510,6 @@ export class MemStorage implements IStorage {
       isAdmin: insertUser.isAdmin ?? false,
       firstName: insertUser.firstName ?? null,
       lastName: insertUser.lastName ?? null,
-      storeCredit: insertUser.storeCredit ?? "0.00",
       createdAt: new Date() 
     };
     this.users.set(id, user);
@@ -654,33 +650,8 @@ export class MemStorage implements IStorage {
     return Array.from(this.orders.values());
   }
 
-  async getAllOrders(filters?: { status?: string; paymentMethod?: string; limit?: number; offset?: number }): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]> {
-    let orders = Array.from(this.orders.values());
-    
-    // Apply filters
-    if (filters?.status) {
-      orders = orders.filter(order => order.status === filters.status);
-    }
-    if (filters?.paymentMethod) {
-      orders = orders.filter(order => order.paymentMethod === filters.paymentMethod);
-    }
-    
-    // Sort by creation date (newest first)
-    orders.sort((a, b) => {
-      const aDate = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bDate = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return bDate - aDate;
-    });
-    
-    // Apply pagination
-    if (filters?.offset) {
-      orders = orders.slice(filters.offset);
-    }
-    if (filters?.limit) {
-      orders = orders.slice(0, filters.limit);
-    }
-    
-    const ordersWithUsers = orders.map(order => {
+  async getAllOrders(): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]> {
+    const ordersWithUsers = Array.from(this.orders.values()).map(order => {
       const user = this.users.get(order.userId);
       if (!user) throw new Error(`User not found: ${order.userId}`);
       return { 
@@ -700,33 +671,21 @@ export class MemStorage implements IStorage {
     return this.orders.get(id);
   }
 
-  async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
-    return Array.from(this.orders.values()).find(order => order.orderNumber === orderNumber);
-  }
-
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = randomUUID();
     const order: Order = { 
       ...insertOrder,
       id,
-      createdAt: new Date(),
       status: insertOrder.status || "pending",
-      paymentMethod: insertOrder.paymentMethod ?? null,
-      cashAppAmount: insertOrder.cashAppAmount ?? null,
-      productNames: insertOrder.productNames ?? null,
       shippingCost: insertOrder.shippingCost || "0.00",
       shippingMethod: insertOrder.shippingMethod || "standard",
-      shippingCountry: insertOrder.shippingCountry || "US",
       trackingNumber: insertOrder.trackingNumber || null,
       estimatedDelivery: insertOrder.estimatedDelivery || null,
       totalWeight: insertOrder.totalWeight || null,
       shippingPhone: insertOrder.shippingPhone || null,
       paymentStatus: insertOrder.paymentStatus || "pending",
-      stripePaymentIntentId: insertOrder.stripePaymentIntentId || null,
-      storeCreditUsed: insertOrder.storeCreditUsed || "0.00",
-      promoCodeUsed: insertOrder.promoCodeUsed || null,
-      promoDiscount: insertOrder.promoDiscount || "0.00",
-      affiliateCode: insertOrder.affiliateCode || null
+      shippingAddress: insertOrder.shippingAddress || "",
+      createdAt: new Date() 
     };
     this.orders.set(id, order);
     return order;
@@ -749,15 +708,11 @@ export class MemStorage implements IStorage {
     return orderItemsWithProducts;
   }
 
-  async updateOrderStatus(id: string, status: string, trackingNumber?: string, notes?: string): Promise<Order | undefined> {
+  async updateOrderStatus(id: string, status: string): Promise<Order | undefined> {
     const order = this.orders.get(id);
     if (!order) return undefined;
     
     order.status = status;
-    if (trackingNumber !== undefined) {
-      order.trackingNumber = trackingNumber;
-    }
-    // Note: Adding notes field would require schema update, for now just update status and tracking
     this.orders.set(id, order);
     return order;
   }
@@ -820,85 +775,11 @@ export class MemStorage implements IStorage {
       firstName: 'Admin',
       lastName: 'User',
       isAdmin: true,
-      storeCredit: "0.00",
       createdAt: new Date()
     };
 
     this.users.set(adminUser.id, adminUser);
     console.log('✓ Default admin user created: admin@thca-store.com / admin123');
-    
-    // Create sample order for testing
-    await this.createSampleOrder(adminUser.id);
-  }
-
-  private async createSampleOrder(userId: string): Promise<void> {
-    try {
-      // Create a sample order for testing
-      const sampleOrder: Order = {
-        id: randomUUID(),
-        orderNumber: 'MC123456',
-        userId: userId,
-        status: 'processing',
-        paymentMethod: 'Cash App Pay',
-        cashAppAmount: '89.99',
-        productNames: 'Purple Koolaid 3.5g, Sour Diesel Preroll',
-        subtotal: '79.99',
-        shippingCost: '10.00',
-        tax: '0.00',
-        total: '89.99',
-        shippingMethod: 'standard',
-        trackingNumber: 'TRK789123456',
-        estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-        totalWeight: '4.75',
-        shippingName: 'John Doe',
-        shippingEmail: 'john@example.com',
-        shippingPhone: '555-0123',
-        shippingAddress: '123 Main St',
-        shippingAddress2: 'Apt 4B',
-        shippingCity: 'Las Vegas',
-        shippingState: 'NV',
-        shippingZip: '89101',
-        paymentStatus: 'paid',
-
-        affiliateCode: null,
-        createdAt: new Date()
-      };
-      
-      this.orders.set(sampleOrder.id, sampleOrder);
-
-      // Create sample order items
-      const products = Array.from(this.products.values());
-      if (products.length > 0) {
-        const purpleKoolaid = products.find(p => p.name.includes('Purple Koolaid')) || products[0];
-        const sourDiesel = products.find(p => p.name.includes('Sour Diesel')) || products[1];
-
-        if (purpleKoolaid) {
-          const orderItem1: OrderItem = {
-            id: randomUUID(),
-            orderId: sampleOrder.id,
-            productId: purpleKoolaid.id,
-            quantity: 1,
-            price: '49.99'
-          };
-          this.orderItems.set(orderItem1.id, orderItem1);
-        }
-
-        if (sourDiesel) {
-          const orderItem2: OrderItem = {
-            id: randomUUID(),
-            orderId: sampleOrder.id,
-            productId: sourDiesel.id,
-            quantity: 2,
-            price: '20.00'
-          };
-          this.orderItems.set(orderItem2.id, orderItem2);
-        }
-      }
-
-      console.log('✓ Sample order MC123456 created for testing');
-    } catch (error) {
-      console.error('Error creating sample order:', error);
-    }
   }
 
   private async initializeAISalesStrategy(): Promise<void> {
@@ -1137,687 +1018,8 @@ export class MemStorage implements IStorage {
     }
     return { valid: true, promoCode };
   }
-
-  // Store Credit System methods
-  async updateUserStoreCredit(userId: string, newBalance: string): Promise<void> {
-    const user = this.users.get(userId);
-    if (user) {
-      user.storeCredit = newBalance;
-      this.users.set(userId, user);
-    }
-  }
-
-  async updateUserPoints(userId: string, newPoints: number): Promise<void> {
-    const userReward = this.userRewards.get(userId) || { 
-      id: randomUUID(), 
-      userId, 
-      totalPoints: 0, 
-      createdAt: new Date() 
-    };
-    userReward.totalPoints = newPoints;
-    this.userRewards.set(userId, userReward);
-  }
-
-  async createStoreCreditTransaction(transaction: any): Promise<any> {
-    const id = randomUUID();
-    const newTransaction = { ...transaction, id, createdAt: new Date() };
-    // Store in a transactions map (would need to add this to constructor)
-    return newTransaction;
-  }
-
-  async getStoreCreditTransactions(userId: string): Promise<any[]> {
-    // Return empty array for now - would need proper storage
-    return [];
-  }
-
-  async createPointTransaction(transaction: any): Promise<any> {
-    const id = randomUUID();
-    const newTransaction = { ...transaction, id, createdAt: new Date() };
-    this.pointTransactions.set(id, newTransaction);
-    return newTransaction;
-  }
-
-  async getReferral(id: string): Promise<any> {
-    return this.referrals.get(id);
-  }
-
-  async updateReferralStatus(id: string, status: string): Promise<void> {
-    const referral = this.referrals.get(id);
-    if (referral) {
-      referral.status = status;
-      this.referrals.set(id, referral);
-    }
-  }
-
-  async updateReferral(id: string, updates: any): Promise<any> {
-    const referral = this.referrals.get(id);
-    if (!referral) return undefined;
-    const updatedReferral = { ...referral, ...updates };
-    this.referrals.set(id, updatedReferral);
-    return updatedReferral;
-  }
-
-  async getUserAchievements(userId: string): Promise<any[]> {
-    // Return empty array for now - would need proper achievement storage
-    return [];
-  }
-
-  async getUserStreaks(userId: string): Promise<any> {
-    // Return default streak data
-    return { currentStreak: 0, longestStreak: 0, lastActivity: null };
-  }
-
-  async getUserOrderCount(userId: string): Promise<number> {
-    return Array.from(this.orders.values()).filter(order => order.userId === userId).length;
-  }
-
-  async claimAchievementReward(userId: string, achievementId: string): Promise<any> {
-    // Return default response for now
-    return { success: true, pointsAwarded: 0 };
-  }
-
-  async recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void> {
-    // No-op for now - would need proper achievement storage
-  }
 }
 
-// Use MemStorage for development to avoid database schema issues
-// Import database connection
-import { db } from "./db";
-import { 
-  users, 
-  products, 
-  cartItems, 
-  orders, 
-  orderItems,
-  blogPosts,
-  referralProgram as referrals,
-  specialOffers,
-  userRewards,
-  pointTransactions,
-  rewardTiers
-} from "@shared/schema";
-import { eq, desc, and, sql } from "drizzle-orm";
-
-export class DatabaseStorage implements IStorage {
-  async initialize(): Promise<void> {
-    // Database is already initialized via db.ts
-  }
-
-  // User methods
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
-    return user;
-  }
-
-  // Product methods
-  async getProducts(): Promise<Product[]> {
-    return await db.select().from(products).orderBy(desc(products.createdAt));
-  }
-
-  async getProduct(id: string): Promise<Product | undefined> {
-    const [product] = await db.select().from(products).where(eq(products.id, id));
-    return product;
-  }
-
-  async getProductsByCategory(category: string): Promise<Product[]> {
-    return await db.select().from(products).where(eq(products.category, category));
-  }
-
-  async getProductsByStrainType(strainType: string): Promise<Product[]> {
-    return await db.select().from(products).where(eq(products.strainType, strainType));
-  }
-
-  async getFeaturedProducts(): Promise<Product[]> {
-    return await db.select().from(products).where(eq(products.featured, true));
-  }
-
-  async createProduct(insertProduct: InsertProduct): Promise<Product> {
-    const [product] = await db.insert(products).values(insertProduct).returning();
-    return product;
-  }
-
-  async updateProduct(id: string, updates: Partial<InsertProduct>): Promise<Product | undefined> {
-    const [product] = await db.update(products).set(updates).where(eq(products.id, id)).returning();
-    return product;
-  }
-
-  async deleteProduct(id: string): Promise<boolean> {
-    const result = await db.delete(products).where(eq(products.id, id));
-    return result.rowCount ? result.rowCount > 0 : false;
-  }
-
-  async clearProducts(): Promise<void> {
-    await db.delete(products);
-  }
-
-  // Cart methods
-  async getCartItems(userId: string): Promise<(CartItem & { product: Product })[]> {
-    return await db
-      .select({
-        id: cartItems.id,
-        userId: cartItems.userId,
-        productId: cartItems.productId,
-        quantity: cartItems.quantity,
-        createdAt: cartItems.createdAt,
-        product: products
-      })
-      .from(cartItems)
-      .innerJoin(products, eq(cartItems.productId, products.id))
-      .where(eq(cartItems.userId, userId));
-  }
-
-  async addToCart(insertCartItem: InsertCartItem): Promise<CartItem> {
-    // Check if item already exists
-    const [existingItem] = await db
-      .select()
-      .from(cartItems)
-      .where(
-        and(
-          eq(cartItems.userId, insertCartItem.userId),
-          eq(cartItems.productId, insertCartItem.productId)
-        )
-      );
-
-    if (existingItem) {
-      // Update quantity
-      const [updatedItem] = await db
-        .update(cartItems)
-        .set({ quantity: existingItem.quantity + (insertCartItem.quantity || 1) })
-        .where(eq(cartItems.id, existingItem.id))
-        .returning();
-      return updatedItem;
-    }
-
-    // Create new cart item
-    const [cartItem] = await db.insert(cartItems).values(insertCartItem).returning();
-    return cartItem;
-  }
-
-  async updateCartItem(id: string, quantity: number): Promise<CartItem | undefined> {
-    const [cartItem] = await db
-      .update(cartItems)
-      .set({ quantity })
-      .where(eq(cartItems.id, id))
-      .returning();
-    return cartItem;
-  }
-
-  async removeFromCart(id: string): Promise<boolean> {
-    const result = await db.delete(cartItems).where(eq(cartItems.id, id));
-    return result.rowCount ? result.rowCount > 0 : false;
-  }
-
-  async removeCartItem(id: string): Promise<boolean> {
-    return this.removeFromCart(id);
-  }
-
-  async clearCart(userId: string): Promise<void> {
-    await db.delete(cartItems).where(eq(cartItems.userId, userId));
-  }
-
-  // Order methods
-  async getOrders(userId?: string): Promise<Order[]> {
-    if (userId) {
-      return await db.select().from(orders).where(eq(orders.userId, userId));
-    }
-    return await db.select().from(orders);
-  }
-
-  async getAllOrders(filters?: { status?: string; paymentMethod?: string; limit?: number; offset?: number }): Promise<(Order & { user: Pick<User, 'id' | 'email' | 'firstName' | 'lastName'> })[]> {
-    return await db
-      .select({
-        id: orders.id,
-        orderNumber: orders.orderNumber,
-        userId: orders.userId,
-        status: orders.status,
-        paymentMethod: orders.paymentMethod,
-        cashAppAmount: orders.cashAppAmount,
-        productNames: orders.productNames,
-        subtotal: orders.subtotal,
-        shippingCost: orders.shippingCost,
-        tax: orders.tax,
-        total: orders.total,
-        shippingMethod: orders.shippingMethod,
-        trackingNumber: orders.trackingNumber,
-        estimatedDelivery: orders.estimatedDelivery,
-        totalWeight: orders.totalWeight,
-        shippingName: orders.shippingName,
-        shippingEmail: orders.shippingEmail,
-        shippingPhone: orders.shippingPhone,
-        shippingAddress: orders.shippingAddress,
-        shippingAddress2: orders.shippingAddress2,
-        shippingCity: orders.shippingCity,
-        shippingState: orders.shippingState,
-        shippingZip: orders.shippingZip,
-        shippingCountry: orders.shippingCountry,
-        stripePaymentIntentId: orders.stripePaymentIntentId,
-        paymentStatus: orders.paymentStatus,
-        storeCreditUsed: orders.storeCreditUsed,
-        promoCodeUsed: orders.promoCodeUsed,
-        promoDiscount: orders.promoDiscount,
-        affiliateCode: orders.affiliateCode,
-        createdAt: orders.createdAt,
-        user: {
-          id: users.id,
-          email: users.email,
-          firstName: users.firstName,
-          lastName: users.lastName
-        }
-      })
-      .from(orders)
-      .innerJoin(users, eq(orders.userId, users.id))
-      .orderBy(desc(orders.createdAt));
-  }
-
-  async getAllOrdersWithDetails(): Promise<any[]> {
-    return this.getAllOrders();
-  }
-
-  async getUserOrders(userId: string): Promise<Order[]> {
-    return await db.select().from(orders).where(eq(orders.userId, userId));
-  }
-
-  async getOrder(id: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.id, id));
-    return order;
-  }
-
-  async getOrderByNumber(orderNumber: string): Promise<Order | undefined> {
-    const [order] = await db.select().from(orders).where(eq(orders.orderNumber, orderNumber));
-    return order;
-  }
-
-  async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const [order] = await db.insert(orders).values(insertOrder).returning();
-    return order;
-  }
-
-  async createOrderItem(insertOrderItem: InsertOrderItem): Promise<OrderItem> {
-    const [orderItem] = await db.insert(orderItems).values(insertOrderItem).returning();
-    return orderItem;
-  }
-
-  async getOrderItems(orderId: string): Promise<(OrderItem & { product: Product })[]> {
-    return await db
-      .select({
-        id: orderItems.id,
-        orderId: orderItems.orderId,
-        productId: orderItems.productId,
-        quantity: orderItems.quantity,
-        price: orderItems.price,
-        product: products
-      })
-      .from(orderItems)
-      .innerJoin(products, eq(orderItems.productId, products.id))
-      .where(eq(orderItems.orderId, orderId));
-  }
-
-  async updateOrderStatus(id: string, status: string, trackingNumber?: string, notes?: string): Promise<Order | undefined> {
-    const updateData: any = { status };
-    if (trackingNumber) updateData.trackingNumber = trackingNumber;
-    
-    const [order] = await db
-      .update(orders)
-      .set(updateData)
-      .where(eq(orders.id, id))
-      .returning();
-    return order;
-  }
-
-  // Referral System Methods
-  async getUserReferrals(userId: string): Promise<any[]> {
-    return await db.select().from(referrals).where(eq(referrals.referrerId, userId));
-  }
-
-  async createReferral(referral: any): Promise<any> {
-    const [newReferral] = await db.insert(referrals).values(referral).returning();
-    return newReferral;
-  }
-
-  async getReferralByCode(code: string): Promise<any> {
-    const [referral] = await db.select().from(referrals).where(eq(referrals.referralCode, code));
-    return referral;
-  }
-
-  async getReferral(id: string): Promise<any> {
-    const [referral] = await db.select().from(referrals).where(eq(referrals.id, id));
-    return referral;
-  }
-
-  async updateReferral(id: string, updates: any): Promise<any> {
-    const [referral] = await db.update(referrals).set(updates).where(eq(referrals.id, id)).returning();
-    return referral;
-  }
-
-  async updateReferralStatus(id: string, status: string): Promise<void> {
-    await db.update(referrals).set({ status }).where(eq(referrals.id, id));
-  }
-
-  // Points and Rewards Methods
-  async getUserRewards(userId: string): Promise<any> {
-    const [userReward] = await db.select().from(userRewards).where(eq(userRewards.userId, userId));
-    return userReward || { points: 0, tier: 'Bronze', transactions: [] };
-  }
-
-  async getUserPoints(userId: string): Promise<number> {
-    const rewards = await this.getUserRewards(userId);
-    return rewards?.totalPoints || 0;
-  }
-
-  async updateUserPoints(userId: string, points: number): Promise<void> {
-    const [existing] = await db.select().from(userRewards).where(eq(userRewards.userId, userId));
-    
-    if (existing) {
-      await db.update(userRewards).set({ totalPoints: points }).where(eq(userRewards.userId, userId));
-    } else {
-      await db.insert(userRewards).values({
-        userId,
-        totalPoints: points
-      });
-    }
-  }
-
-  async getRewardTiers(): Promise<any[]> {
-    return await db.select().from(rewardTiers);
-  }
-
-  async getPointTransactions(userId: string): Promise<any[]> {
-    return await db.select().from(pointTransactions).where(eq(pointTransactions.userId, userId));
-  }
-
-  async createPointTransaction(transaction: any): Promise<any> {
-    const [newTransaction] = await db.insert(pointTransactions).values(transaction).returning();
-    return newTransaction;
-  }
-
-  // Promo Code Methods
-  async getPromoCodes(): Promise<any[]> {
-    return await db.select().from(specialOffers);
-  }
-
-  async getPromoCodeByCode(code: string): Promise<any> {
-    const [promoCode] = await db.select().from(specialOffers).where(eq(specialOffers.name, code));
-    return promoCode;
-  }
-
-  async createPromoCode(promoCode: any): Promise<any> {
-    const [newPromo] = await db.insert(specialOffers).values(promoCode).returning();
-    return newPromo;
-  }
-
-  async validatePromoCode(code: string): Promise<{ valid: boolean; promoCode?: any; error?: string }> {
-    const promoCode = await this.getPromoCodeByCode(code);
-    if (!promoCode) {
-      return { valid: false, error: 'Promo code not found' };
-    }
-    if (!promoCode.isActive) {
-      return { valid: false, error: 'Promo code is not active' };
-    }
-    if (promoCode.expiresAt && new Date() > new Date(promoCode.expiresAt)) {
-      return { valid: false, error: 'Promo code has expired' };
-    }
-    return { valid: true, promoCode };
-  }
-
-  // Store Credit Methods
-  async updateUserStoreCredit(userId: string, amount: string): Promise<any> {
-    const [user] = await db
-      .update(users)
-      .set({ storeCredit: amount })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
-  }
-
-  async createStoreCreditTransaction(transaction: any): Promise<any> {
-    // For now, just return the transaction since we don't have a specific table
-    return { id: `tx_${Date.now()}`, ...transaction, createdAt: new Date() };
-  }
-
-  async getStoreCreditTransactions(userId: string): Promise<any[]> {
-    // Return empty array for now - would need proper transaction table
-    return [];
-  }
-
-  // Special Offers Methods
-  async getActiveOffers(): Promise<any[]> {
-    const now = new Date();
-    return await db.select().from(specialOffers).where(
-      and(
-        eq(specialOffers.isActive, true),
-        sql`${specialOffers.startDate} <= ${now}`,
-        sql`${specialOffers.endDate} >= ${now}`
-      )
-    );
-  }
-
-  async getSpecialOffers(): Promise<any[]> {
-    return await db.select().from(specialOffers);
-  }
-
-  async createSpecialOffer(offer: any): Promise<any> {
-    const [newOffer] = await db.insert(specialOffers).values(offer).returning();
-    return newOffer;
-  }
-
-  // Blog Methods  
-  async getAllBlogPosts(): Promise<any[]> {
-    return await db.select().from(blogPosts);
-  }
-
-  async getBlogPost(id: string): Promise<any> {
-    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.id, id));
-    return post;
-  }
-
-  async getBlogPosts(): Promise<any[]> {
-    return await db.select().from(blogPosts);
-  }
-
-  async getBlogsByCategory(category: string): Promise<any[]> {
-    return await db.select().from(blogPosts).where(eq(blogPosts.category, category));
-  }
-
-  async getBlogPostsByCategory(category: string): Promise<any[]> {
-    return await db.select().from(blogPosts).where(eq(blogPosts.category, category));
-  }
-
-  async createBlogPost(post: any): Promise<any> {
-    const [newPost] = await db.insert(blogPosts).values(post).returning();
-    return newPost;
-  }
-
-  async updateBlogPost(id: string, updates: any): Promise<any> {
-    const [post] = await db.update(blogPosts).set(updates).where(eq(blogPosts.id, id)).returning();
-    return post;
-  }
-
-  async deleteBlogPost(id: string): Promise<boolean> {
-    const result = await db.delete(blogPosts).where(eq(blogPosts.id, id));
-    return result.rowCount ? result.rowCount > 0 : false;
-  }
-
-  async getPublishedBlogPosts(): Promise<any[]> {
-    return await db.select().from(blogPosts).where(eq(blogPosts.status, 'published'));
-  }
-
-  async getBlogPostBySlug(slug: string): Promise<any> {
-    const [post] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug));
-    return post;
-  }
-
-  async incrementBlogViewCount(id: string): Promise<void> {
-    await db.update(blogPosts)
-      .set({ viewCount: sql`${blogPosts.viewCount} + 1` })
-      .where(eq(blogPosts.id, id));
-  }
-
-  async getBlogCategories(): Promise<string[]> {
-    const results = await db.selectDistinct({ category: blogPosts.category }).from(blogPosts);
-    return results.map(r => r.category).filter(Boolean);
-  }
-
-  async searchBlogPosts(query: string): Promise<any[]> {
-    return await db.select().from(blogPosts).where(
-      sql`${blogPosts.title} ILIKE ${`%${query}%`} OR ${blogPosts.content} ILIKE ${`%${query}%`}`
-    );
-  }
-
-  // Achievement Methods (Stubs)
-  async claimAchievementReward(userId: string, achievementId: string): Promise<any> {
-    return { success: true, pointsAwarded: 100 };
-  }
-
-  async getUserAchievements(userId: string): Promise<any[]> {
-    return [];
-  }
-
-  async getUnlockedAchievements(userId: string): Promise<any[]> {
-    return [];
-  }
-
-  async getAvailableAchievements(): Promise<any[]> {
-    return [];
-  }
-
-  async getAchievements(): Promise<any[]> {
-    return [];
-  }
-
-  async checkAndUnlockAchievements(userId: string): Promise<any[]> {
-    return [];
-  }
-
-  async recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void> {
-    // Stub implementation
-  }
-
-  async getUserOrderCount(userId: string): Promise<number> {
-    const orders = await this.getUserOrders(userId);
-    return orders.length;
-  }
-
-  // Daily Promotions Methods
-  async getTodaysPromotions(): Promise<any[]> {
-    const today = new Date().toISOString().split('T')[0];
-    return await db.select().from(specialOffers).where(
-      and(
-        eq(specialOffers.isActive, true),
-        sql`DATE(${specialOffers.startDate}) <= ${today}`,
-        sql`DATE(${specialOffers.endDate}) >= ${today}`
-      )
-    );
-  }
-
-  async getDailyPromotions(): Promise<any[]> {
-    return await this.getSpecialOffers();
-  }
-
-  async getPromotionByDay(dayOfWeek: number): Promise<any[]> {
-    // For simplicity, return all active promotions
-    return await this.getActiveOffers();
-  }
-
-  async getDailyPromotionsByDay(dayOfWeek: number): Promise<any[]> {
-    return await this.getPromotionByDay(dayOfWeek);
-  }
-
-  async getDailyPromotion(id: string): Promise<any> {
-    const [promotion] = await db.select().from(specialOffers).where(eq(specialOffers.id, id));
-    return promotion;
-  }
-
-  async createDailyPromotion(promotion: any): Promise<any> {
-    return await this.createSpecialOffer(promotion);
-  }
-
-  async updateDailyPromotion(id: string, updates: any): Promise<any> {
-    const [promotion] = await db.update(specialOffers).set(updates).where(eq(specialOffers.id, id)).returning();
-    return promotion;
-  }
-
-  async deleteDailyPromotion(id: string): Promise<boolean> {
-    const result = await db.delete(specialOffers).where(eq(specialOffers.id, id));
-    return result.rowCount ? result.rowCount > 0 : false;
-  }
-
-  async calculatePromotionDiscount(promotionId: string, amount: number): Promise<number> {
-    const promotion = await this.getDailyPromotion(promotionId);
-    if (!promotion) return 0;
-    
-    const value = parseFloat(promotion.value);
-    return promotion.type === 'discount' ? (amount * value) / 100 : value;
-  }
-
-  async recordPromotionUsage(promotionId: string, userId: string): Promise<void> {
-    await db.update(specialOffers)
-      .set({ currentUses: sql`${specialOffers.currentUses} + 1` })
-      .where(eq(specialOffers.id, promotionId));
-  }
-
-  // Shipping and other stubs
-  async getShippingRates(): Promise<any[]> {
-    return [
-      { method: 'standard', name: 'Standard Shipping (5-7 days)', baseRate: '9.99' },
-      { method: 'expedited', name: 'Expedited Shipping (2-3 days)', baseRate: '19.99' },
-      { method: 'overnight', name: 'Overnight Shipping', baseRate: '39.99' }
-    ];
-  }
-
-  async calculateShippingCost(weight: number, method: string): Promise<number> {
-    const rates = await this.getShippingRates();
-    const rate = rates.find(r => r.method === method);
-    return rate ? parseFloat(rate.baseRate) : 9.99;
-  }
-
-  async getUserStreaks(userId: string): Promise<any> {
-    return { currentStreak: 0, longestStreak: 0, lastActivity: null };
-  }
-
-  async updateStreak(userId: string, updates: any): Promise<void> {
-    // Stub implementation
-  }
-
-  async getLeaderboard(): Promise<any[]> {
-    return [];
-  }
-
-  // Additional stubs for other methods referenced in routes
-  async updateUserAchievementProgress(userId: string, achievementId: string, progress: any): Promise<void> {
-    // Stub
-  }
-
-  async getDailyChallenges(): Promise<any[]> {
-    return [];
-  }
-
-  async getUserChallenges(userId: string): Promise<any[]> {
-    return [];
-  }
-
-  async updateUserChallengeProgress(userId: string, challengeId: string, progress: any): Promise<void> {
-    // Stub
-  }
-
-  async claimChallengeReward(userId: string, challengeId: string): Promise<any> {
-    return { success: true, pointsAwarded: 50 };
-  }
-}
+import { DatabaseStorage } from "./database-storage";
 
 export const storage = new DatabaseStorage();

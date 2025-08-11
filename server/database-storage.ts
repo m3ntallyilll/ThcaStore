@@ -998,6 +998,8 @@ export class DatabaseStorage {
     }).from(orders).orderBy(desc(orders.createdAt));
   }
 
+
+
   async updateSpecialOffer(id: string, updates: Partial<InsertSpecialOffer>): Promise<SpecialOffer | undefined> {
     const [offer] = await db.update(specialOffers).set(updates).where(eq(specialOffers.id, id)).returning();
     return offer || undefined;
@@ -1854,6 +1856,38 @@ export class DatabaseStorage {
       .where(eq(referralProgram.id, id));
   }
 
+  async updateReferral(id: string, updates: any): Promise<any> {
+    const result = await db.update(referralProgram)
+      .set(updates)
+      .where(eq(referralProgram.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async getUserAchievements(userId: string): Promise<any[]> {
+    return db.select({
+      id: userAchievements.id,
+      achievementId: userAchievements.achievementId,
+      progress: userAchievements.progress,
+      completedAt: userAchievements.completedAt,
+      achievement: {
+        name: achievements.name,
+        description: achievements.description,
+        target: achievements.maxProgress,
+        reward: achievements.rewardPoints,
+        icon: achievements.icon,
+      }
+    })
+      .from(userAchievements)
+      .leftJoin(achievements, eq(userAchievements.achievementId, achievements.id))
+      .where(eq(userAchievements.userId, userId));
+  }
+
+  async getUserStreaks(userId: string): Promise<any> {
+    const result = await db.select().from(loyaltyStreaks).where(eq(loyaltyStreaks.userId, userId));
+    return result[0] || { currentStreak: 0 };
+  }
+
   async getUserOrderCount(userId: string): Promise<number> {
     const result = await db.select({ count: sql`count(*)` })
       .from(orders)
@@ -1907,6 +1941,8 @@ export class DatabaseStorage {
         ));
     }
   }
+
+
 }
 
 export const storage = new DatabaseStorage();

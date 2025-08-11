@@ -1325,7 +1325,7 @@ export function AdminDashboard() {
                                 </div>
                               </div>
 
-                              {/* Actions & Items Purchased */}
+                              {/* Actions */}
                               <div className="flex flex-col gap-2">
                                 <Dialog>
                                   <DialogTrigger asChild>
@@ -1358,15 +1358,7 @@ export function AdminDashboard() {
                                   </DialogContent>
                                 </Dialog>
 
-                                {/* Items Purchased */}
                                 <div className="text-xs text-gray-500 space-y-1">
-                                  <h5 className="font-semibold text-white text-sm mb-1">Items Purchased:</h5>
-                                  {(order as any).productNames ? (
-                                    <p className="text-purple-400">{(order as any).productNames}</p>
-                                  ) : (
-                                    <p className="text-gray-400">Order #{order.id.slice(0, 8)} items</p>
-                                  )}
-                                  <hr className="border-gray-700 my-2" />
                                   <p>Subtotal: ${parseFloat(order.subtotal).toFixed(2)}</p>
                                   <p>Shipping: ${parseFloat(order.shippingCost).toFixed(2)}</p>
                                   <p>Tax: ${parseFloat(order.tax).toFixed(2)}</p>

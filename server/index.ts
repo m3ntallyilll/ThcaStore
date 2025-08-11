@@ -63,11 +63,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  try {
-    // Initialize database first
-    console.log('Initializing database...');
-    
-    const server = await registerRoutes(app);
+  const server = await registerRoutes(app);
 
   // Add static file serving for assets
   app.use('/src/assets', express.static('client/src/assets'));
@@ -204,16 +200,7 @@ Crawl-delay: 1`);
     port,
     host: "0.0.0.0",
     reusePort: true,
-  }, (err: any) => {
-    if (err) {
-      console.error('Failed to start server:', err);
-      process.exit(1);
-    }
+  }, () => {
     log(`serving on port ${port}`);
   });
-  
-  } catch (error) {
-    console.error('Server initialization failed:', error);
-    process.exit(1);
-  }
 })();

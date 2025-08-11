@@ -260,7 +260,7 @@ export default function Rewards() {
                   <Coins className="w-8 h-8" />
                   <Badge className="bg-white/20">Balance</Badge>
                 </div>
-                <p className="text-3xl font-bold">{userRewards?.points?.toLocaleString() || '0'}</p>
+                <p className="text-3xl font-bold">{userRewards.points.toLocaleString()}</p>
                 <p className="text-white/80 text-sm">Available Points</p>
               </CardContent>
             </Card>
@@ -272,10 +272,10 @@ export default function Rewards() {
                   <Medal className="w-8 h-8" />
                   <Badge className="bg-white/20">Level {userRewards.level}</Badge>
                 </div>
-                <p className="text-3xl font-bold">{userRewards?.tier || 'Bronze'}</p>
+                <p className="text-3xl font-bold">{userRewards.tier}</p>
                 <Progress value={levelProgress} className="mt-2 h-2" />
                 <p className="text-white/80 text-xs mt-1">
-                  {(userRewards?.nextLevelPoints || 1000) - (userRewards?.points || 0)} pts to next level
+                  {userRewards.nextLevelPoints - userRewards.points} pts to next level
                 </p>
               </CardContent>
             </Card>
@@ -287,7 +287,7 @@ export default function Rewards() {
                   <TrendingUp className="w-8 h-8" />
                   <Badge className="bg-white/20">Lifetime</Badge>
                 </div>
-                <p className="text-3xl font-bold">{userRewards?.totalEarned?.toLocaleString() || '0'}</p>
+                <p className="text-3xl font-bold">{userRewards.totalEarned.toLocaleString()}</p>
                 <p className="text-white/80 text-sm">Points Earned</p>
               </CardContent>
             </Card>
@@ -299,7 +299,7 @@ export default function Rewards() {
                   <Zap className="w-8 h-8" />
                   <Badge className="bg-white/20">Active</Badge>
                 </div>
-                <p className="text-3xl font-bold">{userRewards?.streak || '0'}</p>
+                <p className="text-3xl font-bold">{userRewards.streak}</p>
                 <p className="text-white/80 text-sm">Day Streak</p>
               </CardContent>
             </Card>
