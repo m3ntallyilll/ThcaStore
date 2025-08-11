@@ -107,15 +107,32 @@ export default function Checkout() {
         }
       });
 
-      // Show detailed instructions toast
+      // Detect mobile devices for better payment experience
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Show device-specific instructions
       toast({
-        title: "Payment Instructions",
-        description: response.instructions,
-        duration: 10000,
+        title: isMobile ? "Opening Cash App..." : "Payment Instructions",
+        description: isMobile 
+          ? "You'll be redirected to Cash App to complete your payment. Include your order details in the payment note."
+          : response.instructions,
+        duration: isMobile ? 8000 : 12000,
       });
       
-      // Open Cash App payment link
-      window.open(response.cashAppLink, '_blank');
+      // Small delay to let user see the toast before redirect
+      setTimeout(() => {
+        if (isMobile) {
+          // On mobile, redirect in the same window for better app integration
+          window.location.href = response.cashAppLink;
+        } else {
+          // On desktop, try to open in new tab, fallback to same window
+          const newWindow = window.open(response.cashAppLink, '_blank');
+          // If popup was blocked, redirect in same window
+          if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+            window.location.href = response.cashAppLink;
+          }
+        }
+      }, 1000);
       
     } catch (error: any) {
       console.error('Cash App order error:', error);
@@ -381,7 +398,7 @@ export default function Checkout() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Creating Order...
+                    Redirecting to Cash App...
                   </>
                 ) : (
                   <>
@@ -394,12 +411,15 @@ export default function Checkout() {
               <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 mt-4">
                 <div className="text-center">
                   <p className="text-green-400 font-medium text-sm mb-2">
-                    ✅ Payment Instructions
+                    📱 Mobile Payment Instructions
                   </p>
-                  <p className="text-white/80 text-xs">
-                    After clicking the button above, include your product names in the Cash App payment note. 
-                    We'll confirm your order via email within 24 hours.
-                  </p>
+                  <div className="space-y-2 text-white/80 text-xs">
+                    <p className="font-medium">Step 1: Click the green button above</p>
+                    <p>Step 2: You'll be redirected to Cash App automatically</p>
+                    <p>Step 3: Complete the ${total.toFixed(2)} payment</p>
+                    <p>Step 4: Include your order items in the payment note</p>
+                    <p className="text-green-400 mt-2">✅ Order confirmed within 24 hours via email</p>
+                  </div>
                 </div>
               </div>
             </CardContent>
