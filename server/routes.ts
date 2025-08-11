@@ -2748,14 +2748,34 @@ Provide actionable insights with specific tactics and projected outcomes.`;
   });
 
   // Cash App Payment Routes
-  // Create pending order for Cash App payment
-  app.post("/api/create-cash-app-order", authenticateToken, async (req, res) => {
+  // Create pending order for Cash App payment (supports both authenticated and guest users)
+  app.post("/api/create-cash-app-order", async (req, res) => {
     try {
       const { items, storeCreditUsed = 0, promoCode, promoDiscount = 0, affiliateCode } = req.body;
-      const userId = req.user?.id;
       
-      // Validate store credit if being used
-      if (storeCreditUsed > 0 && userId) {
+      // Try to get user ID from token if provided (for authenticated users)
+      let userId = null;
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, JWT_SECRET) as any;
+          userId = decoded.userId;
+        } catch (error) {
+          // If token is invalid, continue as guest user
+          console.log('Invalid token provided, continuing as guest user');
+        }
+      }
+      
+      // Validate store credit if being used (only for authenticated users)
+      if (storeCreditUsed > 0) {
+        if (!userId) {
+          return res.status(400).json({ 
+            message: "Must be logged in to use store credit" 
+          });
+        }
+        
         const user = await storage.getUser(userId);
         const userStoreCredit = parseFloat(user?.storeCredit || "0");
         
@@ -2779,7 +2799,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       // Create pending order in database
       const orderData = {
-        userId: userId || '',
+        userId: userId || null,
         status: 'pending_payment',
         paymentMethod: 'cash_app',
         subtotal: subtotal.toFixed(2),
