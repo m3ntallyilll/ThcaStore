@@ -1419,13 +1419,17 @@ function shuffleArray(array: any[]) {
     }
   });
 
-  // Apply referral code during registration
-  app.post("/api/referrals/apply", authenticateToken, async (req: any, res) => {
+  // Apply referral code during registration - public endpoint for referral links
+  app.post("/api/referrals/apply", async (req: any, res) => {
     try {
-      const { referralCode } = req.body;
+      const { referralCode, userId } = req.body;
 
       if (!referralCode) {
         return res.status(400).json({ message: "Referral code is required" });
+      }
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required to apply referral code" });
       }
 
       const referral = await storage.getReferralByCode(referralCode);
@@ -1437,19 +1441,19 @@ function shuffleArray(array: any[]) {
         return res.status(400).json({ message: "This referral code has already been used" });
       }
 
-      if (referral.referrerId === req.user.id) {
+      if (referral.referrerId === userId) {
         return res.status(400).json({ message: "You cannot use your own referral code" });
       }
 
       // Update referral with referee info
       await storage.updateReferral(referral.id, {
-        refereeId: req.user.id,
+        refereeId: userId,
         status: 'completed'
       });
 
       // Award welcome bonus points to new user
       await storage.addPointTransaction({
-        userId: req.user.id,
+        userId: userId,
         points: referral.refereeReward,
         type: 'referral',
         description: `Welcome bonus - Joined via referral code ${referralCode}`,
