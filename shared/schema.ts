@@ -416,7 +416,6 @@ export const affiliateConversions = pgTable('affiliate_conversions', {
 export const promoCodes = pgTable('promo_codes', {
   id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
   code: text('code').notNull().unique(),
-  affiliateId: varchar('affiliate_id').references(() => affiliates.id), // Optional link to affiliate
   discountType: text('discount_type', { enum: ['percentage', 'fixed', 'free_shipping'] }).notNull(),
   discountValue: decimal('discount_value', { precision: 10, scale: 2 }).notNull(),
   minPurchase: decimal('min_purchase', { precision: 10, scale: 2 }).default('0.00'),
@@ -426,8 +425,8 @@ export const promoCodes = pgTable('promo_codes', {
   expiresAt: timestamp('expires_at'),
   applicableCategories: text('applicable_categories').array(),
   description: text('description'),
-  createdBy: varchar('created_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const promoCodeUsage = pgTable('promo_code_usage', {
@@ -475,7 +474,6 @@ export const affiliatesRelations = relations(affiliates, ({ one, many }) => ({
   user: one(users, { fields: [affiliates.userId], references: [users.id] }),
   clicks: many(affiliateClicks),
   conversions: many(affiliateConversions),
-  promoCodes: many(promoCodes),
 }));
 
 export const affiliateClicksRelations = relations(affiliateClicks, ({ one }) => ({
@@ -487,9 +485,7 @@ export const affiliateConversionsRelations = relations(affiliateConversions, ({ 
   order: one(orders, { fields: [affiliateConversions.orderId], references: [orders.id] }),
 }));
 
-export const promoCodesRelations = relations(promoCodes, ({ one, many }) => ({
-  affiliate: one(affiliates, { fields: [promoCodes.affiliateId], references: [affiliates.id] }),
-  createdByUser: one(users, { fields: [promoCodes.createdBy], references: [users.id] }),
+export const promoCodesRelations = relations(promoCodes, ({ many }) => ({
   usage: many(promoCodeUsage),
 }));
 

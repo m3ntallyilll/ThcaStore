@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db';
-import { referralProgram, promoCodes } from '@shared/schema';
+import { referralProgram, promoCodes, affiliates, affiliateClicks, affiliateConversions } from '@shared/schema';
 import { eq, and, gte, lte, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
@@ -181,6 +181,29 @@ router.post('/create-promo', authenticateToken, async (req: any, res) => {
         .returning();
     }
     
+    // Also create a promo code for this referral if one doesn't exist
+    const existingPromo = await db
+      .select({
+        id: promoCodes.id,
+        code: promoCodes.code
+      })
+      .from(promoCodes)
+      .where(eq(promoCodes.code, referral.referralCode))
+      .limit(1);
+
+    if (existingPromo.length === 0) {
+      // Create a promo code based on the referral (working with existing database structure)
+      await db.insert(promoCodes).values({
+        code: referral.referralCode,
+        discountType: 'percentage',
+        discountValue: '20.00', // 20% discount for referees
+        minPurchase: '0.00',
+        maxUses: 1, // One time use
+        isActive: true,
+        description: `Referral code for ${req.user?.username || 'user'}`,
+      });
+    }
+
     res.json({
       success: true,
       referralCode: referral.referralCode,
@@ -321,6 +344,34 @@ router.post('/track-conversion', async (req, res) => {
   } catch (error) {
     console.error('Error tracking conversion:', error);
     res.status(500).json({ error: 'Failed to track conversion' });
+  }
+});
+
+// Get all promo codes for affiliate program
+router.get('/promo-codes', authenticateToken, async (req: any, res) => {
+  try {
+    const allPromoCodes = await db
+      .select({
+        id: promoCodes.id,
+        code: promoCodes.code,
+        discountType: promoCodes.discountType,
+        discountValue: promoCodes.discountValue,
+        minPurchase: promoCodes.minPurchase,
+        maxUses: promoCodes.maxUses,
+        currentUses: promoCodes.currentUses,
+        isActive: promoCodes.isActive,
+        expiresAt: promoCodes.expiresAt,
+        description: promoCodes.description,
+        createdAt: promoCodes.createdAt,
+      })
+      .from(promoCodes)
+      .orderBy(promoCodes.createdAt);
+    
+    console.log('Fetched promo codes:', allPromoCodes);
+    res.json(allPromoCodes);
+  } catch (error) {
+    console.error('Error fetching promo codes:', error);
+    res.status(500).json({ error: 'Failed to fetch promo codes' });
   }
 });
 
