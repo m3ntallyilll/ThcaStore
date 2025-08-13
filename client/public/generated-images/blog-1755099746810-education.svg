@@ -1,0 +1,41 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Cannabis leaf decorations -->
+  <g opacity="0.1" fill="#3b82f6">
+    <path d="M1050 500 Q1030 480 1020 500 Q1030 520 1050 500 Q1070 480 1080 500 Q1070 520 1050 500 M1050 480 L1050 520" transform="scale(2)"/>
+    <path d="M150 550 Q130 530 120 550 Q130 570 150 550 Q170 530 180 550 Q170 570 150 550 M150 530 L150 570" transform="scale(1.5)"/>
+    <path d="M1000 150 Q980 130 970 150 Q980 170 1000 150 Q1020 130 1030 150 Q1020 170 1000 150 M1000 130 L1000 170"/>
+  </g>
+  
+  <!-- Category badge -->
+  <rect x="60" y="60" width="180" height="50" rx="25" fill="#3b82f6"/>
+  <text x="150" y="90" fill="white" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold">EDUCATION</text>
+  
+  <!-- Title -->
+  <text x="60" y="200" fill="white" font-family="Arial, sans-serif" font-size="48" font-weight="bold">## What is THCA?</text>
+  
+  <!-- THCA Store branding -->
+  <text x="1140" y="570" fill="#3b82f6" text-anchor="end" font-family="Arial, sans-serif" font-size="24" font-weight="bold" filter="url(#glow)">THCA Store</text>
+  
+  <!-- Cannabis leaf logo -->
+  <g transform="translate(1080, 540)" fill="#3b82f6" opacity="0.7">
+    <path d="M0 -15 Q-8 -10 -10 0 Q-8 10 0 15 Q8 10 10 0 Q8 -10 0 -15 M0 -15 L0 15"/>
+  </g>
+</svg>

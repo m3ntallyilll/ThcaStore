@@ -32,7 +32,7 @@ The application utilizes a monorepo structure, ensuring clear separation of clie
 - **Product Management**: Offers a comprehensive product catalog with categorization, search, filtering, real-time stock management, and THCA-specific metadata.
 - **Shopping Cart**: Provides real-time cart management with persistent state and dynamic quantity updates.
 - **Admin Dashboard**: Enables CRUD operations for products, order management, user administration, and sales analytics.
-- **AI-Powered Blog Management System**: Full infrastructure supporting blog posts, categories, tags, and SEO, with AI content generation capabilities.
+- **AI-Powered Blog Management System**: Full infrastructure supporting blog posts, categories, tags, and SEO, with AI content generation capabilities. Features professional typography, proper formatting for links/bold text/paragraphs, and automated SVG image generation with THCA Store branding.
 - **Dual AI Assistant System**: Features distinct customer support and sales AI assistants, offering intelligent support and integrating with a knowledge base. Updated cart functionality to automatically redirect to checkout when items are added.
 - **State-Based Purchase Restrictions**: Implements a system to prevent orders from states where THCA products are prohibited.
 - **Automated Referral System**: Complete referral system with automatic code generation for all users (new and existing), 10% store credit commission for referrers, 20% discount for referees, and active shareable referral links. Features bulk admin generation and seamless URL parameter processing.
