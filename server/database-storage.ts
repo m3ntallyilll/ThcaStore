@@ -768,6 +768,11 @@ export class DatabaseStorage {
     return reward || undefined;
   }
 
+  async getUserPoints(userId: string): Promise<number> {
+    const userReward = await this.getUserRewards(userId);
+    return userReward ? userReward.totalPoints : 0;
+  }
+
   async getRewardTiers(): Promise<RewardTier[]> {
     return await db.select().from(rewardTiers).orderBy(rewardTiers.minPoints);
   }

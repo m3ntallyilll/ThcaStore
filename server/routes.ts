@@ -4328,8 +4328,8 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       
       for (const post of posts.slice(0, 5)) { // Limit to 5 posts to avoid timeout
         try {
-          const { AISEOService } = await import('./ai-seo-service');
-          const seoService = new AISEOService();
+          const { aiSEOService } = await import('./ai-seo-service');
+          const seoService = aiSEOService;
           await seoService.enhanceBlogPostSEO(post.id);
           enhanced.push(post.title);
         } catch (error) {

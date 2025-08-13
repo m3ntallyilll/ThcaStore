@@ -57,6 +57,7 @@ export interface IStorage {
 
   // Rewards and Loyalty System
   getUserRewards(userId: string): Promise<any>;
+  getUserPoints(userId: string): Promise<number>;
   getRewardTiers(): Promise<any[]>;
   getPointTransactions(userId: string): Promise<any[]>;
   addPointTransaction(transaction: any): Promise<any>;
@@ -534,6 +535,7 @@ export class MemStorage implements IStorage {
       isAdmin: insertUser.isAdmin ?? false,
       firstName: insertUser.firstName ?? null,
       lastName: insertUser.lastName ?? null,
+      storeCredit: insertUser.storeCredit ?? "0.00",
       createdAt: new Date() 
     };
     this.users.set(id, user);
@@ -799,6 +801,7 @@ export class MemStorage implements IStorage {
       firstName: 'Admin',
       lastName: 'User',
       isAdmin: true,
+      storeCredit: "0.00",
       createdAt: new Date()
     };
 
@@ -1069,6 +1072,96 @@ export class MemStorage implements IStorage {
       return { valid: false, error: 'Promo code usage limit reached' };
     }
     return { valid: true, promoCode };
+  }
+
+  // Missing reward methods
+  async getUserPoints(userId: string): Promise<number> {
+    const userReward = this.userRewards.get(userId);
+    return userReward ? userReward.totalPoints || 0 : 0;
+  }
+
+  // Missing store credit methods
+  async updateUserStoreCredit(userId: string, newBalance: string): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.storeCredit = newBalance;
+      this.users.set(userId, user);
+    }
+  }
+
+  async updateUserPoints(userId: string, newPoints: number): Promise<void> {
+    let userReward = this.userRewards.get(userId);
+    if (!userReward) {
+      userReward = {
+        id: randomUUID(),
+        userId,
+        totalPoints: newPoints,
+        currentTierId: null,
+        lifetimeSpent: "0.00",
+        monthlyPurchases: 0,
+        lastPurchaseDate: null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+    } else {
+      userReward.totalPoints = newPoints;
+      userReward.updatedAt = new Date();
+    }
+    this.userRewards.set(userId, userReward);
+  }
+
+  async createStoreCreditTransaction(transaction: any): Promise<any> {
+    const id = randomUUID();
+    const newTransaction = { ...transaction, id, createdAt: new Date() };
+    // Store in a transactions map if needed
+    return newTransaction;
+  }
+
+  async getStoreCreditTransactions(userId: string): Promise<any[]> {
+    // Return empty array for now - implement as needed
+    return [];
+  }
+
+  async createPointTransaction(transaction: any): Promise<any> {
+    const id = randomUUID();
+    const newTransaction = { ...transaction, id, createdAt: new Date() };
+    this.pointTransactions.set(id, newTransaction);
+    return newTransaction;
+  }
+
+  async getReferral(id: string): Promise<any> {
+    return this.referrals.get(id);
+  }
+
+  async updateReferralStatus(id: string, status: string): Promise<void> {
+    const referral = this.referrals.get(id);
+    if (referral) {
+      referral.status = status;
+      this.referrals.set(id, referral);
+    }
+  }
+
+  async getUserAchievements(userId: string): Promise<any[]> {
+    // Return empty array for now - implement as needed
+    return [];
+  }
+
+  async getUserStreaks(userId: string): Promise<any> {
+    // Return empty object for now - implement as needed
+    return {};
+  }
+
+  async getUserOrderCount(userId: string): Promise<number> {
+    return Array.from(this.orders.values()).filter(order => order.userId === userId).length;
+  }
+
+  async claimAchievementReward(userId: string, achievementId: string): Promise<any> {
+    // Return success for now - implement as needed
+    return { success: true };
+  }
+
+  async recordAchievement(userId: string, achievementId: string, progress?: number): Promise<void> {
+    // Implement as needed
   }
 }
 
