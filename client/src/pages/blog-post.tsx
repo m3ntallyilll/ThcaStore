@@ -68,20 +68,20 @@ export default function BlogPost() {
   const formatBlogContent = (content: string) => {
     if (!content) return '';
     
-    // Split content into paragraphs and wrap each in <p> tags if not already wrapped
-    let formattedContent = content
-      // Convert double line breaks to paragraph breaks
-      .replace(/\n\n/g, '</p><p>')
-      // Ensure content starts and ends with paragraph tags
-      .replace(/^(?!<p>)/, '<p>')
-      .replace(/(?!<\/p>)$/, '</p>')
-      // Clean up any empty paragraphs
-      .replace(/<p><\/p>/g, '')
-      // Clean up malformed paragraph tags
-      .replace(/<p>\s*<p>/g, '<p>')
-      .replace(/<\/p>\s*<\/p>/g, '</p>');
+    // Better paragraph formatting - split on double newlines and wrap in proper HTML
+    const paragraphs = content
+      .split(/\n\s*\n/)
+      .filter(p => p.trim().length > 0)
+      .map(p => p.trim());
     
-    return formattedContent;
+    // Join paragraphs with proper HTML paragraph tags
+    return paragraphs.map(p => {
+      // Check if already wrapped in HTML tags
+      if (p.startsWith('<') && p.endsWith('>')) {
+        return p;
+      }
+      return `<p>${p}</p>`;
+    }).join('\n\n');
   };
 
   const getCategoryColor = (category: string) => {
