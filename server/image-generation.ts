@@ -1,6 +1,4 @@
-import { createWriteStream } from 'fs';
 import { join } from 'path';
-import { createCanvas, loadImage } from 'canvas';
 import fs from 'fs/promises';
 
 export class ImageGenerator {
@@ -27,22 +25,6 @@ export class ImageGenerator {
   }
 
   public async generateBlogImage(title: string, category: string): Promise<string> {
-    const canvas = createCanvas(1200, 630); // Standard social media image size
-    const ctx = canvas.getContext('2d');
-
-    // Background gradient
-    const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
-    gradient.addColorStop(0, '#0f172a'); // dark-900
-    gradient.addColorStop(0.5, '#1e293b'); // dark-800
-    gradient.addColorStop(1, '#334155'); // dark-700
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 1200, 630);
-
-    // Add cannabis leaf pattern (simplified)
-    this.addCanvasLeafPattern(ctx, 1200, 630);
-
-    // Add category badge
     const categoryColors = {
       education: '#3b82f6',
       products: '#10b981',
@@ -55,102 +37,85 @@ export class ImageGenerator {
 
     const categoryColor = categoryColors[category as keyof typeof categoryColors] || '#6b7280';
     
-    // Category badge
-    ctx.fillStyle = categoryColor;
-    ctx.roundRect(60, 60, 180, 50, 25);
-    ctx.fill();
+    // Create SVG content
+    const svgContent = this.createBlogSVG(title, category, categoryColor);
     
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(category.toUpperCase(), 150, 90);
-
-    // Title text
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = 'bold 48px Arial';
-    ctx.textAlign = 'left';
-    
-    // Word wrap title
-    const words = title.split(' ');
-    let line = '';
-    let y = 200;
-    const maxWidth = 1000;
-    const lineHeight = 60;
-
-    for (const word of words) {
-      const testLine = line + word + ' ';
-      const metrics = ctx.measureText(testLine);
-      const testWidth = metrics.width;
-      
-      if (testWidth > maxWidth && line !== '') {
-        ctx.fillText(line, 60, y);
-        line = word + ' ';
-        y += lineHeight;
-        if (y > 450) break; // Prevent overflow
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, 60, y);
-
-    // Add THCA branding
-    ctx.fillStyle = '#10b981';
-    ctx.font = 'bold 24px Arial';
-    ctx.textAlign = 'right';
-    ctx.fillText('THCA Store', 1140, 570);
-
-    // Save image
-    const fileName = `blog-${Date.now()}-${category}.png`;
+    // Save as SVG file
+    const fileName = `blog-${Date.now()}-${category}.svg`;
     const filePath = join(this.outputDir, fileName);
     
-    const buffer = canvas.toBuffer('image/png');
-    await fs.writeFile(filePath, buffer);
-
+    await fs.writeFile(filePath, svgContent);
+    
     return `/generated-images/${fileName}`;
   }
 
-  private addCanvasLeafPattern(ctx: CanvasRenderingContext2D, width: number, height: number): void {
-    // Add subtle cannabis leaf silhouettes
-    ctx.fillStyle = 'rgba(16, 185, 129, 0.05)';
+  private createBlogSVG(title: string, category: string, categoryColor: string): string {
+    // Split title into lines for better display
+    const words = title.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
     
-    // Simple leaf shape using paths
-    const leafPositions = [
-      { x: width - 200, y: height - 150 },
-      { x: 100, y: height - 100 },
-      { x: width - 150, y: 100 }
-    ];
-
-    leafPositions.forEach(pos => {
-      ctx.save();
-      ctx.translate(pos.x, pos.y);
-      ctx.scale(2, 2);
-      
-      // Simple leaf shape
-      ctx.beginPath();
-      ctx.moveTo(0, -30);
-      ctx.quadraticCurveTo(-15, -20, -20, 0);
-      ctx.quadraticCurveTo(-15, 20, 0, 30);
-      ctx.quadraticCurveTo(15, 20, 20, 0);
-      ctx.quadraticCurveTo(15, -20, 0, -30);
-      ctx.fill();
-      
-      ctx.restore();
+    words.forEach(word => {
+      if (currentLine.length + word.length + 1 <= 40) {
+        currentLine += (currentLine ? ' ' : '') + word;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
     });
+    if (currentLine) lines.push(currentLine);
+    
+    // Limit to 3 lines maximum
+    const displayLines = lines.slice(0, 3);
+    
+    const titleElements = displayLines.map((line, index) => 
+      `<text x="60" y="${200 + (index * 60)}" fill="white" font-family="Arial, sans-serif" font-size="48" font-weight="bold">${this.escapeXml(line)}</text>`
+    ).join('\n    ');
+
+    return `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Cannabis leaf decorations -->
+  <g opacity="0.1" fill="${categoryColor}">
+    <path d="M1050 500 Q1030 480 1020 500 Q1030 520 1050 500 Q1070 480 1080 500 Q1070 520 1050 500 M1050 480 L1050 520" transform="scale(2)"/>
+    <path d="M150 550 Q130 530 120 550 Q130 570 150 550 Q170 530 180 550 Q170 570 150 550 M150 530 L150 570" transform="scale(1.5)"/>
+    <path d="M1000 150 Q980 130 970 150 Q980 170 1000 150 Q1020 130 1030 150 Q1020 170 1000 150 M1000 130 L1000 170"/>
+  </g>
+  
+  <!-- Category badge -->
+  <rect x="60" y="60" width="180" height="50" rx="25" fill="${categoryColor}"/>
+  <text x="150" y="90" fill="white" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold">${category.toUpperCase()}</text>
+  
+  <!-- Title -->
+  ${titleElements}
+  
+  <!-- THCA Store branding -->
+  <text x="1140" y="570" fill="${categoryColor}" text-anchor="end" font-family="Arial, sans-serif" font-size="24" font-weight="bold" filter="url(#glow)">THCA Store</text>
+  
+  <!-- Cannabis leaf logo -->
+  <g transform="translate(1080, 540)" fill="${categoryColor}" opacity="0.7">
+    <path d="M0 -15 Q-8 -10 -10 0 Q-8 10 0 15 Q8 10 10 0 Q8 -10 0 -15 M0 -15 L0 15"/>
+  </g>
+</svg>`;
   }
 
   public async generateProductImage(productName: string, strain: string, category: string): Promise<string> {
-    const canvas = createCanvas(800, 800);
-    const ctx = canvas.getContext('2d');
-
-    // Background
-    const gradient = ctx.createRadialGradient(400, 400, 0, 400, 400, 400);
-    gradient.addColorStop(0, '#1e293b');
-    gradient.addColorStop(1, '#0f172a');
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, 800, 800);
-
-    // Add product styling based on category
     const categoryColors = {
       flower: '#10b981',
       edibles: '#f59e0b',
@@ -160,44 +125,55 @@ export class ImageGenerator {
     };
 
     const color = categoryColors[category as keyof typeof categoryColors] || '#10b981';
-
-    // Product name
-    ctx.fillStyle = color;
-    ctx.font = 'bold 48px Arial';
-    ctx.textAlign = 'center';
-    ctx.fillText(productName, 400, 150);
-
-    // Strain name
-    ctx.fillStyle = '#f8fafc';
-    ctx.font = '36px Arial';
-    ctx.fillText(strain, 400, 200);
-
-    // Add decorative elements
-    this.addProductDecorations(ctx, color);
-
-    const fileName = `product-${Date.now()}-${category}.png`;
+    
+    const svgContent = this.createProductSVG(productName, strain, category, color);
+    
+    const fileName = `product-${Date.now()}-${category}.svg`;
     const filePath = join(this.outputDir, fileName);
     
-    const buffer = canvas.toBuffer('image/png');
-    await fs.writeFile(filePath, buffer);
-
+    await fs.writeFile(filePath, svgContent);
+    
     return `/generated-images/${fileName}`;
   }
 
-  private addProductDecorations(ctx: CanvasRenderingContext2D, color: string): void {
-    // Add circular decorations
-    ctx.fillStyle = `${color}33`; // 20% opacity
-    
-    const circles = [
-      { x: 200, y: 400, r: 150 },
-      { x: 600, y: 500, r: 120 },
-      { x: 400, y: 600, r: 100 }
-    ];
+  private createProductSVG(productName: string, strain: string, category: string, color: string): string {
+    return `<svg width="800" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="productBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="800" fill="url(#productBg)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="200" cy="400" r="150" fill="${color}" opacity="0.1"/>
+  <circle cx="600" cy="500" r="120" fill="${color}" opacity="0.15"/>
+  <circle cx="400" cy="600" r="100" fill="${color}" opacity="0.2"/>
+  
+  <!-- Product name -->
+  <text x="400" y="150" fill="${color}" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="bold">${this.escapeXml(productName)}</text>
+  
+  <!-- Strain name -->
+  <text x="400" y="200" fill="white" text-anchor="middle" font-family="Arial, sans-serif" font-size="36">${this.escapeXml(strain)}</text>
+  
+  <!-- Category -->
+  <text x="400" y="700" fill="${color}" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" opacity="0.7">${category.toUpperCase()}</text>
+</svg>`;
+  }
 
-    circles.forEach(circle => {
-      ctx.beginPath();
-      ctx.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI);
-      ctx.fill();
+  private escapeXml(unsafe: string): string {
+    return unsafe.replace(/[<>&'"]/g, (c) => {
+      switch (c) {
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '&': return '&amp;';
+        case '\'': return '&#39;';
+        case '"': return '&quot;';
+        default: return c;
+      }
     });
   }
 }
