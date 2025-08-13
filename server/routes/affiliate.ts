@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db';
-import { affiliates, affiliateClicks, affiliateConversions, promoCodes, promoCodeUsage } from '@shared/schema';
+import { referralProgram, promoCodes } from '@shared/schema';
 import { eq, and, gte, lte, sql } from 'drizzle-orm';
 import crypto from 'crypto';
 import type { Request, Response, NextFunction } from 'express';
@@ -104,50 +104,44 @@ router.get('/my-affiliate', authenticateToken, async (req: any, res) => {
       return res.status(401).json({ error: 'Not authenticated' });
     }
     
-    // Check if user already has a referral account
-    let [affiliate] = await db
+    // Check if user already has a referral record
+    let [referral] = await db
       .select()
-      .from(affiliates)
-      .where(eq(affiliates.userId, userId))
+      .from(referralProgram)
+      .where(eq(referralProgram.referrerId, userId))
       .limit(1);
     
-    // Create affiliate account if doesn't exist
-    if (!affiliate) {
-      const username = req.user?.email?.split('@')[0] || 'user';
-      const affiliateCode = generateReferralCode(username);
+    // Create referral account if doesn't exist
+    if (!referral) {
+      const username = req.user?.username || req.user?.email?.split('@')[0] || 'user';
+      const referralCode = generateReferralCode(username);
       
-      [affiliate] = await db
-        .insert(affiliates)
+      [referral] = await db
+        .insert(referralProgram)
         .values({
-          userId,
-          affiliateCode,
-          commissionRate: '10.00', // 10% default commission
+          referrerId: userId,
+          referralCode,
+          referrerReward: 1000, // 10% store credit (1000 points = $10)
+          refereeReward: 2000, // 20% discount (2000 points = $20)
         })
         .returning();
     }
     
-    // Get conversion stats
-    const conversions = await db
+    // Get referral stats
+    const stats = await db
       .select({
-        total: sql<number>`COUNT(*)`,
-        pending: sql<number>`COUNT(*) FILTER (WHERE status = 'pending')`,
-        approved: sql<number>`COUNT(*) FILTER (WHERE status = 'approved')`,
-        totalEarnings: sql<number>`COALESCE(SUM(commission_amount), 0)`,
+        totalReferrals: sql<number>`COUNT(*)`,
+        completedReferrals: sql<number>`COUNT(*) FILTER (WHERE status = 'completed')`,
+        pendingReferrals: sql<number>`COUNT(*) FILTER (WHERE status = 'pending')`,
+        totalRewards: sql<number>`COALESCE(SUM(referrer_reward), 0)`,
       })
-      .from(affiliateConversions)
-      .where(eq(affiliateConversions.affiliateId, affiliate.id));
-    
-    // Get promo codes associated with this affiliate
-    const affiliatePromoCodes = await db
-      .select()
-      .from(promoCodes)
-      .where(eq(promoCodes.affiliateId, affiliate.id));
+      .from(referralProgram)
+      .where(eq(referralProgram.referrerId, userId));
     
     res.json({
-      ...affiliate,
-      stats: conversions[0],
-      promoCodes: affiliatePromoCodes,
-      referralLink: `${process.env.APP_URL || 'https://mentally-chill.online'}/ref/${affiliate.affiliateCode}`,
+      ...referral,
+      stats: stats[0] || { totalReferrals: 0, completedReferrals: 0, pendingReferrals: 0, totalRewards: 0 },
+      referralLink: `${process.env.APP_URL || 'https://mentally-chill.online'}/ref/${referral.referralCode}`,
     });
   } catch (error) {
     console.error('Error fetching affiliate data:', error);
@@ -165,37 +159,38 @@ router.post('/create-promo', authenticateToken, async (req: any, res) => {
     
     const { code, discountType, discountValue, minPurchase, maxUses, expiresAt, description } = req.body;
     
-    // Get user's affiliate account
-    const [affiliate] = await db
+    // Get user's referral record
+    let [referral] = await db
       .select()
-      .from(affiliates)
-      .where(eq(affiliates.userId, userId))
+      .from(referralProgram)
+      .where(eq(referralProgram.referrerId, userId))
       .limit(1);
     
-    if (!affiliate) {
-      return res.status(404).json({ error: 'Affiliate account not found' });
+    if (!referral) {
+      const username = req.user?.username || req.user?.email?.split('@')[0] || 'user';
+      const referralCode = generateReferralCode(username);
+      
+      [referral] = await db
+        .insert(referralProgram)
+        .values({
+          referrerId: userId,
+          referralCode,
+          referrerReward: 1000, // 10% store credit
+          refereeReward: 2000, // 20% discount
+        })
+        .returning();
     }
     
-    // Generate code if not provided
-    const promoCode = code || `${affiliate.affiliateCode}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-    
-    // Create promo code
-    const [newPromo] = await db
-      .insert(promoCodes)
-      .values({
-        code: promoCode,
-        affiliateId: affiliate.id,
-        discountType: discountType || 'percentage',
-        discountValue: discountValue || '10.00',
-        minPurchase: minPurchase || '0.00',
-        maxUses,
-        expiresAt: expiresAt ? new Date(expiresAt) : null,
-        description,
-        createdBy: userId,
-      })
-      .returning();
-    
-    res.json(newPromo);
+    res.json({
+      success: true,
+      referralCode: referral.referralCode,
+      referralLink: `${process.env.APP_URL || 'https://mentally-chill.online'}/ref/${referral.referralCode}`,
+      rewards: {
+        referrerReward: `$${(referral.referrerReward / 100).toFixed(2)} store credit`,
+        refereeDiscount: `$${(referral.refereeReward / 100).toFixed(2)} off first order`
+      }
+    });
+
   } catch (error) {
     console.error('Error creating promo code:', error);
     res.status(500).json({ error: 'Failed to create promo code' });
