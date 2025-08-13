@@ -68,20 +68,24 @@ export default function BlogPost() {
   const formatBlogContent = (content: string) => {
     if (!content) return '';
     
-    // Better paragraph formatting - split on double newlines and wrap in proper HTML
-    const paragraphs = content
+    // Convert markdown-style content to HTML with proper paragraph breaks
+    let formatted = content
+      // Convert **bold** to <strong>
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      // Split into paragraphs and wrap each
       .split(/\n\s*\n/)
       .filter(p => p.trim().length > 0)
-      .map(p => p.trim());
+      .map(paragraph => {
+        const trimmed = paragraph.trim();
+        // Skip if already wrapped in HTML
+        if (trimmed.startsWith('<') && trimmed.includes('>')) {
+          return trimmed;
+        }
+        return `<p>${trimmed}</p>`;
+      })
+      .join('\n\n');
     
-    // Join paragraphs with proper HTML paragraph tags
-    return paragraphs.map(p => {
-      // Check if already wrapped in HTML tags
-      if (p.startsWith('<') && p.endsWith('>')) {
-        return p;
-      }
-      return `<p>${p}</p>`;
-    }).join('\n\n');
+    return formatted;
   };
 
   const getCategoryColor = (category: string) => {
@@ -236,7 +240,7 @@ export default function BlogPost() {
           <div className="mt-12 pt-8 border-t border-dark-700">
             <h3 className="text-lg font-semibold text-white mb-4">Tags</h3>
             <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag, index) => (
+              {post.tags.map((tag: string, index: number) => (
                 <Badge key={index} variant="outline" className="text-gray-400 border-gray-600">
                   #{tag}
                 </Badge>

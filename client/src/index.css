@@ -550,21 +550,37 @@ textarea {
 }
 
 .blog-post-content p {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.5rem !important;
   font-size: 1.125rem;
   line-height: 1.85;
   color: #d1d5db;
   text-align: justify;
+  display: block;
 }
 
 .blog-post-content p:last-child {
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
+}
+
+/* Force paragraph breaks for content */
+.blog-post-content {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 
 .blog-post-content br {
   display: block;
   margin-bottom: 1.5rem;
   content: "";
+}
+
+/* Ensure text content is properly spaced */
+.blog-post-content > * {
+  margin-bottom: 1.5rem;
+}
+
+.blog-post-content > *:last-child {
+  margin-bottom: 0;
 }
 
 .blog-post-content h1,
