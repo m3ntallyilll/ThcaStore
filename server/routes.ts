@@ -1795,10 +1795,146 @@ function shuffleArray(array: any[]) {
               await storage.addToCart(cartItemData);
               console.log(`AI Assistant added product ${productId} to cart for user ${cartUserId}`);
             }
+
+            // Handle order status updates (admin only)
+            else if (action.type === 'update_order_status' && action.data?.orderId && action.data?.status && req.body.userContext?.isAdmin) {
+              const updatedOrder = await storage.updateOrderStatus(action.data.orderId, action.data.status);
+              if (updatedOrder) {
+                console.log(`AI Assistant updated order ${action.data.orderId} status to ${action.data.status}`);
+                // Add success response to the action result
+                action.result = {
+                  success: true,
+                  message: `Order ${action.data.orderId} status updated to ${action.data.status}`,
+                  order: updatedOrder
+                };
+              } else {
+                action.result = { success: false, message: 'Order not found or update failed' };
+              }
+            }
+
+            // Handle getting order details (admin only)
+            else if (action.type === 'get_order_details' && action.data?.orderId && req.body.userContext?.isAdmin) {
+              const order = await storage.getOrder(action.data.orderId);
+              if (order) {
+                const orderItems = await storage.getOrderItems(order.id);
+                action.result = {
+                  success: true,
+                  order: {
+                    ...order,
+                    items: orderItems,
+                    shippingAddress: {
+                      fullName: `${order.shippingFirstName} ${order.shippingLastName}`,
+                      street: order.shippingStreet,
+                      city: order.shippingCity,
+                      state: order.shippingState,
+                      zipCode: order.shippingZip,
+                      phone: order.shippingPhone
+                    }
+                  }
+                };
+              } else {
+                action.result = { success: false, message: 'Order not found' };
+              }
+            }
+
+            // Handle getting all orders (admin only)
+            else if (action.type === 'get_all_orders' && req.body.userContext?.isAdmin) {
+              const orders = await storage.getAllOrdersWithDetails();
+              action.result = {
+                success: true,
+                orders: orders.map(order => ({
+                  ...order,
+                  shippingAddress: {
+                    fullName: `${order.shippingFirstName} ${order.shippingLastName}`,
+                    street: order.shippingStreet,
+                    city: order.shippingCity,
+                    state: order.shippingState,
+                    zipCode: order.shippingZip,
+                    phone: order.shippingPhone
+                  }
+                }))
+              };
+            }
+
+            // Handle searching orders (admin only) 
+            else if (action.type === 'search_orders' && action.data?.query && req.body.userContext?.isAdmin) {
+              const allOrders = await storage.getAllOrdersWithDetails();
+              const query = action.data.query.toLowerCase();
+              const filteredOrders = allOrders.filter(order => 
+                order.id.toLowerCase().includes(query) ||
+                order.email?.toLowerCase().includes(query) ||
+                `${order.shippingFirstName} ${order.shippingLastName}`.toLowerCase().includes(query) ||
+                order.shippingCity?.toLowerCase().includes(query) ||
+                order.status?.toLowerCase().includes(query)
+              );
+              
+              action.result = {
+                success: true,
+                orders: filteredOrders.map(order => ({
+                  ...order,
+                  shippingAddress: {
+                    fullName: `${order.shippingFirstName} ${order.shippingLastName}`,
+                    street: order.shippingStreet,
+                    city: order.shippingCity,
+                    state: order.shippingState,
+                    zipCode: order.shippingZip,
+                    phone: order.shippingPhone
+                  }
+                }))
+              };
+            }
+
           } catch (actionError) {
             console.error('Failed to process action:', action.type, actionError);
+            if (action) {
+              action.result = { success: false, message: 'Action failed to process' };
+            }
           }
         }
+      }
+
+      // Add action results to response if available
+      if (response.actionItems && response.actionItems.length > 0) {
+        response.actionItems.forEach((action, index) => {
+          if (action.result) {
+            // Append action results to the response message for admin order actions
+            if (action.type === 'update_order_status' || action.type === 'get_order_details' || 
+                action.type === 'get_all_orders' || action.type === 'search_orders') {
+              if (action.result.success) {
+                response.response += `\n\n✅ Action completed successfully: ${action.result.message || 'Order information retrieved'}`;
+                if (action.result.order) {
+                  const order = action.result.order;
+                  response.response += `\n📋 Order Details:\n`;
+                  response.response += `- Order ID: ${order.id}\n`;
+                  response.response += `- Status: ${order.status}\n`;
+                  response.response += `- Total: $${order.total}\n`;
+                  if (order.shippingAddress) {
+                    response.response += `- Shipping Address: ${order.shippingAddress.fullName}\n`;
+                    response.response += `  ${order.shippingAddress.street}\n`;
+                    response.response += `  ${order.shippingAddress.city}, ${order.shippingAddress.state} ${order.shippingAddress.zipCode}\n`;
+                    if (order.shippingAddress.phone) {
+                      response.response += `  Phone: ${order.shippingAddress.phone}\n`;
+                    }
+                  }
+                  if (order.trackingNumber) {
+                    response.response += `- Tracking: ${order.trackingNumber}\n`;
+                  }
+                }
+                if (action.result.orders && action.result.orders.length > 0) {
+                  response.response += `\n📋 Found ${action.result.orders.length} orders:\n`;
+                  action.result.orders.slice(0, 5).forEach((order: any) => {
+                    response.response += `- ${order.id}: ${order.status} - $${order.total} (${order.shippingAddress.fullName})\n`;
+                  });
+                  if (action.result.orders.length > 5) {
+                    response.response += `... and ${action.result.orders.length - 5} more orders\n`;
+                  }
+                }
+              } else {
+                response.response += `\n❌ Action failed: ${action.result.message}`;
+              }
+            }
+          }
+        });
       }
 
       res.json(response);
