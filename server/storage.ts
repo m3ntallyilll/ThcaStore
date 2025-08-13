@@ -65,6 +65,10 @@ export interface IStorage {
   getUserReferrals(userId: string): Promise<any[]>;
   createReferral(referral: any): Promise<any>;
   getReferralByCode(code: string): Promise<any>;
+  getUserReferralCode(userId: string): Promise<any>;
+  getUserReferralStats(userId: string): Promise<any>;
+  hasUserUsedReferral(userId: string): Promise<boolean>;
+  updateReferral(id: string, updates: any): Promise<any>;
 
   // Special Offers
   getActiveOffers(): Promise<any[]>;
@@ -852,6 +856,34 @@ export class MemStorage implements IStorage {
 
   async getReferralByCode(code: string): Promise<any> {
     return Array.from(this.referrals.values()).find((r: any) => r.referralCode === code);
+  }
+
+  async getUserReferralCode(userId: string): Promise<any> {
+    return Array.from(this.referrals.values()).find((r: any) => r.referrerId === userId);
+  }
+
+  async getUserReferralStats(userId: string): Promise<any> {
+    const userReferrals = Array.from(this.referrals.values()).filter((r: any) => r.referrerId === userId);
+    const completedReferrals = userReferrals.filter((r: any) => r.status === 'completed' || r.status === 'rewarded');
+    const totalEarned = completedReferrals.reduce((sum, r: any) => sum + (r.referrerReward || 500), 0);
+    
+    return {
+      totalReferrals: completedReferrals.length,
+      pendingReferrals: userReferrals.filter((r: any) => r.status === 'pending').length,
+      totalEarned: totalEarned
+    };
+  }
+
+  async hasUserUsedReferral(userId: string): Promise<boolean> {
+    return Array.from(this.referrals.values()).some((r: any) => r.refereeId === userId);
+  }
+
+  async updateReferral(id: string, updates: any): Promise<any> {
+    const referral = this.referrals.get(id);
+    if (!referral) return undefined;
+    const updatedReferral = { ...referral, ...updates };
+    this.referrals.set(id, updatedReferral);
+    return updatedReferral;
   }
 
   // Special Offers

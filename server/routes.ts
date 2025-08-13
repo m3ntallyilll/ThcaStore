@@ -1244,6 +1244,33 @@ function shuffleArray(array: any[]) {
     }
   });
 
+  // Get user's own referral program data
+  app.get("/api/referrals/user", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      
+      // Get user's own referral code
+      const userReferral = await storage.getUserReferralCode(userId);
+      
+      // Get stats about users who have used this referral code
+      const referralStats = await storage.getUserReferralStats(userId);
+      
+      // Check if user has used someone else's referral code
+      const hasUsedReferral = await storage.hasUserUsedReferral(userId);
+      
+      res.json({
+        referralCode: userReferral?.referralCode || null,
+        hasUsedReferral: hasUsedReferral,
+        stats: referralStats,
+        totalReferrals: referralStats?.totalReferrals || 0,
+        totalEarned: referralStats?.totalEarned || 0
+      });
+    } catch (error: any) {
+      console.error('Error fetching user referral data:', error);
+      res.status(500).json({ message: error.message || 'Failed to fetch referral data' });
+    }
+  });
+
   app.post("/api/referrals", authenticateToken, async (req: any, res) => {
     try {
       // Generate a truly unique referral code with collision detection
