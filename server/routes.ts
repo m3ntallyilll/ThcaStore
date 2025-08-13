@@ -1250,7 +1250,44 @@ function shuffleArray(array: any[]) {
       const userId = req.user.id;
       
       // Get user's own referral code
-      const userReferral = await storage.getUserReferralCode(userId);
+      let userReferral = await storage.getUserReferralCode(userId);
+      
+      // If user doesn't have a referral code yet, create one automatically
+      if (!userReferral) {
+        // Generate a unique referral code for the user
+        let referralCode: string;
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        do {
+          // Create a unique code: USER prefix + timestamp + random
+          const userPrefix = req.user.username ? req.user.username.toUpperCase().slice(0, 3) : 'USR';
+          const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+          const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
+          referralCode = `${userPrefix}${timestamp}${randomPart}`;
+
+          // Check if code already exists
+          const existingReferral = await storage.getReferralByCode(referralCode);
+          if (!existingReferral) {
+            break; // Code is unique, exit loop
+          }
+
+          attempts++;
+        } while (attempts < maxAttempts);
+
+        if (attempts >= maxAttempts) {
+          return res.status(500).json({ message: "Unable to generate unique referral code. Please try again." });
+        }
+
+        // Create the referral for the user
+        userReferral = await storage.createReferral({
+          referrerId: userId,
+          referralCode,
+          status: 'pending',
+          referrerReward: 500,
+          refereeReward: 250
+        });
+      }
       
       // Get stats about users who have used this referral code
       const referralStats = await storage.getUserReferralStats(userId);

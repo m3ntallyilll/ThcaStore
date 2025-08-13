@@ -859,6 +859,34 @@ export class DatabaseStorage {
     return await db.select().from(referralProgram).where(eq(referralProgram.referrerId, userId));
   }
 
+  async getUserReferralCode(userId: string): Promise<ReferralProgram | undefined> {
+    const [referral] = await db.select().from(referralProgram)
+      .where(eq(referralProgram.referrerId, userId))
+      .limit(1);
+    return referral || undefined;
+  }
+
+  async getUserReferralStats(userId: string): Promise<any> {
+    const userReferrals = await db.select().from(referralProgram)
+      .where(eq(referralProgram.referrerId, userId));
+    
+    const completedReferrals = userReferrals.filter(r => r.status === 'completed' || r.status === 'rewarded');
+    const totalEarned = completedReferrals.reduce((sum, r) => sum + r.referrerReward, 0);
+    
+    return {
+      totalReferrals: completedReferrals.length,
+      pendingReferrals: userReferrals.filter(r => r.status === 'pending').length,
+      totalEarned: totalEarned
+    };
+  }
+
+  async hasUserUsedReferral(userId: string): Promise<boolean> {
+    const [referral] = await db.select().from(referralProgram)
+      .where(eq(referralProgram.refereeId, userId))
+      .limit(1);
+    return !!referral;
+  }
+
   async updateReferral(referralId: string, updates: Partial<InsertReferralProgram>): Promise<ReferralProgram | undefined> {
     const [referral] = await db.update(referralProgram)
       .set({ ...updates, completedAt: updates.status === 'completed' ? new Date() : undefined })
