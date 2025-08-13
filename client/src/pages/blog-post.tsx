@@ -205,9 +205,9 @@ export default function BlogPost() {
 
       {/* Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
-        <article className="prose prose-lg prose-invert max-w-none">
+        <article className="prose prose-lg prose-invert max-w-none blog-content">
           <div 
-            className="leading-relaxed text-gray-200"
+            className="leading-relaxed text-gray-200 blog-post-content"
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </article>

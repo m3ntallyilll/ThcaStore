@@ -2780,6 +2780,84 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Blog Image Generation Routes
+  app.post("/api/admin/blog/generate-image/:postId", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { ImageGenerator } = await import('./image-generation');
+      const { postId } = req.params;
+      
+      // Get the blog post
+      const post = await storage.getBlogPost(postId);
+      if (!post) {
+        return res.status(404).json({ success: false, message: 'Blog post not found' });
+      }
+      
+      const imageGenerator = ImageGenerator.getInstance();
+      const imagePath = await imageGenerator.generateBlogImage(post.title, post.category);
+      
+      // Update the blog post with the featured image
+      const updatedPost = await storage.updateBlogPost(postId, {
+        featuredImage: imagePath
+      });
+      
+      res.json({
+        success: true,
+        message: 'Blog image generated successfully',
+        imagePath,
+        post: updatedPost
+      });
+    } catch (error: any) {
+      console.error('Blog image generation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to generate blog image'
+      });
+    }
+  });
+
+  app.post("/api/admin/blog/bulk-generate-images", authenticateToken, requireAdmin, async (req: any, res) => {
+    try {
+      const { ImageGenerator } = await import('./image-generation');
+      const { postIds } = req.body;
+      
+      if (!Array.isArray(postIds) || postIds.length === 0) {
+        return res.status(400).json({ success: false, message: 'Post IDs array is required' });
+      }
+      
+      const imageGenerator = ImageGenerator.getInstance();
+      const results = [];
+      
+      for (const postId of postIds) {
+        try {
+          const post = await storage.getBlogPost(postId);
+          if (post) {
+            const imagePath = await imageGenerator.generateBlogImage(post.title, post.category);
+            await storage.updateBlogPost(postId, { featuredImage: imagePath });
+            results.push({ postId, success: true, imagePath });
+          } else {
+            results.push({ postId, success: false, error: 'Post not found' });
+          }
+        } catch (error: any) {
+          results.push({ postId, success: false, error: error.message });
+        }
+      }
+      
+      const successCount = results.filter(r => r.success).length;
+      
+      res.json({
+        success: true,
+        message: `Generated ${successCount}/${postIds.length} blog images successfully`,
+        results
+      });
+    } catch (error: any) {
+      console.error('Bulk blog image generation error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Failed to generate bulk blog images'
+      });
+    }
+  });
+
   // AI SEO Enhancement Routes
   app.post("/api/admin/seo/enhance/:postId", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
