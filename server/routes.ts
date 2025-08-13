@@ -273,6 +273,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
       });
 
+      // Automatically create referral code for new user
+      try {
+        const userPrefix = userData.username.toUpperCase().slice(0, 3);
+        const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+        const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
+        const referralCode = `${userPrefix}${timestamp}${randomPart}`;
+
+        await storage.createReferral({
+          referrerId: user.id,
+          referralCode,
+          status: 'pending',
+          referrerReward: 1000, // 10% commission (in basis points)
+          refereeReward: 2000   // 20% discount (in basis points)
+        });
+
+        console.log(`✓ Created referral code for new user: ${referralCode}`);
+      } catch (referralError) {
+        console.log('Warning: Failed to create referral code for new user:', referralError);
+      }
+
       // Generate JWT token
       const token = jwt.sign({ userId: user.id, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '30d' });
 
@@ -1279,13 +1299,13 @@ function shuffleArray(array: any[]) {
           return res.status(500).json({ message: "Unable to generate unique referral code. Please try again." });
         }
 
-        // Create the referral for the user
+        // Create the referral for the user with 10% commission and 20% discount
         userReferral = await storage.createReferral({
           referrerId: userId,
           referralCode,
           status: 'pending',
-          referrerReward: 500,
-          refereeReward: 250
+          referrerReward: 1000, // 10% commission (in basis points: 1000 = 10%)
+          refereeReward: 2000   // 20% discount (in basis points: 2000 = 20%)
         });
       }
       
@@ -1441,6 +1461,98 @@ function shuffleArray(array: any[]) {
         pointsEarned: referral.refereeReward,
         message: `Welcome! You've earned ${referral.refereeReward} points for joining with a referral code.`
       });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Generate referral codes for all existing users (Admin only)
+  app.post("/api/referrals/generate-for-existing", authenticateToken, async (req: any, res) => {
+    try {
+      // Check if user is admin
+      if (!req.user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const allUsers = await storage.getUsers();
+      const results = [];
+      let successCount = 0;
+      let skipCount = 0;
+
+      for (const user of allUsers) {
+        try {
+          // Check if user already has a referral code
+          const existingReferral = await storage.getUserReferralCode(user.id);
+          if (existingReferral) {
+            results.push({ 
+              userId: user.id, 
+              username: user.username,
+              status: 'exists', 
+              referralCode: existingReferral.referralCode,
+              referralLink: `${req.protocol}://${req.get('host')}/?ref=${existingReferral.referralCode}`
+            });
+            skipCount++;
+            continue;
+          }
+
+          // Generate unique referral code
+          let referralCode: string;
+          let attempts = 0;
+          const maxAttempts = 10;
+
+          do {
+            const userPrefix = user.username.toUpperCase().slice(0, 3);
+            const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+            const randomPart = Math.random().toString(36).slice(2, 6).toUpperCase();
+            referralCode = `${userPrefix}${timestamp}${randomPart}`;
+
+            const existingCode = await storage.getReferralByCode(referralCode);
+            if (!existingCode) {
+              break;
+            }
+            attempts++;
+          } while (attempts < maxAttempts);
+
+          if (attempts >= maxAttempts) {
+            results.push({ userId: user.id, status: 'failed', reason: 'Could not generate unique code' });
+            continue;
+          }
+
+          // Create referral for the user
+          await storage.createReferral({
+            referrerId: user.id,
+            referralCode,
+            status: 'pending',
+            referrerReward: 1000, // 10% commission
+            refereeReward: 2000   // 20% discount
+          });
+
+          results.push({ 
+            userId: user.id, 
+            username: user.username,
+            status: 'created', 
+            referralCode,
+            referralLink: `${req.protocol}://${req.get('host')}/?ref=${referralCode}`
+          });
+          successCount++;
+
+        } catch (error: any) {
+          results.push({ 
+            userId: user.id, 
+            status: 'failed', 
+            reason: error.message 
+          });
+        }
+      }
+
+      res.json({
+        message: `Generated referral codes for ${successCount} users (${skipCount} already had codes)`,
+        successCount,
+        skipCount,
+        totalProcessed: allUsers.length,
+        results: results
+      });
+
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

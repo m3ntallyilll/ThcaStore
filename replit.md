@@ -35,7 +35,7 @@ The application utilizes a monorepo structure, ensuring clear separation of clie
 - **AI-Powered Blog Management System**: Full infrastructure supporting blog posts, categories, tags, and SEO, with AI content generation capabilities.
 - **Dual AI Assistant System**: Features distinct customer support and sales AI assistants, offering intelligent support and integrating with a knowledge base. Updated cart functionality to automatically redirect to checkout when items are added.
 - **State-Based Purchase Restrictions**: Implements a system to prevent orders from states where THCA products are prohibited.
-- **Referral System**: Manages unique code generation, database validation, and referral tracking.
+- **Automated Referral System**: Complete referral system with automatic code generation for all users (new and existing), 10% store credit commission for referrers, 20% discount for referees, and active shareable referral links. Features bulk admin generation and seamless URL parameter processing.
 - **Viral Marketing System**: A complete arsenal of viral content tailored for platforms like TikTok, Instagram, Reddit, and Twitter, designed for automated deployment and viral spread.
 - **AI-Enhanced SEO System**: Leverages AI for automated metadata generation, intelligent internal link pyramids, schema markup automation, and comprehensive SEO health analysis.
 - **Dynamic Discount System**: Incorporates attention-grabbing popups with animated price slashes, countdown timers, rotating offers, and cart integration to display savings.
