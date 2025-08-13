@@ -10,6 +10,7 @@ import { LegalDisclaimer } from "@/components/legal-disclaimer";
 import { CartSidebar } from "@/components/cart/cart-sidebar";
 import { useCart } from "@/hooks/use-cart";
 import { useEffect, useState } from "react";
+import { processReferralFromURL } from "@/lib/referral-utils";
 
 
 // Layout Components
@@ -77,6 +78,12 @@ function AppContent() {
     
     // Initialize cart on app load to ensure persistence
     fetchCart();
+    
+    // Process any referral code from URL parameters
+    const referralResult = processReferralFromURL();
+    if (referralResult.hasReferral && referralResult.isNew) {
+      console.log('🎁 New referral code detected from URL:', referralResult.code);
+    }
   }, [fetchCart]);
   
   return (
