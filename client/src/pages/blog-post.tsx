@@ -65,6 +65,25 @@ export default function BlogPost() {
     });
   };
 
+  const formatBlogContent = (content: string) => {
+    if (!content) return '';
+    
+    // Split content into paragraphs and wrap each in <p> tags if not already wrapped
+    let formattedContent = content
+      // Convert double line breaks to paragraph breaks
+      .replace(/\n\n/g, '</p><p>')
+      // Ensure content starts and ends with paragraph tags
+      .replace(/^(?!<p>)/, '<p>')
+      .replace(/(?!<\/p>)$/, '</p>')
+      // Clean up any empty paragraphs
+      .replace(/<p><\/p>/g, '')
+      // Clean up malformed paragraph tags
+      .replace(/<p>\s*<p>/g, '<p>')
+      .replace(/<\/p>\s*<\/p>/g, '</p>');
+    
+    return formattedContent;
+  };
+
   const getCategoryColor = (category: string) => {
     const colors = {
       education: 'bg-blue-500',
@@ -208,7 +227,7 @@ export default function BlogPost() {
         <article className="prose prose-lg prose-invert max-w-none blog-content">
           <div 
             className="leading-relaxed text-gray-200 blog-post-content"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: formatBlogContent(post.content) }}
           />
         </article>
 

@@ -547,13 +547,19 @@ textarea {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   line-height: 1.8;
   color: #e5e7eb;
+  white-space: pre-line;
 }
 
 .blog-post-content p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   font-size: 1.125rem;
-  line-height: 1.75;
+  line-height: 1.8;
   color: #d1d5db;
+  text-align: justify;
+}
+
+.blog-post-content br {
+  margin-bottom: 1rem;
 }
 
 .blog-post-content h1,
