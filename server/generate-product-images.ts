@@ -3,29 +3,29 @@ import { join } from 'path';
 
 // Product image URL mappings for your exact inventory
 export const productImageUrls = {
-  // Pre-roll strains
-  'sour-diesel-infused': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'purple-koolaid-infused': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
-  'sour-lemon-diesel': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
-  'too-tall': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
-  'runtz': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
+  // Pre-roll strains - realistic Android phone photos
+  'sour-diesel-infused': '/attached_assets/generated_images/Android_preroll_photo_grainy_f4a96edf.png',
+  'purple-koolaid-infused': '/attached_assets/generated_images/Purple_bud_phone_photo_49b8133a.png',
+  'sour-lemon-diesel': '/attached_assets/generated_images/Android_preroll_photo_grainy_f4a96edf.png',
+  'too-tall': '/attached_assets/generated_images/Android_phone_cannabis_bud_photo_93611cde.png',
+  'runtz': '/attached_assets/generated_images/Multiple_buds_Android_camera_9160f585.png',
 
-  // Flower strains  
-  'grape-popsicle': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'purple-koolaid-diamonds': '/attached_assets/generated_images/Gelato_hemp_strain_1a2aebbb.png',
-  'sour-diesel-flower': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
-  'sour-lemon-diesel-flower': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
-  'sour-diesel-popcorn': 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&auto=format',
-  'wedding-cake': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
-  'girl-scout-cookies': 'https://images.unsplash.com/photo-1585288766827-c1a1bb3c6b0e?w=400&h=400&fit=crop&auto=format',
-  'runtz-peppermint': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format',
+  // Flower strains - realistic Android phone photos
+  'grape-popsicle': '/attached_assets/generated_images/Purple_bud_phone_photo_49b8133a.png',
+  'purple-koolaid-diamonds': '/attached_assets/generated_images/Purple_bud_phone_photo_49b8133a.png',
+  'sour-diesel-flower': '/attached_assets/generated_images/Android_phone_cannabis_bud_photo_93611cde.png',
+  'sour-lemon-diesel-flower': '/attached_assets/generated_images/Multiple_buds_Android_camera_9160f585.png',
+  'sour-diesel-popcorn': '/attached_assets/generated_images/Multiple_buds_Android_camera_9160f585.png',
+  'wedding-cake': '/attached_assets/generated_images/Android_phone_cannabis_bud_photo_93611cde.png',
+  'girl-scout-cookies': '/attached_assets/generated_images/Purple_bud_phone_photo_49b8133a.png',
+  'runtz-peppermint': '/attached_assets/generated_images/Multiple_buds_Android_camera_9160f585.png',
 
-  // Pre-roll packs
-  'preroll-pack': '/attached_assets/generated_images/attached_assets/generated_images/Hemp_pre-roll_variety_pack_7d836cbe.png',
-  'preroll-multi-pack': '/attached_assets/BCO.ee170353-be48-42c8-8726-f48463cd7ffd_1754085146155.png',
+  // Pre-roll packs - realistic Android phone photos
+  'preroll-pack': '/attached_assets/generated_images/Preroll_pack_Android_photo_934b8710.png',
+  'preroll-multi-pack': '/attached_assets/generated_images/Preroll_pack_Android_photo_934b8710.png',
   
   // Variety packs
-  'variety-pack': 'https://images.unsplash.com/photo-1574780191071-15ad7b40bc72?w=400&h=400&fit=crop&auto=format'
+  'variety-pack': '/attached_assets/generated_images/Multiple_buds_Android_camera_9160f585.png'
 };
 
 // Generate image URLs based on product name/category
@@ -67,8 +67,8 @@ export function getProductImageUrl(productName: string, category: string): strin
     return productImageUrls['variety-pack'];
   }
   
-  // Default fallback
-  return productImageUrls['sour-diesel-infused'];
+  // Default fallback - realistic Android phone photo
+  return '/attached_assets/generated_images/Android_phone_cannabis_bud_photo_93611cde.png';
 }
 
 // Create image endpoint list for user
