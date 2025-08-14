@@ -403,7 +403,7 @@ export default function Home() {
                       whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(16, 185, 129, 0.5)" }}
                       whileTap={{ scale: 0.95 }}
                     >
-                      <Button className="relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-12 py-6 rounded-full text-xl font-bold shadow-2xl group">
+                      <Button className="relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-12 py-6 rounded-full text-xl font-bold shadow-2xl group" data-testid="button-shop-now">
                         <motion.div
                           className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400"
                           initial={{ x: "-100%" }}
@@ -412,7 +412,7 @@ export default function Home() {
                         />
                         <span className="relative z-10 flex items-center">
                           <Rocket className="mr-3 w-6 h-6" />
-                          Launch Experience
+                          Shop Now
                           <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </span>
                       </Button>
@@ -423,13 +423,16 @@ export default function Home() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Button 
-                      variant="outline" 
-                      className="glass border-2 border-gold/50 px-12 py-6 rounded-full text-xl font-bold text-gold hover:bg-gold/10 backdrop-blur-md transition-all duration-300"
-                    >
-                      <Crown className="mr-3 w-6 h-6" />
-                      Join Elite Community
-                    </Button>
+                    <Link href="/rewards">
+                      <Button 
+                        variant="outline" 
+                        className="glass border-2 border-gold/50 px-12 py-6 rounded-full text-xl font-bold text-gold hover:bg-gold/10 backdrop-blur-md transition-all duration-300"
+                        data-testid="button-save-rewards"
+                      >
+                        <Crown className="mr-3 w-6 h-6" />
+                        Save with Rewards
+                      </Button>
+                    </Link>
                   </motion.div>
                 </motion.div>
               </motion.div>
