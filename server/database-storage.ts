@@ -736,8 +736,8 @@ export class DatabaseStorage {
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const [order] = await db.insert(orders).values(insertOrder).returning();
     
-    // Award points for the order
-    await this.awardPointsForOrder(order);
+    // Points will be awarded only after admin approval
+    // See updateOrderStatus method for point awarding logic
     
     return order;
   }
@@ -749,6 +749,18 @@ export class DatabaseStorage {
     }
     
     const [order] = await db.update(orders).set(updateData).where(eq(orders.id, id)).returning();
+    
+    // Award points only when admin approves payment (status: approved, completed, or shipped)
+    if (order && (status === 'approved' || status === 'completed' || status === 'shipped')) {
+      const existingPointTransaction = await db.select().from(pointTransactions)
+        .where(eq(pointTransactions.orderId, order.id));
+      
+      // Only award points if not already awarded for this order
+      if (existingPointTransaction.length === 0) {
+        await this.awardPointsForOrder(order);
+      }
+    }
+    
     return order || undefined;
   }
 

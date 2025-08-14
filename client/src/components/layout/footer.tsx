@@ -44,9 +44,14 @@ export function Footer() {
           </div>
           
           <div>
-            <h4 className="font-semibold mb-4">Support</h4>
+            <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+              <li className="hover:text-white transition-colors">
+                <span className="font-medium">Phone:</span> 702-482-9794
+              </li>
+              <li className="hover:text-white transition-colors">
+                <span className="font-medium">Email:</span> support@mentally-chill.online
+              </li>
               <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
               <li><a href="#" className="hover:text-white transition-colors">Shipping Info</a></li>
               <li><Link href="/returns" className="hover:text-white transition-colors">Returns</Link></li>

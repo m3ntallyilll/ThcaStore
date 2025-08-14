@@ -740,7 +740,52 @@ export class MemStorage implements IStorage {
     
     order.status = status;
     this.orders.set(id, order);
+    
+    // Award points only when admin approves payment (status: approved, completed, or shipped)
+    if (status === 'approved' || status === 'completed' || status === 'shipped') {
+      const existingPointTransaction = Array.from(this.pointTransactions.values())
+        .find(pt => pt.orderId === order.id);
+      
+      // Only award points if not already awarded for this order
+      if (!existingPointTransaction) {
+        await this.awardPointsForOrder(order);
+      }
+    }
+    
     return order;
+  }
+
+  private async awardPointsForOrder(order: Order): Promise<void> {
+    const userReward = await this.getUserRewards(order.userId);
+    if (!userReward) return;
+
+    const tier = this.rewardTiers.get(userReward.currentTierId || '1');
+    if (!tier) return;
+
+    // Calculate points: $1 = 1 point, multiplied by tier multiplier
+    const basePoints = Math.floor(parseFloat(order.total));
+    const multiplier = parseFloat(tier.multiplier);
+    const pointsEarned = Math.floor(basePoints * multiplier);
+
+    await this.addPointTransaction({
+      userId: order.userId,
+      orderId: order.id,
+      points: pointsEarned,
+      type: 'earned',
+      description: `Points earned from order #${order.id.slice(-8)}`,
+      multiplier: tier.multiplier
+    });
+
+    // Update monthly purchases and lifetime spent
+    const updatedReward = {
+      ...userReward,
+      totalPoints: userReward.totalPoints + pointsEarned,
+      monthlyPurchases: userReward.monthlyPurchases + 1,
+      lifetimeSpent: (parseFloat(userReward.lifetimeSpent) + parseFloat(order.total)).toFixed(2),
+      lastPurchaseDate: new Date(),
+      updatedAt: new Date()
+    };
+    this.userRewards.set(order.userId, updatedReward);
   }
 
   // Additional order methods

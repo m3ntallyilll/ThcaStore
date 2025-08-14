@@ -118,7 +118,7 @@ export function processSupportRequest(request: SupportRequest): SupportResponse 
 
   if (needsEscalation) {
     return {
-      response: "I understand you're having a serious concern. I'm escalating this to our senior support team who will contact you directly within 2 hours. In the meantime, you can also reach our priority support line at (555) 123-THCA ext. 911.",
+      response: "I understand you're having a serious concern. I'm escalating this to our senior support team who will contact you directly within 2 hours. In the meantime, you can also reach our support line at 702-482-9794 or email support@mentally-chill.online.",
       needsEscalation: true,
       priority: 'urgent',
       ticketId: generateTicketId()
