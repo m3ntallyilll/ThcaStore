@@ -2,7 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import path from "path";
-import { storage } from "./storage";
+import { storage } from "./database-storage";
 import { aiAssistant } from "./ai-assistant";
 import affiliateRoutes from "./routes/affiliate";
 

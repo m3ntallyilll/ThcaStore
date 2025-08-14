@@ -1851,7 +1851,7 @@ export class DatabaseStorage {
     }
 
     // Check usage limit
-    if (promoCode.maxUses && promoCode.currentUses >= promoCode.maxUses) {
+    if (promoCode.maxUses && (promoCode.currentUses || 0) >= promoCode.maxUses) {
       return null;
     }
 
