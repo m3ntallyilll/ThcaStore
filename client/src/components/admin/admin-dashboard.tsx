@@ -176,7 +176,7 @@ export function AdminDashboard() {
         });
 
         const response = await apiRequest(`/api/products/${id}`, { method: 'PATCH', body: cleanData });
-        return response.json();
+        return response;
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['/api/products'] });
