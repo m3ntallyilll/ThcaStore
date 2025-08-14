@@ -108,8 +108,10 @@ export default function Checkout() {
         }
       });
 
-      // Detect mobile devices for better payment experience
+      // Enhanced mobile detection for better payment experience
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isAndroid = /Android/.test(navigator.userAgent);
       
       // Show device-specific instructions
       toast({
@@ -123,14 +125,41 @@ export default function Checkout() {
       // Small delay to let user see the toast before redirect
       setTimeout(() => {
         if (isMobile) {
-          // On mobile, redirect in the same window for better app integration
-          window.location.href = response.cashAppLink;
-        } else {
-          // On desktop, try to open in new tab, fallback to same window
-          const newWindow = window.open(response.cashAppLink, '_blank');
-          // If popup was blocked, redirect in same window
-          if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+          // Enhanced mobile Cash App forwarding with deep linking
+          if (isIOS) {
+            // iOS: Try deep link first, fallback to web
+            const deepLink = `cashapp://qr?code=$${response.cashAppLink.split('$')[1]}`;
+            const webFallback = response.cashAppLink;
+            
+            // Create invisible iframe to attempt deep link
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = deepLink;
+            document.body.appendChild(iframe);
+            
+            // Fallback to web after delay
+            setTimeout(() => {
+              window.location.href = webFallback;
+              document.body.removeChild(iframe);
+            }, 1500);
+            
+          } else if (isAndroid) {
+            // Android: Use intent URL for better app integration
+            const intentUrl = `intent://qr?code=${response.cashAppLink.split('$')[1]}#Intent;package=com.squareup.cash;scheme=cashapp;S.browser_fallback_url=${encodeURIComponent(response.cashAppLink)};end`;
+            window.location.href = intentUrl;
+            
+          } else {
+            // Other mobile devices: direct web link
             window.location.href = response.cashAppLink;
+          }
+        } else {
+          // Desktop: try to open in new tab, fallback to same window
+          const newWindow = window.open(response.cashAppLink, '_blank', 'noopener,noreferrer,width=600,height=800');
+          // If popup was blocked, redirect in same window after delay
+          if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+            setTimeout(() => {
+              window.location.href = response.cashAppLink;
+            }, 500);
           }
         }
       }, 1000);

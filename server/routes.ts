@@ -3213,8 +3213,8 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       const order = await storage.createOrder(orderData);
 
-      // Generate Cash App payment link
-      const cashAppLink = `https://cash.app/$${CASH_APP_CASHTAG}/${total.toFixed(2)}`;
+      // Generate enhanced Cash App payment link with better mobile support
+      const cashAppLink = `https://cash.app/$${CASH_APP_CASHTAG}/${total.toFixed(2)}/${order.id.substring(0, 8)}`;
 
       res.json({ 
         success: true,
