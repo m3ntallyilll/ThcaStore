@@ -20,6 +20,7 @@ import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import type { CartItemWithProduct } from '@/lib/types';
+import { ShippingInfo } from '@/components/shipping/shipping-info';
 
 // AI Assistant Integration Helper
 const AIAssistantHelper = ({ 
@@ -361,6 +362,18 @@ export default function Cart() {
         total={getTotal()}
         onAskAssistant={handleAskAssistant}
       />
+
+      {/* Prominent Shipping Information */}
+      {items.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <ShippingInfo variant="card" />
+        </motion.div>
+      )}
 
       {items.length === 0 ? (
         <motion.div

@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { ProductVariantSelector } from './product-variant-selector';
 import type { Product, ProductVariant } from '@shared/schema';
+import { ShippingInfo } from '@/components/shipping/shipping-info';
 
 interface ProductCardProps {
   product: Product;
@@ -257,6 +258,11 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
           </div>
         )}
         
+        {/* Compact Shipping Information */}
+        <div className="mb-4">
+          <ShippingInfo variant="compact" />
+        </div>
+
         <Button
           onClick={handleAddToCart}
           disabled={currentVariant.stock === 0}

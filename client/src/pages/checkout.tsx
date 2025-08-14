@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/hooks/use-cart';
 import { apiRequest } from '@/lib/queryClient';
+import { ShippingInfo } from '@/components/shipping/shipping-info';
 import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy, Coins, Tag, CheckCircle } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -170,6 +171,11 @@ export default function Checkout() {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold text-white mb-8 text-center">Secure Checkout</h1>
+
+        {/* Prominent Shipping Information */}
+        <div className="max-w-6xl mx-auto mb-8">
+          <ShippingInfo variant="detailed" />
+        </div>
 
         <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Order Summary */}

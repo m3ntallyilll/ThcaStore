@@ -15,6 +15,7 @@ import { FloatingSocialShare } from '@/components/floating-social-share';
 import { AuthModal } from '@/components/auth/auth-modal';
 import { useAuth } from '@/hooks/use-auth';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
+import { ShippingInfo } from '@/components/shipping/shipping-info';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -434,6 +435,16 @@ export default function Home() {
                       </Button>
                     </Link>
                   </motion.div>
+                </motion.div>
+
+                {/* Prominent Shipping Information Banner */}
+                <motion.div 
+                  className="mt-12"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.8 }}
+                >
+                  <ShippingInfo variant="banner" />
                 </motion.div>
               </motion.div>
             )}
