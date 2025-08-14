@@ -696,6 +696,8 @@ export const insertAiUserProfileSchema = createInsertSchema(aiUserProfiles);
 export const insertAiContextMemorySchema = createInsertSchema(aiContextMemory);
 export const insertDailyPromotionSchema = createInsertSchema(dailyPromotions);
 export const insertPromotionUsageSchema = createInsertSchema(promotionUsage);
+export const insertPromoCodeSchema = createInsertSchema(promoCodes);
+export const insertPromoCodeUsageSchema = createInsertSchema(promoCodeUsage);
 
 // Gamification Insert Schemas
 export const insertAchievementSchema = createInsertSchema(achievements);
@@ -740,6 +742,10 @@ export type InsertDailyPromotion = z.infer<typeof insertDailyPromotionSchema>;
 export type DailyPromotion = typeof dailyPromotions.$inferSelect;
 export type InsertPromotionUsage = z.infer<typeof insertPromotionUsageSchema>;
 export type PromotionUsage = typeof promotionUsage.$inferSelect;
+export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
+export type PromoCode = typeof promoCodes.$inferSelect;
+export type InsertPromoCodeUsage = z.infer<typeof insertPromoCodeUsageSchema>;
+export type PromoCodeUsage = typeof promoCodeUsage.$inferSelect;
 
 // Gamification Types
 export type Achievement = typeof achievements.$inferSelect;

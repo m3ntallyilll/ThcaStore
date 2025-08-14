@@ -815,7 +815,7 @@ export class DatabaseStorage {
   }
 
   private async awardPointsForOrder(order: Order): Promise<void> {
-    const userReward = await this.getUserRewards(order.userId);
+    const userReward = await this.getUserRewards(order.userId || '');
     if (!userReward || !userReward.currentTierId) return;
 
     const [tier] = await db.select().from(rewardTiers).where(eq(rewardTiers.id, userReward.currentTierId));
@@ -827,7 +827,7 @@ export class DatabaseStorage {
     const pointsEarned = Math.floor(basePoints * multiplier);
 
     await this.addPointTransaction({
-      userId: order.userId,
+      userId: order.userId || '',
       orderId: order.id,
       points: pointsEarned,
       type: 'earned',
@@ -836,7 +836,7 @@ export class DatabaseStorage {
     });
 
     // Update monthly purchases and lifetime spent
-    await this.updateUserRewards(order.userId, {
+    await this.updateUserRewards(order.userId || '', {
       monthlyPurchases: userReward.monthlyPurchases + 1,
       lifetimeSpent: (parseFloat(userReward.lifetimeSpent) + parseFloat(order.total)).toFixed(2),
       lastPurchaseDate: new Date()
@@ -1925,37 +1925,7 @@ export class DatabaseStorage {
       .where(eq(referralProgram.id, id));
   }
 
-  async updateReferral(id: string, updates: any): Promise<any> {
-    const result = await db.update(referralProgram)
-      .set(updates)
-      .where(eq(referralProgram.id, id))
-      .returning();
-    return result[0];
-  }
 
-  async getUserAchievements(userId: string): Promise<any[]> {
-    return db.select({
-      id: userAchievements.id,
-      achievementId: userAchievements.achievementId,
-      progress: userAchievements.progress,
-      completedAt: userAchievements.completedAt,
-      achievement: {
-        name: achievements.name,
-        description: achievements.description,
-        target: achievements.maxProgress,
-        reward: achievements.rewardPoints,
-        icon: achievements.icon,
-      }
-    })
-      .from(userAchievements)
-      .leftJoin(achievements, eq(userAchievements.achievementId, achievements.id))
-      .where(eq(userAchievements.userId, userId));
-  }
-
-  async getUserStreaks(userId: string): Promise<any> {
-    const result = await db.select().from(loyaltyStreaks).where(eq(loyaltyStreaks.userId, userId));
-    return result[0] || { currentStreak: 0 };
-  }
 
   async getUserOrderCount(userId: string): Promise<number> {
     const result = await db.select({ count: sql`count(*)` })
