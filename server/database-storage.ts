@@ -1864,6 +1864,26 @@ export class DatabaseStorage {
     return promoCode;
   }
 
+  // Calculate discount amount with limits
+  calculateDiscountAmount(promoCode: any, subtotal: number): number {
+    let discountAmount = 0;
+    
+    if (promoCode.discountType === 'percentage') {
+      discountAmount = (subtotal * parseFloat(promoCode.discountValue)) / 100;
+      
+      // Apply maximum discount cap if specified
+      if (promoCode.maxDiscountAmount) {
+        const maxCap = parseFloat(promoCode.maxDiscountAmount);
+        discountAmount = Math.min(discountAmount, maxCap);
+      }
+    } else if (promoCode.discountType === 'fixed') {
+      discountAmount = Math.min(parseFloat(promoCode.discountValue), subtotal);
+    }
+    
+    // Ensure discount doesn't exceed subtotal
+    return Math.min(discountAmount, subtotal);
+  }
+
   // Store Credit System Methods
   async updateUserStoreCredit(userId: string, newBalance: string): Promise<void> {
     await db.update(users)

@@ -25,7 +25,7 @@ const authenticateToken = async (req: any, res: any, next: any) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Get user from storage
-    const user = await storage.getUser(decoded.userId);
+    const user = await storage.getUser((decoded as any).userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -33,7 +33,7 @@ const authenticateToken = async (req: any, res: any, next: any) => {
     req.user = { 
       ...user, 
       isAdmin: user.isAdmin || false,
-      id: user.id || decoded.userId 
+      id: user.id || (decoded as any).userId 
     };
     next();
   } catch (error) {
@@ -197,6 +197,7 @@ router.post('/create-promo', authenticateToken, async (req: any, res) => {
         code: referral.referralCode,
         discountType: 'percentage',
         discountValue: '20.00', // 20% discount for referees
+        maxDiscountAmount: '50.00', // Cap discount at $50 maximum
         minPurchase: '0.00',
         maxUses: 1, // One time use
         isActive: true,
@@ -266,9 +267,18 @@ router.post('/validate-promo', async (req, res) => {
     let discountAmount = 0;
     if (promo.discountType === 'percentage') {
       discountAmount = (subtotal * parseFloat(promo.discountValue)) / 100;
+      
+      // Apply maximum discount cap if specified
+      if (promo.maxDiscountAmount) {
+        const maxCap = parseFloat(promo.maxDiscountAmount);
+        discountAmount = Math.min(discountAmount, maxCap);
+      }
     } else if (promo.discountType === 'fixed') {
       discountAmount = Math.min(parseFloat(promo.discountValue), subtotal);
     }
+    
+    // Ensure discount doesn't exceed subtotal
+    discountAmount = Math.min(discountAmount, subtotal);
     
     res.json({
       valid: true,
@@ -298,13 +308,8 @@ router.post('/track-conversion', async (req, res) => {
         .where(eq(promoCodes.code, promoCode))
         .limit(1);
       
-      if (promo?.affiliateId) {
-        [affiliate] = await db
-          .select()
-          .from(affiliates)
-          .where(eq(affiliates.id, promo.affiliateId))
-          .limit(1);
-      }
+      // Note: promo codes are now linked to referral system, not direct affiliates
+      // Skip affiliate lookup from promo code since affiliateId field doesn't exist
     }
     
     // Check affiliate code if no promo code affiliate found
@@ -318,7 +323,7 @@ router.post('/track-conversion', async (req, res) => {
     
     // Record conversion if affiliate found
     if (affiliate) {
-      const commissionAmount = (orderTotal * parseFloat(affiliate.commissionRate)) / 100;
+      const commissionAmount = (orderTotal * parseFloat(affiliate.commissionRate || '0')) / 100;
       
       await db.insert(affiliateConversions).values({
         affiliateId: affiliate.id,

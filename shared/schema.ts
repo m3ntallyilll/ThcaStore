@@ -418,6 +418,7 @@ export const promoCodes = pgTable('promo_codes', {
   code: text('code').notNull().unique(),
   discountType: text('discount_type', { enum: ['percentage', 'fixed', 'free_shipping'] }).notNull(),
   discountValue: decimal('discount_value', { precision: 10, scale: 2 }).notNull(),
+  maxDiscountAmount: decimal('max_discount_amount', { precision: 10, scale: 2 }), // Maximum discount cap for percentage discounts
   minPurchase: decimal('min_purchase', { precision: 10, scale: 2 }).default('0.00'),
   maxUses: integer('max_uses'),
   currentUses: integer('current_uses').default(0),
