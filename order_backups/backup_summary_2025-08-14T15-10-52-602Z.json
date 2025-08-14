@@ -1,0 +1,20 @@
+{
+  "backup_summary": {
+    "timestamp": "2025-08-14T15:10:52.905Z",
+    "files_created": [
+      "order_data_backup_2025-08-14T15-10-52-602Z.json",
+      "order_data_restore_2025-08-14T15-10-52-602Z.sql"
+    ],
+    "orders_backed_up": 0,
+    "order_items_backed_up": 0,
+    "users_with_orders": 0,
+    "point_transactions": 0,
+    "backup_location": "order_backups",
+    "total_revenue": 0,
+    "order_statuses": {},
+    "date_range": {
+      "first_order": null,
+      "last_order": null
+    }
+  }
+}
