@@ -140,6 +140,14 @@ router.get('/my-affiliate', authenticateToken, async (req: any, res) => {
     
     res.json({
       ...referral,
+      isActive: true, // User referral codes are always active
+      affiliateCode: referral.referralCode, // Add alias for frontend compatibility
+      totalClicks: 0, // Default values for display
+      totalConversions: 0,
+      totalEarnings: '0.00',
+      commissionRate: '10',
+      availableBalance: '0.00',
+      promoCodes: [], // Will be populated from separate endpoint
       stats: stats[0] || { totalReferrals: 0, completedReferrals: 0, pendingReferrals: 0, totalRewards: 0 },
       referralLink: `${process.env.APP_URL || 'https://mentally-chill.online'}/ref/${referral.referralCode}`,
     });
