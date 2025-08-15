@@ -3213,16 +3213,45 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
       const order = await storage.createOrder(orderData);
 
-      // Generate enhanced Cash App payment link with better mobile support
-      const cashAppLink = `https://cash.app/$${CASH_APP_CASHTAG}/${total.toFixed(2)}/${order.id.substring(0, 8)}`;
+      // Generate proper Cash App payment links
+      const amount = total.toFixed(2);
+      const orderRef = order.id.substring(0, 8);
+      const cashtag = CASH_APP_CASHTAG || 'iLLAithegptstore';
+      
+      // Multiple Cash App link formats for maximum compatibility
+      const cashAppLinks = {
+        // Primary mobile app deep link
+        mobile: `cashapp://cash.app/pay/${cashtag}/${amount}?note=Order%20${orderRef}%20-%20THCA%20Store`,
+        // Web fallback link
+        web: `https://cash.app/$${cashtag}/${amount}?note=Order%20${orderRef}`,
+        // Direct payment link
+        direct: `https://cash.app/pay/${cashtag}/${amount}`,
+        // Universal link that works on both mobile and desktop
+        universal: `https://cash.app/$${cashtag}?amount=${amount}&note=Order%20${orderRef}%20THCA%20Purchase`
+      };
+
+      // Create order items summary for payment note
+      const itemsSummary = items.slice(0, 3).map((item: any) => 
+        `${item.quantity}x ${item.product.name.substring(0, 20)}`
+      ).join(', ');
+      const extraItems = items.length > 3 ? ` +${items.length - 3} more` : '';
 
       res.json({ 
         success: true,
         orderId: order.id,
-        cashAppLink: cashAppLink,
-        total: total.toFixed(2),
+        orderRef: orderRef,
+        cashAppLinks: cashAppLinks,
+        primaryLink: cashAppLinks.universal, // Best compatibility
+        total: amount,
+        cashtag: `$${cashtag}`,
         productNames: productNames,
-        instructions: `🔥 PAYMENT INSTRUCTIONS 🔥\n\n📱 Send $${total.toFixed(2)} via Cash App to: $iLLAithegptstore\n\n📝 ORDER NUMBER: ${order.id}\n\n💬 Include your order number in the payment note\n\n📞 Contact: (702) 482-9794\n📧 Email: support@mentally-chill.com\n📍 Address: Will be provided after payment confirmation\n\n⚡ Your premium THCA products will be processed within 24 hours!`
+        itemsSummary: `${itemsSummary}${extraItems}`,
+        paymentNote: `Order ${orderRef} - THCA Store`,
+        instructions: {
+          mobile: `📱 TAP THE BUTTON to open Cash App and send $${amount}`,
+          manual: `📱 Manual Payment Steps:\n1️⃣ Open Cash App\n2️⃣ Tap "Pay" or "$"\n3️⃣ Search: ${cashtag}\n4️⃣ Enter amount: $${amount}\n5️⃣ Add note: Order ${orderRef}\n6️⃣ Send payment`,
+          confirmation: `✅ After sending payment:\n• Screenshot your payment confirmation\n• Email it to: orders@mentally-chill.com\n• Include your order number: ${orderRef}\n• We'll process your order within 4 hours!`
+        }
       });
 
     } catch (error: any) {
