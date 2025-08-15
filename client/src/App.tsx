@@ -36,6 +36,12 @@ import NotFound from "@/pages/not-found";
 import StateTHCA from "@/pages/state-thca";
 import StrainLanding from "@/pages/strain-landing";
 import ReferralsPage from "@/pages/referrals";
+import THCABenefits from "@/pages/thca-benefits";
+import WhatIsTHCAVsTHC from "@/pages/what-is-thca-vs-thc";
+import THCADosageGuide from "@/pages/thca-dosage-guide";
+import IsTHCALegal from "@/pages/is-thca-legal";
+import BuyTHCAFlower from "@/pages/buy-thca-flower";
+import THCAPreRolls from "@/pages/thca-pre-rolls";
 
 function Router() {
   return (
@@ -54,6 +60,12 @@ function Router() {
       <Route path="/returns" component={Returns} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/thca-benefits" component={THCABenefits} />
+      <Route path="/what-is-thca-vs-thc" component={WhatIsTHCAVsTHC} />
+      <Route path="/thca-dosage-guide" component={THCADosageGuide} />
+      <Route path="/is-thca-legal" component={IsTHCALegal} />
+      <Route path="/buy-thca-flower" component={BuyTHCAFlower} />
+      <Route path="/thca-pre-rolls" component={THCAPreRolls} />
       <Route path="/thca/:state" component={StateTHCA} />
       <Route path="/thca" component={StateTHCA} />
       <Route path="/strains/:strainType" component={StrainLanding} />

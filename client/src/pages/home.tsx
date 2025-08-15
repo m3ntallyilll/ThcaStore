@@ -16,6 +16,7 @@ import { AuthModal } from '@/components/auth/auth-modal';
 import { useAuth } from '@/hooks/use-auth';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { ShippingInfo } from '@/components/shipping/shipping-info';
+import { KeywordRichContent } from '@/components/seo/keyword-rich-content';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -334,10 +335,10 @@ export default function Home() {
                     transition={{ duration: 1, delay: 0.3 }}
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-green-300 to-teal-400 bg-clip-text text-transparent animate-pulse">
-                      Premium THCA Hemp Products - Lab-Tested & Legal
+                      Buy THCA Online - Premium Legal Products
                     </span>
                     <span className="relative bg-gradient-to-r from-emerald-300 via-green-200 to-teal-300 bg-clip-text text-transparent">
-                      Premium THCA Hemp Products - Lab-Tested & Legal
+                      Buy THCA Online - Premium Legal Products
                     </span>
                   </motion.div>
                   
@@ -348,7 +349,7 @@ export default function Home() {
                     transition={{ duration: 1.5, delay: 0.6 }}
                   >
                     <span className="bg-gradient-to-r from-gold via-yellow-300 to-amber-400 bg-clip-text text-transparent">
-                      Shop THCA Flower, Pre-Rolls & Concentrates with Fast Shipping
+                      THCA Flower Near Me - Premium Pre-Rolls & Diamonds for Sale
                     </span>
                   </motion.h2>
                 </motion.div>
@@ -997,6 +998,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* SEO Keyword-Rich Content Section */}
+      <KeywordRichContent />
 
       {/* Revolutionary Contact Section */}
       <section id="contact" className="relative py-32 overflow-hidden bg-black">

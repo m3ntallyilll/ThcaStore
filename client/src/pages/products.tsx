@@ -72,7 +72,7 @@ export default function Products() {
 
   // Generate dynamic SEO based on current filters
   const generateDynamicSEO = () => {
-    let title = 'Premium THCA Products | Lab-Tested Quality';
+    let title = 'Buy THCA Online - Premium Legal THCA Products | Mentally-Chill';
     let description = 'Shop the finest THCA products online. Premium quality, lab-tested, fast shipping nationwide.';
     let keywords = ['THCA products', 'buy THCA online', 'premium THCA', 'THCA flower', 'THCA delivery', 'lab-tested THCA'];
 
