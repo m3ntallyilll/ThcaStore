@@ -510,7 +510,7 @@ export default function Rewards() {
                   <div className="text-center">
                     <h3 className="text-white text-lg mb-2">Current Store Credit Balance</h3>
                     <div className="text-4xl font-bold text-white mb-2">
-                      ${currentBalance?.toFixed(2) || '0.00'}
+                      ${typeof currentBalance === 'number' ? currentBalance.toFixed(2) : (parseFloat(currentBalance) || 0).toFixed(2)}
                     </div>
                     <p className="text-white/80 text-sm">Available for purchases</p>
                   </div>

@@ -125,7 +125,7 @@ const CartItemCard = memo(({
           <div className="relative w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
             <img 
               src={item.product.imageUrl} 
-              alt={`${item.product.name} - Premium THCA ${item.product.category} in shopping cart - Lab-tested hemp product`}
+              alt={`${item.product.name} - Premium THCA product in shopping cart - Lab-tested hemp product`}
               className="w-full h-full object-cover"
               loading="lazy"
             />
@@ -138,7 +138,7 @@ const CartItemCard = memo(({
                 {item.product.name}
               </h3>
               <p className="text-sm text-muted-foreground line-clamp-2">
-                {item.product.description}
+                Premium THCA product - Lab-tested quality guaranteed
               </p>
             </div>
 
