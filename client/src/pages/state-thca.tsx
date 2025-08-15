@@ -153,12 +153,12 @@ export default function StateTHCA() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
               Buy THCA in {currentState?.name} {currentState?.emoji}
-            </h1>
-            <h2 className="text-xl md:text-2xl text-emerald-400 mb-6">
-              Premium THCA Flower, Pre-Rolls & Concentrates - Legal {currentState?.name} THCA Delivery
             </h2>
+            <h3 className="text-xl md:text-2xl text-emerald-400 mb-6">
+              Premium THCA Flower, Pre-Rolls & Concentrates - Legal {currentState?.name} THCA Delivery
+            </h3>
             <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-300">
               <span className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-emerald-400" />

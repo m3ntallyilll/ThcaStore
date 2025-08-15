@@ -350,30 +350,20 @@ export default function Home() {
                 transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
                 className="max-w-6xl mx-auto"
               >
-                {/* SEO-Optimized H1 Title */}
-                <div className="sr-only">
-                  <h1>Premium THCA Hemp Products - Lab-Tested & Legal - Shop THCA Flower, Pre-Rolls & Concentrates Online</h1>
-                </div>
-                
-                {/* Revolutionary Visual Title */}
-                <motion.div
-                  className="relative mb-8"
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: "spring", stiffness: 300 }}
+                {/* SEO-Optimized Visible H1 Title */}
+                <motion.h1 
+                  className="text-5xl md:text-7xl lg:text-8xl font-black mb-8 relative"
+                  initial={{ opacity: 0, y: 100 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.3 }}
                 >
-                  <motion.div 
-                    className="text-7xl md:text-9xl font-black mb-4 relative"
-                    initial={{ opacity: 0, y: 100 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.3 }}
-                  >
-                    <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-green-300 to-teal-400 bg-clip-text text-transparent animate-pulse">
-                      Buy THCA Online - Premium Legal Products
-                    </span>
-                    <span className="relative bg-gradient-to-r from-emerald-300 via-green-200 to-teal-300 bg-clip-text text-transparent">
-                      Buy THCA Online - Premium Legal Products
-                    </span>
-                  </motion.div>
+                  <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-green-300 to-teal-400 bg-clip-text text-transparent animate-pulse">
+                    Premium THCA Hemp Products - Lab-Tested & Legal
+                  </span>
+                  <span className="relative bg-gradient-to-r from-emerald-300 via-green-200 to-teal-300 bg-clip-text text-transparent">
+                    Premium THCA Hemp Products - Lab-Tested & Legal
+                  </span>
+                </motion.h1>
                   
                   <motion.h2
                     className="text-2xl md:text-4xl font-light tracking-wider"
@@ -385,7 +375,6 @@ export default function Home() {
                       THCA Flower Near Me - Premium Pre-Rolls & Diamonds for Sale
                     </span>
                   </motion.h2>
-                </motion.div>
 
                 {/* Live Statistics Display */}
                 <motion.div

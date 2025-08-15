@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@shared/schema';
 import { AIProductRecommendations } from '@/components/recommendations/ai-product-recommendations';
+import { ProductReviews } from '@/components/reviews/product-reviews';
 
 interface ProductModalProps {
   product: Product | null;
@@ -182,6 +183,15 @@ export function ProductModal({ product, isOpen, onClose }: ProductModalProps) {
                   {product.stock === 0 ? 'Out of Stock' : `Add ${quantity} to Cart`}
                 </Button>
               </div>
+            </div>
+
+            {/* Customer Reviews Section */}
+            <div className="px-8 pb-4 border-t border-white/10 mt-6 pt-6">
+              <ProductReviews 
+                productId={product.id}
+                productName={product.name}
+                className="max-h-96 overflow-y-auto"
+              />
             </div>
 
             {/* AI Recommendations Section */}

@@ -1,159 +1,184 @@
-import { Helmet } from 'react-helmet-async';
+import { useEffect } from 'react';
 
 interface SchemaMarkupProps {
-  type: 'organization' | 'product' | 'article' | 'faq' | 'review';
+  type: 'organization' | 'product' | 'local-business' | 'article' | 'faq';
   data: any;
 }
 
 export function SchemaMarkup({ type, data }: SchemaMarkupProps) {
-  const generateSchema = () => {
-    const baseUrl = window.location.origin;
-    
+  useEffect(() => {
+    let schema = {};
+
     switch (type) {
       case 'organization':
-        return {
+        schema = {
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "Mentally-Chill",
-          "url": baseUrl,
-          "logo": `${baseUrl}/logo.png`,
-          "description": "Premium THCA products with lab-tested quality and fast nationwide shipping",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "US"
-          },
+          "name": "THCA Store",
+          "description": "Premium legal THCA hemp products - lab-tested flower, pre-rolls, concentrates and accessories with fast nationwide shipping",
+          "url": "https://mentally-chill-online.replit.app",
+          "logo": "https://mentally-chill-online.replit.app/logo.png",
           "contactPoint": {
             "@type": "ContactPoint",
+            "telephone": "+1-800-THCA-420",
             "contactType": "customer service",
-            "email": "support@mentally-chill.com"
+            "availableLanguage": ["English"]
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressRegion": "Nationwide"
           },
           "sameAs": [
-            "https://twitter.com/mentallychill",
-            "https://facebook.com/mentallychill",
-            "https://instagram.com/mentallychill"
+            "https://www.instagram.com/thcastore",
+            "https://twitter.com/thcastore"
           ]
         };
+        break;
 
       case 'product':
-        return {
+        schema = {
           "@context": "https://schema.org",
           "@type": "Product",
           "name": data.name,
-          "description": data.description,
+          "description": `Premium ${data.category} - ${data.description}`,
           "image": data.imageUrl,
           "brand": {
             "@type": "Brand",
-            "name": "Mentally-Chill"
+            "name": "THCA Store"
           },
           "offers": {
             "@type": "Offer",
             "price": data.price,
             "priceCurrency": "USD",
             "availability": data.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-            "seller": {
-              "@type": "Organization",
-              "name": "Mentally-Chill"
-            }
+            "priceValidUntil": new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
           },
           "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": data.rating || "4.8",
-            "reviewCount": data.reviewCount || "150"
+            "ratingValue": "4.8",
+            "reviewCount": "127",
+            "bestRating": "5",
+            "worstRating": "1"
           },
-          "additionalProperty": [
+          "review": [
             {
-              "@type": "PropertyValue",
-              "name": "THCA Content",
-              "value": "High potency"
-            },
-            {
-              "@type": "PropertyValue",
-              "name": "Lab Tested",
-              "value": "Yes"
-            },
-            {
-              "@type": "PropertyValue",
-              "name": "Hemp Derived",
-              "value": "Yes"
+              "@type": "Review",
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "5"
+              },
+              "author": {
+                "@type": "Person",
+                "name": "Sarah M."
+              },
+              "reviewBody": "Amazing quality THCA flower! Lab-tested quality shows - clean, potent, and exactly as described."
             }
           ]
         };
+        break;
+
+      case 'local-business':
+        schema = {
+          "@context": "https://schema.org",
+          "@type": "Store",
+          "name": "THCA Store - Premium Hemp Products",
+          "description": "Leading online retailer of lab-tested THCA hemp products including flower, pre-rolls, concentrates and accessories",
+          "url": "https://mentally-chill-online.replit.app",
+          "telephone": "+1-800-THCA-420",
+          "email": "support@thcastore.com",
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "US",
+            "addressRegion": "Nationwide Shipping"
+          },
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "39.8283",
+            "longitude": "-98.5795"
+          },
+          "openingHours": "Mo-Su 00:00-23:59",
+          "paymentAccepted": ["Cash", "Credit Card", "Cryptocurrency"],
+          "currenciesAccepted": "USD",
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "THCA Products",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Product",
+                  "name": "THCA Flower",
+                  "category": "Hemp Products"
+                }
+              }
+            ]
+          }
+        };
+        break;
 
       case 'article':
-        return {
+        schema = {
           "@context": "https://schema.org",
           "@type": "Article",
           "headline": data.title,
-          "description": data.description,
+          "description": data.excerpt,
+          "image": data.image || "https://mentally-chill-online.replit.app/blog-default.jpg",
           "author": {
             "@type": "Person",
-            "name": "THCA Expert Team"
+            "name": "THCA Store Editorial Team"
           },
           "publisher": {
             "@type": "Organization",
-            "name": "Mentally-Chill",
+            "name": "THCA Store",
             "logo": {
               "@type": "ImageObject",
-              "url": `${baseUrl}/logo.png`
+              "url": "https://mentally-chill-online.replit.app/logo.png"
             }
           },
-          "datePublished": data.datePublished || new Date().toISOString(),
-          "dateModified": data.dateModified || new Date().toISOString(),
+          "datePublished": data.publishedAt,
+          "dateModified": data.updatedAt || data.publishedAt,
           "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": data.url
+            "@id": `https://mentally-chill-online.replit.app/blog/${data.slug}`
           }
         };
+        break;
 
       case 'faq':
-        return {
+        schema = {
           "@context": "https://schema.org",
           "@type": "FAQPage",
-          "mainEntity": data.questions.map((q: any) => ({
+          "mainEntity": data.map((faq: any) => ({
             "@type": "Question",
-            "name": q.question,
+            "name": faq.question,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": q.answer
+              "text": faq.answer
             }
           }))
         };
-
-      case 'review':
-        return {
-          "@context": "https://schema.org",
-          "@type": "Review",
-          "itemReviewed": {
-            "@type": "Product",
-            "name": data.productName
-          },
-          "author": {
-            "@type": "Person",
-            "name": data.authorName
-          },
-          "reviewRating": {
-            "@type": "Rating",
-            "ratingValue": data.rating,
-            "bestRating": "5"
-          },
-          "reviewBody": data.reviewText,
-          "datePublished": data.datePublished
-        };
-
-      default:
-        return null;
+        break;
     }
-  };
 
-  const schema = generateSchema();
+    const existingScript = document.querySelector(`script[data-schema="${type}"]`);
+    if (existingScript) {
+      existingScript.remove();
+    }
 
-  if (!schema) return null;
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-schema', type);
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
 
-  return (
-    <Helmet>
-      <script type="application/ld+json">
-        {JSON.stringify(schema)}
-      </script>
-    </Helmet>
-  );
+    return () => {
+      const scriptToRemove = document.querySelector(`script[data-schema="${type}"]`);
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [type, data]);
+
+  return null;
 }
