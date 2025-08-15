@@ -1,86 +1,168 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Main Pages -->
+  <!-- Homepage -->
   <url>
     <loc>https://mentally-chill.online/</loc>
-    <lastmod>2025-08-06</lastmod>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  
+  <!-- Product Pages -->
   <url>
     <loc>https://mentally-chill.online/products</loc>
-    <lastmod>2025-08-06</lastmod>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.online/blog</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://mentally-chill.online/buy-thca-flower</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/thca-pre-rolls</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/cheap-thca-products</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Educational Content -->
+  <url>
+    <loc>https://mentally-chill.online/ultimate-thca-guide-2025</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/thca-benefits</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/what-is-thca-vs-thc</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/is-thca-legal</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/thca-dosage-guide</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/state-by-state-thca-legal</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/thca-faq</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
-  <!-- City THCA Landing Pages -->
+  <!-- Reviews -->
   <url>
-    <loc>https://mentally-chill.online/thca-los-angeles-california</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://mentally-chill.online/thca-reviews-2025</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://mentally-chill.online/thca-denver-colorado</loc>
-    <lastmod>2025-08-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://mentally-chill.online/thca-portland-oregon</loc>
-    <lastmod>2025-08-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://mentally-chill.online/thca-seattle-washington</loc>
-    <lastmod>2025-08-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://mentally-chill.online/thca-las-vegas-nevada</loc>
-    <lastmod>2025-08-06</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
+    <priority>0.8</priority>
   </url>
   
-  <!-- State THCA Pages -->
+  <!-- Business Pages -->
+  <url>
+    <loc>https://mentally-chill.online/daily-deals</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/rewards</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/referrals</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Legal Pages -->
+  <url>
+    <loc>https://mentally-chill.online/privacy-policy</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/terms-of-service</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/returns</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <!-- State-Specific Landing Pages -->
   <url>
     <loc>https://mentally-chill.online/thca/california</loc>
-    <lastmod>2025-08-06</lastmod>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.online/thca/oregon</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://mentally-chill.online/thca/texas</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://mentally-chill.online/thca/washington</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://mentally-chill.online/thca/florida</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mentally-chill.online/thca/new-york</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://mentally-chill.online/thca/colorado</loc>
-    <lastmod>2025-08-06</lastmod>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
+  
+  <!-- Admin (Low Priority) -->
   <url>
-    <loc>https://mentally-chill.online/thca/nevada</loc>
-    <lastmod>2025-08-06</lastmod>
+    <loc>https://mentally-chill.online/admin</loc>
+    <lastmod>2025-01-15T12:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
   </url>
 </urlset>
