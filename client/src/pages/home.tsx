@@ -722,6 +722,106 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Expert THCA Knowledge Section - SEO Content Showcase */}
+      <section className="relative py-24 overflow-hidden bg-gradient-to-br from-emerald-950/50 to-teal-950/30">
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
+              Expert THCA Knowledge Hub
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Your complete guide to THCA - from comprehensive education to expert reviews and legal information
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                title: "Ultimate THCA Guide 2025",
+                description: "Complete expert guide covering benefits, effects, dosage, and everything you need to know",
+                href: "/ultimate-thca-guide-2025",
+                badge: "COMPLETE GUIDE",
+                color: "from-emerald-500 to-teal-500"
+              },
+              {
+                title: "THCA Reviews 2025",
+                description: "Expert product reviews with lab testing data and honest comparisons",
+                href: "/thca-reviews-2025",
+                badge: "EXPERT REVIEWS",
+                color: "from-blue-500 to-cyan-500"
+              },
+              {
+                title: "State-by-State Legal Guide",
+                description: "Current THCA legal status across all 50 states with regular updates",
+                href: "/state-by-state-thca-legal",
+                badge: "LEGAL INFO",
+                color: "from-purple-500 to-indigo-500"
+              },
+              {
+                title: "Best Deals & Prices",
+                description: "Find the most affordable THCA products without compromising quality",
+                href: "/cheap-thca-products",
+                badge: "BEST DEALS",
+                color: "from-green-500 to-emerald-500"
+              }
+            ].map((guide, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="group"
+              >
+                <Link href={guide.href}>
+                  <Card className="h-full bg-gradient-to-br from-gray-900/90 to-gray-800/90 border border-emerald-400/20 hover:border-emerald-400/40 transition-all duration-300 backdrop-blur-sm group-hover:shadow-xl group-hover:shadow-emerald-400/20">
+                    <CardContent className="p-6 h-full flex flex-col">
+                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold mb-4 bg-gradient-to-r ${guide.color} text-white`}>
+                        {guide.badge}
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors">
+                        {guide.title}
+                      </h3>
+                      <p className="text-gray-400 text-sm flex-grow leading-relaxed">
+                        {guide.description}
+                      </p>
+                      <div className="mt-4 flex items-center text-emerald-400 text-sm font-semibold group-hover:text-emerald-300 transition-colors">
+                        Learn More
+                        <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Additional FAQ Link */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <Link href="/thca-faq">
+              <Button className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+                View Complete THCA FAQ
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Revolutionary About Section */}
       <section id="about" className="relative py-32 overflow-hidden">
         {/* Immersive Background */}

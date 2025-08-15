@@ -37,8 +37,33 @@ export function Navigation() {
                 <Link href="/products" className="hover:text-glow-green-400 transition-colors duration-300">
                   Products
                 </Link>
-                <Link href="/blog" className="hover:text-glow-green-400 transition-colors duration-300">
-                  Blog
+                <div className="relative group">
+                  <span className="hover:text-glow-green-400 transition-colors duration-300 cursor-pointer">
+                    Education
+                  </span>
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-gray-900 border border-emerald-400/30 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    <div className="p-4 space-y-2">
+                      <Link href="/ultimate-thca-guide-2025" className="block text-sm text-emerald-300 hover:text-white transition-colors">
+                        Ultimate THCA Guide 2025
+                      </Link>
+                      <Link href="/thca-reviews-2025" className="block text-sm text-emerald-300 hover:text-white transition-colors">
+                        THCA Reviews 2025
+                      </Link>
+                      <Link href="/state-by-state-thca-legal" className="block text-sm text-emerald-300 hover:text-white transition-colors">
+                        THCA Legal Guide
+                      </Link>
+                      <Link href="/thca-faq" className="block text-sm text-emerald-300 hover:text-white transition-colors">
+                        THCA FAQ
+                      </Link>
+                      <Link href="/blog" className="block text-sm text-gray-400 hover:text-white transition-colors border-t border-gray-700 pt-2 mt-2">
+                        All Articles →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+                <Link href="/cheap-thca-products" className="hover:text-glow-green-400 transition-colors duration-300 flex items-center gap-1">
+                  <span className="text-xs bg-green-600 px-2 py-1 rounded">DEALS</span>
+                  Best Prices
                 </Link>
                 <Link href="/daily-deals" className="hover:text-glow-green-400 transition-colors duration-300 flex items-center gap-1">
                   <span className="text-xs bg-red-600 px-2 py-1 rounded animate-pulse">HOT</span>

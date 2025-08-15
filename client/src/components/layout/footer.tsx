@@ -44,6 +44,17 @@ export function Footer() {
           </div>
           
           <div>
+            <h4 className="font-semibold mb-4">Education</h4>
+            <ul className="space-y-2 text-gray-400">
+              <li><Link href="/ultimate-thca-guide-2025" className="hover:text-white transition-colors">Ultimate THCA Guide 2025</Link></li>
+              <li><Link href="/thca-reviews-2025" className="hover:text-white transition-colors">THCA Reviews 2025</Link></li>
+              <li><Link href="/state-by-state-thca-legal" className="hover:text-white transition-colors">Legal Guide</Link></li>
+              <li><Link href="/cheap-thca-products" className="hover:text-white transition-colors">Best Deals</Link></li>
+              <li><Link href="/thca-faq" className="hover:text-white transition-colors">THCA FAQ</Link></li>
+            </ul>
+          </div>
+          
+          <div>
             <h4 className="font-semibold mb-4">Contact</h4>
             <ul className="space-y-2 text-gray-400">
               <li className="hover:text-white transition-colors">
@@ -52,8 +63,6 @@ export function Footer() {
               <li className="hover:text-white transition-colors">
                 <span className="font-medium">Email:</span> support@mentally-chill.online
               </li>
-              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Shipping Info</a></li>
               <li><Link href="/returns" className="hover:text-white transition-colors">Returns</Link></li>
             </ul>
           </div>
