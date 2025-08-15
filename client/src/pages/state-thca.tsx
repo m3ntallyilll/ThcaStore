@@ -293,7 +293,7 @@ export default function StateTHCA() {
                   <div className="aspect-square bg-gradient-to-br from-emerald-600/20 to-green-500/20 rounded-lg mb-4 flex items-center justify-center">
                     <img 
                       src={product.imageUrl || '/api/placeholder/300/300'} 
-                      alt={product.name}
+                      alt={`${product.name} - Premium THCA ${product.category} available in ${currentState?.name} - Lab-tested hemp flower with fast ${currentState?.shippingTime} shipping`}
                       className="w-full h-full object-cover rounded-lg"
                     />
                   </div>

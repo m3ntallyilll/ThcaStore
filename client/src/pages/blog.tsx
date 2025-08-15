@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Link } from 'wouter';
+import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -97,6 +98,20 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-dark-900 text-white">
+      <Helmet>
+        <title>THCA Blog - Expert Education & News | Mentally-Chill</title>
+        <meta name="description" content="Stay informed with expert THCA education, product reviews, legal updates & wellness guides. Comprehensive research-backed content about hemp-derived cannabis products." />
+        <meta name="keywords" content="THCA blog, THCA education, cannabis news, hemp articles, THCA guides, wellness blog, THCA research, hemp education" />
+        <meta property="og:title" content="THCA Knowledge Hub - Expert Education & News" />
+        <meta property="og:description" content="Expert insights and education about THCA, hemp, and wellness. Research-backed articles and comprehensive guides." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mentally-chill.online/blog" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="THCA Knowledge Hub - Expert Education & News" />
+        <meta name="twitter:description" content="Expert insights and education about THCA, hemp, and wellness." />
+        <link rel="canonical" href="https://mentally-chill.online/blog" />
+      </Helmet>
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-purple-900/20 to-pink-900/20 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-16">

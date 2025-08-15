@@ -1,6 +1,7 @@
 import { useState, useEffect, memo } from 'react';
 import { Link, useLocation } from 'wouter';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
 import { 
   ShoppingCart, 
   Plus, 
@@ -124,7 +125,7 @@ const CartItemCard = memo(({
           <div className="relative w-20 h-20 bg-muted rounded-lg overflow-hidden flex-shrink-0">
             <img 
               src={item.product.imageUrl} 
-              alt={item.product.name}
+              alt={`${item.product.name} - Premium THCA ${item.product.category} in shopping cart - Lab-tested hemp product`}
               className="w-full h-full object-cover"
               loading="lazy"
             />
@@ -318,6 +319,17 @@ export default function Cart() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <Helmet>
+        <title>Shopping Cart - THCA Products | Mentally-Chill</title>
+        <meta name="description" content="Review your THCA products in cart. Secure checkout, fast shipping, lab-tested hemp products. Store credit accepted. Complete your premium THCA order now." />
+        <meta name="keywords" content="THCA cart, checkout THCA, buy THCA products, hemp products cart, secure cannabis checkout, THCA store credit" />
+        <meta property="og:title" content="Shopping Cart - THCA Products" />
+        <meta property="og:description" content="Review your premium THCA products and complete secure checkout with fast shipping." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mentally-chill.online/cart" />
+        <link rel="canonical" href="https://mentally-chill.online/cart" />
+      </Helmet>
+      
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center space-x-4">

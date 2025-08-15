@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
+import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -198,6 +199,17 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+      <Helmet>
+        <title>Secure THCA Checkout - Complete Your Order | Mentally-Chill</title>
+        <meta name="description" content="Complete your secure THCA checkout with Cash App Pay. Fast shipping, store credit accepted, promo codes available. Finish your premium hemp product order now." />
+        <meta name="keywords" content="THCA checkout, secure cannabis payment, Cash App THCA, hemp products checkout, store credit checkout, promo code THCA" />
+        <meta property="og:title" content="Secure THCA Checkout - Complete Your Order" />
+        <meta property="og:description" content="Complete your secure checkout for premium THCA products with fast shipping and multiple payment options." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mentally-chill.online/checkout" />
+        <link rel="canonical" href="https://mentally-chill.online/checkout" />
+      </Helmet>
+      
       <div className="container mx-auto px-4 py-12">
         <h1 className="text-4xl font-bold text-white mb-8 text-center">Secure Checkout</h1>
 

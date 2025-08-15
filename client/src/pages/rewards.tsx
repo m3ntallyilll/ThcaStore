@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -152,6 +153,8 @@ export default function Rewards() {
   const { data: storeCreditBalance } = useQuery({
     queryKey: ['/api/store-credit/balance'],
   });
+  
+  const currentBalance = (storeCreditBalance as any)?.balance || 0;
 
   // Redeem reward mutation
   const redeemMutation = useMutation({
@@ -239,6 +242,16 @@ export default function Rewards() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-8">
+      <Helmet>
+        <title>THCA Rewards Program - Earn Points & Store Credit | Mentally-Chill</title>
+        <meta name="description" content="Join our exclusive THCA rewards program. Earn points on every purchase, unlock store credit, and get access to premium member benefits & exclusive deals." />
+        <meta name="keywords" content="THCA rewards program, cannabis loyalty program, earn store credit, THCA points, member benefits, exclusive deals, rewards points" />
+        <meta property="og:title" content="THCA Rewards Program - Earn Points & Store Credit" />
+        <meta property="og:description" content="Join our exclusive THCA rewards program. Earn points on every purchase and unlock exclusive benefits." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://mentally-chill.online/rewards" />
+        <link rel="canonical" href="https://mentally-chill.online/rewards" />
+      </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
@@ -311,7 +324,7 @@ export default function Rewards() {
                   <Coins className="w-8 h-8" />
                   <Badge className="bg-white/20">Available</Badge>
                 </div>
-                <p className="text-3xl font-bold">${storeCreditBalance?.balance?.toFixed(2) || '0.00'}</p>
+                <p className="text-3xl font-bold">${currentBalance?.toFixed(2) || '0.00'}</p>
                 <p className="text-white/80 text-sm">Store Credit</p>
               </CardContent>
             </Card>
@@ -497,7 +510,7 @@ export default function Rewards() {
                   <div className="text-center">
                     <h3 className="text-white text-lg mb-2">Current Store Credit Balance</h3>
                     <div className="text-4xl font-bold text-white mb-2">
-                      ${storeCreditBalance?.balance?.toFixed(2) || '0.00'}
+                      ${currentBalance?.toFixed(2) || '0.00'}
                     </div>
                     <p className="text-white/80 text-sm">Available for purchases</p>
                   </div>

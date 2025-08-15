@@ -73,7 +73,7 @@ export default function Products() {
   // Generate dynamic SEO based on current filters
   const generateDynamicSEO = () => {
     let title = 'Buy THCA Online - Premium Legal THCA Products | Mentally-Chill';
-    let description = 'Shop the finest THCA products online. Premium quality, lab-tested, fast shipping nationwide.';
+    let description = 'Shop premium THCA products online with fast shipping. High-quality THCA flower, pre-rolls, concentrates & edibles. Lab-tested, legal hemp-derived cannabis products.';
     let keywords = ['THCA products', 'buy THCA online', 'premium THCA', 'THCA flower', 'THCA delivery', 'lab-tested THCA'];
 
     if (selectedCategory !== 'all') {
