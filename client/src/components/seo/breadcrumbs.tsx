@@ -1,98 +1,66 @@
-import { ChevronRight, Home } from 'lucide-react';
 import { Link } from 'wouter';
+import { ChevronRight, Home } from 'lucide-react';
 
 interface BreadcrumbItem {
   label: string;
-  href?: string;
+  href: string;
+  current?: boolean;
 }
 
 interface BreadcrumbsProps {
   items: BreadcrumbItem[];
-  className?: string;
 }
 
-export function Breadcrumbs({ items, className = "" }: BreadcrumbsProps) {
+export function Breadcrumbs({ items }: BreadcrumbsProps) {
   return (
-    <nav className={`flex items-center space-x-1 text-sm text-gray-400 mb-8 ${className}`} aria-label="Breadcrumb">
-      <Link href="/">
-        <a className="flex items-center hover:text-emerald-400 transition-colors">
-          <Home className="h-4 w-4" />
-          <span className="sr-only">Home</span>
-        </a>
-      </Link>
-      
-      {items.map((item, index) => (
-        <div key={index} className="flex items-center">
-          <ChevronRight className="h-4 w-4 mx-1" />
-          {item.href ? (
-            <Link href={item.href}>
-              <a className="hover:text-emerald-400 transition-colors">
+    <nav aria-label="Breadcrumb" className="mb-6">
+      <ol className="flex items-center space-x-2 text-sm">
+        <li>
+          <Link href="/" className="text-gray-400 hover:text-white transition-colors flex items-center">
+            <Home className="w-4 h-4 mr-1" />
+            Home
+          </Link>
+        </li>
+        {items.map((item, index) => (
+          <li key={index} className="flex items-center">
+            <ChevronRight className="w-4 h-4 mx-2 text-gray-500" />
+            {item.current ? (
+              <span className="text-white font-medium" aria-current="page">
                 {item.label}
-              </a>
-            </Link>
-          ) : (
-            <span className="text-white font-medium">{item.label}</span>
-          )}
-        </div>
-      ))}
+              </span>
+            ) : (
+              <Link 
+                href={item.href}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                {item.label}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ol>
+
+      {/* Schema.org Breadcrumb Markup */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://mentally-chill.online"
+            },
+            ...items.map((item, index) => ({
+              "@type": "ListItem",
+              "position": index + 2,
+              "name": item.label,
+              "item": `https://mentally-chill.online${item.href}`
+            }))
+          ]
+        })}
+      </script>
     </nav>
   );
 }
-
-// Pre-built breadcrumb configurations
-export const BreadcrumbConfigs = {
-  THCAGuide: [
-    { label: "Education", href: "/ultimate-thca-guide-2025" },
-    { label: "Ultimate THCA Guide 2025" }
-  ],
-  
-  THCABenefits: [
-    { label: "Education", href: "/ultimate-thca-guide-2025" },
-    { label: "THCA Benefits" }
-  ],
-  
-  THCALegal: [
-    { label: "Education", href: "/ultimate-thca-guide-2025" },
-    { label: "THCA Legal Status" }
-  ],
-  
-  THCAVsTHC: [
-    { label: "Education", href: "/ultimate-thca-guide-2025" },
-    { label: "THCA vs THC" }
-  ],
-  
-  THCADosage: [
-    { label: "Education", href: "/ultimate-thca-guide-2025" },
-    { label: "THCA Dosage Guide" }
-  ],
-  
-  StateLegal: [
-    { label: "Legal Information", href: "/is-thca-legal" },
-    { label: "State-by-State Guide" }
-  ],
-  
-  THCAFAQ: [
-    { label: "Support", href: "/thca-faq" },
-    { label: "THCA FAQ" }
-  ],
-  
-  THCAReviews: [
-    { label: "Reviews", href: "/thca-reviews-2025" },
-    { label: "2025 Product Reviews" }
-  ],
-  
-  BuyFlower: [
-    { label: "Products", href: "/products" },
-    { label: "THCA Flower" }
-  ],
-  
-  PreRolls: [
-    { label: "Products", href: "/products" },
-    { label: "THCA Pre-Rolls" }
-  ],
-  
-  CheapProducts: [
-    { label: "Products", href: "/products" },
-    { label: "Cheap THCA Products" }
-  ]
-};

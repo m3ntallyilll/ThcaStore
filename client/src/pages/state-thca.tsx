@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Link, useParams } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { SEOMeta } from '@/components/seo-meta';
+import { AdvancedSchema } from '@/components/seo/advanced-schema';
 
 interface StateInfo {
   name: string;
@@ -133,7 +134,7 @@ export default function StateTHCA() {
 
   // Generate SEO data for current state
   const seoTitle = `Buy THCA in ${currentState?.name} | Premium THCA Flower & Pre-Rolls | Mentally Chill`;
-  const seoDescription = `Buy premium THCA flower in ${currentState?.name}. Fast ${currentState?.shippingTime} delivery, lab-tested quality, legal hemp THCA products. ${currentState?.legalStatus}. Shop now!`;
+  const seoDescription = `Buy legal THCA in ${currentState?.name} - premium hemp products with fast delivery. Lab-tested flower, diamonds, and concentrates available.`;
   const seoKeywords = `THCA ${currentState?.name}, buy THCA in ${currentState?.name}, THCA flower ${currentState?.name}, THCA delivery ${currentState?.name}, legal THCA ${currentState?.name}, THCA store ${currentState?.name}, THCA dispensary ${currentState?.name}, premium THCA ${currentState?.name}`;
   const canonicalUrl = `https://mentally-chill.replit.app/thca/${selectedState}`;
 
@@ -145,6 +146,17 @@ export default function StateTHCA() {
         keywords={seoKeywords}
         canonicalUrl={canonicalUrl}
       />
+      <AdvancedSchema pageType="state" stateInfo={currentState} />
+      
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <Breadcrumbs 
+          items={[
+            { label: 'State Info', href: '/state-by-state-thca-legal' },
+            { label: currentState?.name || 'State', href: `/thca/${selectedState}`, current: true }
+          ]} 
+        />
+      </div>
+      
       {/* SEO-Optimized Header */}
       <div className="bg-emerald-900/20 border-b border-emerald-500/20">
         <div className="max-w-7xl mx-auto px-4 py-4">

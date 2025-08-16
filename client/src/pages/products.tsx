@@ -25,6 +25,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SkipLinks } from '@/components/accessibility/skip-links';
 import { AIChat } from '@/components/ai/ai-chat';
 import { SocialShare } from '@/components/social-share';
+import { AdvancedSchema } from '@/components/seo/advanced-schema';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
+import { PageSpeedOptimizer } from '@/components/seo/page-speed-optimizer';
+import { TechnicalSEO } from '@/components/seo/technical-seo';
+import { CoreWebVitals } from '@/components/seo/core-web-vitals';
 import type { Product } from '@shared/schema';
 
 const categories = [
@@ -73,7 +78,7 @@ export default function Products() {
   // Generate dynamic SEO based on current filters
   const generateDynamicSEO = () => {
     let title = 'Buy THCA Online - Premium Legal THCA Products | Mentally-Chill';
-    let description = 'Shop premium THCA products online with fast shipping. High-quality THCA flower, pre-rolls, concentrates & edibles. Lab-tested, legal hemp-derived cannabis products.';
+    let description = 'Shop premium THCA flower, diamonds, and concentrates. Lab-tested, legal, fast shipping. Multiple strains available with COA included.';
     let keywords = ['THCA products', 'buy THCA online', 'premium THCA', 'THCA flower', 'THCA delivery', 'lab-tested THCA'];
 
     if (selectedCategory !== 'all') {
@@ -294,7 +299,19 @@ export default function Products() {
         </script>
       </Helmet>
       
+      <AdvancedSchema pageType="products" />
+      <TechnicalSEO pageType="products" />
+      <PageSpeedOptimizer />
+      <CoreWebVitals />
+      
       <div className="min-h-screen bg-gradient-to-b from-dark-900 to-dark-800 pt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Breadcrumbs 
+            items={[
+              { label: 'Products', href: '/products', current: true }
+            ]} 
+          />
+        </div>
       {/* Hero Section */}
       <section className="py-20 text-center">
         <div className="max-w-4xl mx-auto px-4">

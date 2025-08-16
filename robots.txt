@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Allow all search engines to crawl the entire site
-Sitemap: https://mentally-chill.replit.app/sitemap.xml
+Sitemap: https://mentally-chill.online/sitemap.xml
 
 # Allow crawling of CSS, JS and asset files for better rendering
 Allow: /src/

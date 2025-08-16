@@ -138,7 +138,7 @@ export function ProductCard({ product, onProductClick, isHighlighted = false }: 
       <div className="relative overflow-hidden">
         <img
           src={product.imageUrl}
-          alt={`${product.name} - Premium THCA ${product.category} - Lab-tested hemp product with ${currentVariant.weight} size`}
+          alt={`${product.name} THCA ${product.category.charAt(0).toUpperCase() + product.category.slice(1)} ${currentVariant.weight} Premium Hemp Lab Tested COA Included Fast Shipping`}
           className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.currentTarget.src = '/src/assets/generated_images/Hemp_pre-rolls_in_tubes_eff785cb.png';

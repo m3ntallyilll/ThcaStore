@@ -10,6 +10,8 @@ import {
   Shield, Scale, FlaskConical, Leaf, Clock, AlertTriangle
 } from 'lucide-react';
 import { SchemaMarkup } from '@/components/seo/schema-markup';
+import { AdvancedSchema } from '@/components/seo/advanced-schema';
+import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 
 const faqData = [
   {
@@ -157,9 +159,15 @@ export default function THCAFAQ() {
         <meta name="keywords" content="THCA FAQ, THCA questions, THCA answers, THCA guide, THCA legal, THCA benefits, THCA dosage, THCA products" />
       </Helmet>
 
+      <AdvancedSchema pageType="faq" />
       <SchemaMarkup type="faq" data={{ questions: allQuestions }} />
 
       <div className="container mx-auto px-4 py-12">
+        <Breadcrumbs 
+          items={[
+            { label: 'FAQ', href: '/thca-faq', current: true }
+          ]} 
+        />
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

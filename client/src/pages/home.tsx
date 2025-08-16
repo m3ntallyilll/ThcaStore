@@ -18,6 +18,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { PWAInstallButton } from '@/components/PWAInstallButton';
 import { ShippingInfo } from '@/components/shipping/shipping-info';
 import { KeywordRichContent } from '@/components/seo/keyword-rich-content';
+import { AdvancedSchema } from '@/components/seo/advanced-schema';
+import { TechnicalSEO } from '@/components/seo/technical-seo';
+import { PageSpeedOptimizer } from '@/components/seo/page-speed-optimizer';
+import { CoreWebVitals } from '@/components/seo/core-web-vitals';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -224,7 +228,7 @@ export default function Home() {
     <div ref={containerRef} className="min-h-screen overflow-hidden">
       <Helmet>
         <title>Buy Premium THCA Online - Lab-Tested Hemp Products | Mentally-Chill</title>
-        <meta name="description" content="Shop premium lab-tested THCA products online. High-quality THCA flower, pre-rolls, concentrates & edibles. Fast nationwide shipping, legal hemp-derived cannabis products." />
+        <meta name="description" content="Buy premium lab-tested THCA products online. Legal hemp-derived flower, diamonds, and pre-rolls with fast nationwide shipping. 99.8% success rate." />
         <meta name="keywords" content="buy THCA online, THCA products, THCA flower, hemp products, lab-tested THCA, legal cannabis, THCA pre-rolls, premium hemp, THCA concentrates" />
         <meta property="og:title" content="Buy Premium THCA Online - Lab-Tested Hemp Products" />
         <meta property="og:description" content="Shop premium lab-tested THCA products with fast nationwide shipping. High-quality hemp-derived cannabis products." />
@@ -236,23 +240,12 @@ export default function Home() {
         <meta name="twitter:description" content="Shop premium lab-tested THCA products with fast nationwide shipping." />
         <meta name="twitter:image" content="https://mentally-chill.online/social-thumbnail.png" />
         <link rel="canonical" href="https://mentally-chill.online/" />
-        {/* Schema.org structured data */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "WebSite",
-            "name": "Mentally-Chill",
-            "alternateName": "THCA Store",
-            "url": "https://mentally-chill.online/",
-            "description": "Premium lab-tested THCA products online. High-quality hemp-derived cannabis products with fast nationwide shipping.",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://mentally-chill.online/products?search={search_term_string}",
-              "query-input": "required name=search_term_string"
-            }
-          })}
-        </script>
       </Helmet>
+      
+      <AdvancedSchema pageType="homepage" />
+      <TechnicalSEO pageType="homepage" />
+      <PageSpeedOptimizer />
+      <CoreWebVitals />
       
       {/* Quick Access Login Section - Top of Page */}
       {!user && (

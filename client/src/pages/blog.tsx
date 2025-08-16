@@ -100,7 +100,7 @@ export default function Blog() {
     <div className="min-h-screen bg-dark-900 text-white">
       <Helmet>
         <title>THCA Blog - Expert Education & News | Mentally-Chill</title>
-        <meta name="description" content="Stay informed with expert THCA education, product reviews, legal updates & wellness guides. Comprehensive research-backed content about hemp-derived cannabis products." />
+        <meta name="description" content="Complete THCA guide 2025 - benefits, effects, dosage, and legal status. Expert reviews and lab testing data for informed decisions." />
         <meta name="keywords" content="THCA blog, THCA education, cannabis news, hemp articles, THCA guides, wellness blog, THCA research, hemp education" />
         <meta property="og:title" content="THCA Knowledge Hub - Expert Education & News" />
         <meta property="og:description" content="Expert insights and education about THCA, hemp, and wellness. Research-backed articles and comprehensive guides." />
