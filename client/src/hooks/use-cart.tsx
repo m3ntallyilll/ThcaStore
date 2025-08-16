@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { useCallback } from 'react';
 import { apiRequest } from '@/lib/queryClient';
 import type { CartItemWithProduct } from '@/lib/types';
 

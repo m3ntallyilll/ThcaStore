@@ -92,14 +92,17 @@ function Router() {
 
 function AppContent() {
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
-  const { fetchCart } = useCart();
+  const cartStore = useCart();
+  const fetchCart = cartStore?.fetchCart;
   
   useEffect(() => {
     const hasAccepted = localStorage.getItem('thca-disclaimer-accepted');
     setDisclaimerAccepted(!!hasAccepted);
     
     // Initialize cart on app load to ensure persistence
-    fetchCart();
+    if (fetchCart) {
+      fetchCart();
+    }
     
     // Process any referral code from URL parameters
     const referralResult = processReferralFromURL();
