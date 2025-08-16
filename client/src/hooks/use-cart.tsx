@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { apiRequest } from '@/lib/queryClient';
-import { useAuth } from './use-auth';
 import type { CartItemWithProduct } from '@/lib/types';
 
 interface CartState {
