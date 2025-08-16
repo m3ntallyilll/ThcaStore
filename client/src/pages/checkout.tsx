@@ -23,9 +23,15 @@ export default function Checkout() {
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
   
   // Fetch store credit balance - only if user is authenticated
+  const [hasAuthToken, setHasAuthToken] = useState(false);
+  
+  useEffect(() => {
+    setHasAuthToken(!!localStorage.getItem('authToken'));
+  }, []);
+  
   const { data: storeCreditBalance } = useQuery({
     queryKey: ['/api/store-credit/balance'],
-    enabled: !!localStorage.getItem('authToken'), // Only fetch if authenticated
+    enabled: hasAuthToken, // Only fetch if authenticated
   });
   
   const availableStoreCredit = (storeCreditBalance as any)?.balance || 0;
@@ -120,7 +126,7 @@ export default function Checkout() {
         title: isMobile ? "Opening Cash App..." : "Payment Instructions",
         description: isMobile 
           ? "You'll be redirected to Cash App to complete your payment. Include your order details in the payment note."
-          : response.instructions,
+          : response.instructions?.manual || "Complete payment via Cash App",
         duration: isMobile ? 8000 : 12000,
       });
       

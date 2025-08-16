@@ -3221,13 +3221,13 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       // Multiple Cash App link formats for maximum compatibility
       const cashAppLinks = {
         // Primary mobile app deep link
-        mobile: `cashapp://cash.app/pay/${cashtag}/${amount}?note=Order%20${orderRef}%20-%20THCA%20Store`,
+        mobile: `cashapp://qr/pay/${cashtag}/${amount}`,
         // Web fallback link
-        web: `https://cash.app/$${cashtag}/${amount}?note=Order%20${orderRef}`,
+        web: `https://cash.app/$${cashtag}`,
         // Direct payment link
         direct: `https://cash.app/pay/${cashtag}/${amount}`,
         // Universal link that works on both mobile and desktop
-        universal: `https://cash.app/$${cashtag}?amount=${amount}&note=Order%20${orderRef}%20THCA%20Purchase`
+        universal: `https://cash.app/$${cashtag}`
       };
 
       // Create order items summary for payment note
@@ -3248,7 +3248,7 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         itemsSummary: `${itemsSummary}${extraItems}`,
         paymentNote: `Order ${orderRef} - THCA Store`,
         instructions: {
-          mobile: `📱 TAP THE BUTTON to open Cash App and send $${amount}`,
+          mobile: `📱 TAP THE BUTTON to open Cash App and send $${amount} to ${cashtag}`,
           manual: `📱 Manual Payment Steps:\n1️⃣ Open Cash App\n2️⃣ Tap "Pay" or "$"\n3️⃣ Search: ${cashtag}\n4️⃣ Enter amount: $${amount}\n5️⃣ Add note: Order ${orderRef}\n6️⃣ Send payment`,
           confirmation: `✅ After sending payment:\n• Screenshot your payment confirmation\n• Email it to: orders@mentally-chill.com\n• Include your order number: ${orderRef}\n• We'll process your order within 4 hours!`
         }
