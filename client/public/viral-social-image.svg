@@ -1,0 +1,136 @@
+<svg viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#0f3460;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#16537e;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#047857;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#f59e0b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+    </linearGradient>
+    
+    <radialGradient id="glowEffect" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.6" />
+      <stop offset="70%" style="stop-color:#10b981;stop-opacity:0.2" />
+      <stop offset="100%" style="stop-color:#10b981;stop-opacity:0" />
+    </radialGradient>
+    
+    <!-- Filters -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <filter id="shadow">
+      <feDropShadow dx="4" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#bgGradient)"/>
+  
+  <!-- Background Pattern -->
+  <pattern id="dotPattern" patternUnits="userSpaceOnUse" width="60" height="60">
+    <circle cx="30" cy="30" r="2" fill="#10b981" opacity="0.1"/>
+  </pattern>
+  <rect width="100%" height="100%" fill="url(#dotPattern)"/>
+  
+  <!-- Glow Effects -->
+  <circle cx="200" cy="150" r="100" fill="url(#glowEffect)" opacity="0.3"/>
+  <circle cx="1000" cy="480" r="120" fill="url(#glowEffect)" opacity="0.4"/>
+  <circle cx="600" cy="100" r="80" fill="url(#glowEffect)" opacity="0.2"/>
+  
+  <!-- Cannabis Leaf Icons -->
+  <g transform="translate(100, 80)" opacity="0.6">
+    <path d="M50 10 C60 15, 70 25, 60 40 C50 35, 40 25, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C40 15, 30 25, 40 40 C50 35, 60 25, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C55 20, 60 30, 50 45 C45 30, 40 20, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C52 25, 54 35, 50 50 C48 35, 46 25, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C48 25, 46 35, 50 50 C52 35, 54 25, 50 10 Z" fill="url(#leafGradient)"/>
+  </g>
+  
+  <g transform="translate(1050, 450) scale(0.8)" opacity="0.4">
+    <path d="M50 10 C60 15, 70 25, 60 40 C50 35, 40 25, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C40 15, 30 25, 40 40 C50 35, 60 25, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C55 20, 60 30, 50 45 C45 30, 40 20, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C52 25, 54 35, 50 50 C48 35, 46 25, 50 10 Z" fill="url(#leafGradient)"/>
+    <path d="M50 10 C48 25, 46 35, 50 50 C52 35, 54 25, 50 10 Z" fill="url(#leafGradient)"/>
+  </g>
+  
+  <!-- Main Content Area -->
+  <g transform="translate(600, 315)">
+    <!-- Central Logo/Brand -->
+    <circle cx="0" cy="0" r="80" fill="url(#goldGradient)" filter="url(#glow)" opacity="0.9"/>
+    <text x="0" y="8" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="24" font-weight="900" fill="#000000">MC</text>
+    
+    <!-- Main Title -->
+    <text x="0" y="-120" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="64" font-weight="900" fill="#ffffff" filter="url(#shadow)">
+      PREMIUM THCA
+    </text>
+    
+    <!-- Subtitle -->
+    <text x="0" y="-70" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="url(#goldGradient)">
+      Lab-Tested • Legal • Fast Shipping
+    </text>
+    
+    <!-- Call to Action -->
+    <text x="0" y="120" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#10b981">
+      117+ Products • 99.8% Success Rate
+    </text>
+    
+    <!-- Website URL -->
+    <text x="0" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="600" fill="#ffffff" opacity="0.9">
+      mentally-chill.online
+    </text>
+  </g>
+  
+  <!-- Decorative Elements -->
+  <g opacity="0.3">
+    <!-- Left side decorations -->
+    <circle cx="150" cy="400" r="4" fill="#10b981"/>
+    <circle cx="180" cy="420" r="3" fill="#fbbf24"/>
+    <circle cx="120" cy="440" r="2" fill="#10b981"/>
+    
+    <!-- Right side decorations -->
+    <circle cx="1050" cy="200" r="4" fill="#10b981"/>
+    <circle cx="1020" cy="180" r="3" fill="#fbbf24"/>
+    <circle cx="1080" cy="160" r="2" fill="#10b981"/>
+  </g>
+  
+  <!-- Quality Badges -->
+  <g transform="translate(200, 500)">
+    <rect x="0" y="0" width="120" height="40" rx="20" fill="#10b981" opacity="0.9"/>
+    <text x="60" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ffffff">LAB-TESTED</text>
+  </g>
+  
+  <g transform="translate(880, 500)">
+    <rect x="0" y="0" width="120" height="40" rx="20" fill="#fbbf24" opacity="0.9"/>
+    <text x="60" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#000000">LEGAL HEMP</text>
+  </g>
+  
+  <!-- Floating geometric shapes -->
+  <g opacity="0.2">
+    <polygon points="300,150 320,130 340,150 320,170" fill="#10b981"/>
+    <polygon points="900,400 920,380 940,400 920,420" fill="#fbbf24"/>
+    <rect x="250" y="300" width="15" height="15" rx="3" fill="#10b981" transform="rotate(45 257.5 307.5)"/>
+    <rect x="950" y="250" width="12" height="12" rx="2" fill="#fbbf24" transform="rotate(45 956 256)"/>
+  </g>
+  
+  <!-- Border glow effect -->
+  <rect x="5" y="5" width="1190" height="620" rx="10" fill="none" stroke="url(#goldGradient)" stroke-width="2" opacity="0.5"/>
+</svg>

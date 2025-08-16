@@ -25,7 +25,7 @@ export function SEOOptimizer({
   title = 'Premium THCA Hemp Products | Lab-Tested & Legal | 150+ Happy Customers',
   description = 'Buy premium lab-tested THCA products online. 150+ happy customers, 117 products available. Legal hemp-derived flower, diamonds, and pre-rolls with 99.8% success rate.',
   keywords = [],
-  image = '/og-image.jpg',
+  image = '/viral-social-image.svg',
   url,
   type = 'website',
   product,
@@ -285,10 +285,12 @@ export function SEOOptimizer({
         {/* Open Graph */}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
-        <meta property="og:image" content={image} />
+        <meta property="og:image" content={`https://mentally-chill.online${image}`} />
+        <meta property="og:image:secure_url" content={`https://mentally-chill.online${image}`} />
+        <meta property="og:image:type" content="image/svg+xml" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality" />
+        <meta property="og:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality - Mentally Chill Store" />
         <meta property="og:url" content={url || window.location.href} />
         <meta property="og:type" content={type} />
         <meta property="og:site_name" content="Mentally-Chill THCA Store" />
@@ -298,8 +300,8 @@ export function SEOOptimizer({
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={image} />
-        <meta name="twitter:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality" />
+        <meta name="twitter:image" content={`https://mentally-chill.online${image}`} />
+        <meta name="twitter:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality - Mentally Chill Store" />
         <meta name="twitter:site" content="@MentallyChill" />
         <meta name="twitter:creator" content="@MentallyChill" />
         
