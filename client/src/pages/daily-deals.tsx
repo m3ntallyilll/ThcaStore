@@ -12,7 +12,7 @@ export function DailyDealsPage() {
         <meta property="og:description" content="Exclusive daily THCA deals & flash sales. Save big on premium lab-tested products." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://mentally-chill.online/daily-deals" />
-        <link rel="canonical" href="https://mentally-chill.online/daily-deals" />
+
       </Helmet>
       <DailyDeals />
     </div>

@@ -138,8 +138,8 @@ function AppContent() {
       {/* Global Referral Detection Banner */}
       <ReferralBanner className="fixed top-20 left-4 right-4 z-40" compact />
       
-      {/* Legal Disclaimer Modal */}
-      {!disclaimerAccepted && (
+      {/* Legal Disclaimer Modal - Only show on checkout/payment pages */}
+      {!disclaimerAccepted && (window.location.pathname === '/checkout' || window.location.pathname === '/cart') && (
         <LegalDisclaimer 
           onAccept={() => setDisclaimerAccepted(true)}
           onDecline={() => window.location.href = 'https://google.com'}

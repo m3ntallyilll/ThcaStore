@@ -109,7 +109,7 @@ export default function Blog() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="THCA Knowledge Hub - Expert Education & News" />
         <meta name="twitter:description" content="Expert insights and education about THCA, hemp, and wellness." />
-        <link rel="canonical" href="https://mentally-chill.online/blog" />
+
       </Helmet>
       
       {/* Header */}

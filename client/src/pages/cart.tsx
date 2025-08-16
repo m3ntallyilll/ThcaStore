@@ -327,7 +327,7 @@ export default function Cart() {
         <meta property="og:description" content="Review your premium THCA products and complete secure checkout with fast shipping." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://mentally-chill.online/cart" />
-        <link rel="canonical" href="https://mentally-chill.online/cart" />
+
       </Helmet>
       
       {/* Header */}

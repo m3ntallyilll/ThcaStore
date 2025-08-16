@@ -303,8 +303,9 @@ export function SEOOptimizer({
         <meta name="twitter:site" content="@MentallyChill" />
         <meta name="twitter:creator" content="@MentallyChill" />
         
-        {/* Canonical URL */}
-        <link rel="canonical" href={url || window.location.href} />
+        {/* Single Canonical URL - conditional to prevent duplicates */}
+        {url && <link rel="canonical" href={url} />}
+        {!url && typeof window !== 'undefined' && <link rel="canonical" href={window.location.href} />}
         
         {/* Structured Data */}
         {structuredData.map((data, index) => (

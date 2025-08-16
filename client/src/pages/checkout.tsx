@@ -126,32 +126,51 @@ export default function Checkout() {
       // Small delay to let user see the toast before redirect
       setTimeout(() => {
         if (isMobile) {
-          // Enhanced mobile Cash App forwarding with deep linking
+          // Enhanced mobile Cash App forwarding with improved deep linking
           if (isIOS) {
-            // iOS: Try deep link first, fallback to web
-            const deepLink = `cashapp://qr?code=$${response.cashAppLink.split('$')[1]}`;
-            const webFallback = response.cashAppLink;
+            // iOS: Improved deep link approach
+            const cashtag = response.cashAppLink.split('$')[1];
+            const deepLink = `cashapp://qr?code=${cashtag}`;
+            const webFallback = `https://cash.app/$${cashtag}`;
             
-            // Create invisible iframe to attempt deep link
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = deepLink;
-            document.body.appendChild(iframe);
+            // Try opening Cash App directly
+            const startTime = Date.now();
+            window.location.href = deepLink;
             
-            // Fallback to web after delay
+            // Fallback to web after short delay if app didn't open
             setTimeout(() => {
-              window.location.href = webFallback;
-              document.body.removeChild(iframe);
-            }, 1500);
+              // If still on same page after attempting deep link, use web fallback
+              if (Date.now() - startTime > 1000) {
+                window.open(webFallback, '_blank');
+              }
+            }, 1200);
             
           } else if (isAndroid) {
-            // Android: Use intent URL for better app integration
-            const intentUrl = `intent://qr?code=${response.cashAppLink.split('$')[1]}#Intent;package=com.squareup.cash;scheme=cashapp;S.browser_fallback_url=${encodeURIComponent(response.cashAppLink)};end`;
-            window.location.href = intentUrl;
+            // Android: Better intent handling with market fallback
+            const cashtag = response.cashAppLink.split('$')[1];
+            const cashAppPackage = 'com.squareup.cash';
+            const webFallback = `https://cash.app/$${cashtag}`;
+            const marketFallback = `market://details?id=${cashAppPackage}`;
+            
+            try {
+              // Try Cash App intent first
+              const intentUrl = `intent://qr?code=${cashtag}#Intent;package=${cashAppPackage};scheme=cashapp;S.browser_fallback_url=${encodeURIComponent(webFallback)};S.market_fallback_url=${encodeURIComponent(marketFallback)};end`;
+              window.location.href = intentUrl;
+            } catch (e) {
+              // Fallback to web link if intent fails
+              window.open(webFallback, '_blank');
+            }
             
           } else {
-            // Other mobile devices: direct web link
-            window.location.href = response.cashAppLink;
+            // Other mobile devices: enhanced web link handling
+            const cashtag = response.cashAppLink.split('$')[1];
+            const webUrl = `https://cash.app/$${cashtag}`;
+            
+            // Try to open in new window first, fallback to same window
+            const newWindow = window.open(webUrl, '_blank', 'noopener,noreferrer');
+            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+              window.location.href = webUrl;
+            }
           }
         } else {
           // Desktop: try to open in new tab, fallback to same window
@@ -207,7 +226,7 @@ export default function Checkout() {
         <meta property="og:description" content="Complete your secure checkout for premium THCA products with fast shipping and multiple payment options." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://mentally-chill.online/checkout" />
-        <link rel="canonical" href="https://mentally-chill.online/checkout" />
+
       </Helmet>
       
       <div className="container mx-auto px-4 py-12">

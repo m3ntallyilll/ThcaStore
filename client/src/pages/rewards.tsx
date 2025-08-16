@@ -250,7 +250,7 @@ export default function Rewards() {
         <meta property="og:description" content="Join our exclusive THCA rewards program. Earn points on every purchase and unlock exclusive benefits." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://mentally-chill.online/rewards" />
-        <link rel="canonical" href="https://mentally-chill.online/rewards" />
+
       </Helmet>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
