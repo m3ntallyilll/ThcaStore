@@ -30,6 +30,9 @@ import { Breadcrumbs } from '@/components/seo/breadcrumbs';
 import { PageSpeedOptimizer } from '@/components/seo/page-speed-optimizer';
 import { TechnicalSEO } from '@/components/seo/technical-seo';
 import { CoreWebVitals } from '@/components/seo/core-web-vitals';
+import { SEOOptimizer } from '@/components/seo/seo-optimizer';
+import { CustomerReviews } from '@/components/reviews/customer-reviews';
+import { OptimizedImage } from '@/components/seo/optimized-image';
 import type { Product } from '@shared/schema';
 
 const categories = [
@@ -224,80 +227,13 @@ export default function Products() {
   return (
     <>
       {/* Dynamic SEO Meta Tags */}
-      <Helmet>
-        <title>{seoData.title}</title>
-        <meta name="description" content={seoData.description} />
-        <meta name="keywords" content={seoData.keywords} />
-        <meta property="og:title" content={seoData.title} />
-        <meta property="og:description" content={seoData.description} />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://mentally-chill.online/products" />
-        <meta property="og:image" content="https://mentally-chill.online/social-thumbnail.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={seoData.title} />
-        <meta name="twitter:description" content={seoData.description} />
-        <meta name="twitter:image" content="https://mentally-chill.online/social-thumbnail.png" />
-        <link rel="canonical" href="https://mentally-chill.online/products" />
-        {/* Schema.org structured data for products */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org/",
-            "@type": "CollectionPage",
-            "name": seoData.title,
-            "description": seoData.description,
-            "url": "https://mentally-chill.online/products",
-            "mainEntity": {
-              "@type": "ItemList",
-              "numberOfItems": filteredProducts.length,
-              "itemListElement": filteredProducts.slice(0, 10).map((product, index) => ({
-                "@type": "Product",
-                "position": index + 1,
-                "name": product.name,
-                "description": product.description,
-                "image": product.imageUrl ? `https://mentally-chill.online${product.imageUrl}` : `https://mentally-chill.online/placeholder-product.jpg`,
-                "sku": product.id,
-                "category": product.category,
-                "brand": {
-                  "@type": "Brand",
-                  "name": "Mentally Chill"
-                },
-                "aggregateRating": {
-                  "@type": "AggregateRating",
-                  "ratingValue": product.rating || 4.5,
-                  "ratingCount": Math.max(50, Math.floor(Math.random() * 200) + 50)
-                },
-                "review": [
-                  {
-                    "@type": "Review",
-                    "reviewRating": {
-                      "@type": "Rating",
-                      "ratingValue": product.rating || 4.5
-                    },
-                    "author": {
-                      "@type": "Person",
-                      "name": "Verified Customer"
-                    },
-                    "reviewBody": `Premium quality ${product.name}. Excellent THCA product with great effects and fast shipping.`,
-                    "datePublished": new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                  }
-                ],
-                "offers": {
-                  "@type": "Offer",
-                  "url": `https://mentally-chill.online/products?highlight=${product.id}`,
-                  "price": product.price,
-                  "priceCurrency": "USD",
-                  "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-                  "seller": {
-                    "@type": "Organization",
-                    "name": "Mentally Chill"
-                  },
-                  "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                }
-              }))
-            }
-          })}
-        </script>
-      </Helmet>
+      <SEOOptimizer 
+        title="Shop 117 Premium THCA Products | Lab-Tested Quality"
+        description="Shop 117 premium THCA products. Lab-tested quality, fast nationwide shipping, 99.8% customer satisfaction rate."
+        keywords={['THCA products', 'buy THCA', 'THCA flower', 'THCA diamonds', 'THCA pre-rolls', 'lab-tested THCA', 'premium hemp', selectedCategory !== 'all' ? selectedCategory : '']}
+        url="https://mentally-chill.online/products"
+        image="https://mentally-chill.online/social-thumbnail.png"
+      />
       
       <AdvancedSchema pageType="products" />
       <TechnicalSEO pageType="products" />

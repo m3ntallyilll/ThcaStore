@@ -22,6 +22,8 @@ import { AdvancedSchema } from '@/components/seo/advanced-schema';
 import { TechnicalSEO } from '@/components/seo/technical-seo';
 import { PageSpeedOptimizer } from '@/components/seo/page-speed-optimizer';
 import { CoreWebVitals } from '@/components/seo/core-web-vitals';
+import { SEOOptimizer } from '@/components/seo/seo-optimizer';
+import { CustomerReviews } from '@/components/reviews/customer-reviews';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -226,21 +228,13 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="min-h-screen overflow-hidden">
-      <Helmet>
-        <title>Buy Premium THCA Online - Lab-Tested Hemp Products | Mentally-Chill</title>
-        <meta name="description" content="Buy premium lab-tested THCA products online. Legal hemp-derived flower, diamonds, and pre-rolls with fast nationwide shipping. 99.8% success rate." />
-        <meta name="keywords" content="buy THCA online, THCA products, THCA flower, hemp products, lab-tested THCA, legal cannabis, THCA pre-rolls, premium hemp, THCA concentrates" />
-        <meta property="og:title" content="Buy Premium THCA Online - Lab-Tested Hemp Products" />
-        <meta property="og:description" content="Shop premium lab-tested THCA products with fast nationwide shipping. High-quality hemp-derived cannabis products." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://mentally-chill.online/" />
-        <meta property="og:image" content="https://mentally-chill.online/social-thumbnail.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Buy Premium THCA Online - Lab-Tested Hemp Products" />
-        <meta name="twitter:description" content="Shop premium lab-tested THCA products with fast nationwide shipping." />
-        <meta name="twitter:image" content="https://mentally-chill.online/social-thumbnail.png" />
-        <link rel="canonical" href="https://mentally-chill.online/" />
-      </Helmet>
+      <SEOOptimizer 
+        title="Premium THCA Hemp Products | Lab-Tested & Legal | 150+ Happy Customers"
+        description="Buy premium lab-tested THCA products online. 150+ happy customers, 117 products available. Legal hemp-derived flower, diamonds, and pre-rolls with 99.8% success rate."
+        keywords={['THCA flower', 'buy THCA online', 'premium THCA', 'lab-tested THCA', 'hemp flower', 'THCA concentrates', 'legal THCA', 'THCA pre-rolls', 'THCA diamonds', 'THCA near me']}
+        url="https://mentally-chill.online/"
+        image="https://mentally-chill.online/social-thumbnail.png"
+      />
       
       <AdvancedSchema pageType="homepage" />
       <TechnicalSEO pageType="homepage" />
@@ -1278,6 +1272,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+      
+      {/* Customer Reviews Section */}
+      <CustomerReviews />
       
       {/* PWA Install Button */}
       <PWAInstallButton />

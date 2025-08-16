@@ -1,25 +1,121 @@
+# Robots.txt for Mentally Chill - Premium THCA Hemp Store
+# Optimized for Maximum SEO Performance
+# Last Updated: 2025-01-16
+
+# Primary crawler rules - All search engines
 User-agent: *
 Allow: /
-
-# Allow all search engines to crawl the entire site
-Sitemap: https://mentally-chill.online/sitemap.xml
-
-# Allow crawling of CSS, JS and asset files for better rendering
-Allow: /src/
+Allow: /products/
+Allow: /blog/
+Allow: /about
+Allow: /contact
 Allow: /assets/
 Allow: *.css
 Allow: *.js
-Allow: *.png
-Allow: *.jpg
-Allow: *.jpeg
 Allow: *.webp
+Allow: *.jpg
+Allow: *.png
+Allow: *.svg
+Disallow: /api/
+Disallow: /admin/
+Disallow: /checkout/success
+Disallow: /account/settings
+Disallow: /*.json$
+Crawl-delay: 1
 
-# Allow important pages
-Allow: /products
-Allow: /blog
+# Google Bot - Priority Access
+User-agent: Googlebot
+Allow: /
+Allow: /products/
+Allow: /blog/
 Allow: /about
 Allow: /contact
-Allow: /admin
+Allow: /assets/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.webp
+Disallow: /api/
+Disallow: /admin/
+Crawl-delay: 0
 
-# Crawl delay for respectful crawling
+# Google Image Bot - Product Images
+User-agent: Googlebot-Image
+Allow: /
+Allow: /assets/
+Allow: /*.webp
+Allow: /*.jpg
+Allow: /*.png
+Allow: /*.svg
+Disallow: /api/
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Allow: /products/
+Allow: /blog/
+Disallow: /api/
+Disallow: /admin/
 Crawl-delay: 1
+
+# AI Content Crawlers (For SEO Understanding)
+User-agent: GPTBot
+Allow: /
+Allow: /products/
+Allow: /blog/
+
+User-agent: ChatGPT-User
+Allow: /
+
+# Social Media Crawlers - Important for sharing
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Pinterestbot
+Allow: /
+
+# Block competitive analysis bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: Majestic-12
+Disallow: /
+
+# Performance optimization
+User-agent: *
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+Disallow: /*?*page=
+Disallow: /*&
+Disallow: /search?
+Disallow: /cart?
+Disallow: /*session=
+
+# Sitemap locations - Multiple for better indexing
+Sitemap: https://mentally-chill.online/sitemap.xml
+Sitemap: https://mentally-chill.online/sitemap-products.xml
+Sitemap: https://mentally-chill.online/sitemap-blog.xml
+Sitemap: https://mentally-chill.online/sitemap-images.xml
+
+# Host directive for crawl speed
+Host: mentally-chill.online
