@@ -126,51 +126,70 @@ export default function Checkout() {
       // Small delay to let user see the toast before redirect
       setTimeout(() => {
         if (isMobile) {
-          // Enhanced mobile Cash App forwarding with improved deep linking
+          // Enhanced mobile Cash App forwarding - more reliable approach
+          const cashtag = response.cashAppLink.split('$')[1] || response.cashAppLink.replace('https://cash.app/$', '');
+          
           if (isIOS) {
-            // iOS: Improved deep link approach
-            const cashtag = response.cashAppLink.split('$')[1];
+            // iOS: Sequential approach with better detection
             const deepLink = `cashapp://qr?code=${cashtag}`;
             const webFallback = `https://cash.app/$${cashtag}`;
             
-            // Try opening Cash App directly
-            const startTime = Date.now();
+            // First attempt: Try deep link with visibility change detection
+            let hasLeftPage = false;
+            
+            const visibilityHandler = () => {
+              if (document.hidden) {
+                hasLeftPage = true;
+                document.removeEventListener('visibilitychange', visibilityHandler);
+              }
+            };
+            
+            document.addEventListener('visibilitychange', visibilityHandler);
+            
+            // Attempt deep link
             window.location.href = deepLink;
             
-            // Fallback to web after short delay if app didn't open
+            // Enhanced fallback detection
             setTimeout(() => {
-              // If still on same page after attempting deep link, use web fallback
-              if (Date.now() - startTime > 1000) {
-                window.open(webFallback, '_blank');
+              document.removeEventListener('visibilitychange', visibilityHandler);
+              
+              if (!hasLeftPage) {
+                // Deep link failed, use web fallback
+                console.log('Deep link failed, opening web fallback');
+                window.location.href = webFallback;
               }
-            }, 1200);
+            }, 2500);
             
           } else if (isAndroid) {
-            // Android: Better intent handling with market fallback
-            const cashtag = response.cashAppLink.split('$')[1];
+            // Android: More robust intent handling
             const cashAppPackage = 'com.squareup.cash';
             const webFallback = `https://cash.app/$${cashtag}`;
-            const marketFallback = `market://details?id=${cashAppPackage}`;
+            
+            // First try: Cash App intent with comprehensive fallbacks
+            const intentUrl = `intent://qr?code=${cashtag}#Intent;` +
+              `package=${cashAppPackage};` +
+              `scheme=cashapp;` +
+              `S.browser_fallback_url=${encodeURIComponent(webFallback)};` +
+              `S.market_fallback_url=${encodeURIComponent('market://details?id=' + cashAppPackage)};` +
+              `end`;
             
             try {
-              // Try Cash App intent first
-              const intentUrl = `intent://qr?code=${cashtag}#Intent;package=${cashAppPackage};scheme=cashapp;S.browser_fallback_url=${encodeURIComponent(webFallback)};S.market_fallback_url=${encodeURIComponent(marketFallback)};end`;
               window.location.href = intentUrl;
-            } catch (e) {
-              // Fallback to web link if intent fails
-              window.open(webFallback, '_blank');
+            } catch (error) {
+              console.log('Intent failed, trying web fallback:', error);
+              // Direct web fallback if intent completely fails
+              setTimeout(() => {
+                window.location.href = webFallback;
+              }, 500);
             }
             
           } else {
-            // Other mobile devices: enhanced web link handling
-            const cashtag = response.cashAppLink.split('$')[1];
+            // Other mobile devices: Direct web approach
             const webUrl = `https://cash.app/$${cashtag}`;
+            console.log('Using direct web link for mobile:', webUrl);
             
-            // Try to open in new window first, fallback to same window
-            const newWindow = window.open(webUrl, '_blank', 'noopener,noreferrer');
-            if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-              window.location.href = webUrl;
-            }
+            // Force current window navigation for mobile compatibility
+            window.location.href = webUrl;
           }
         } else {
           // Desktop: try to open in new tab, fallback to same window
@@ -182,7 +201,7 @@ export default function Checkout() {
             }, 500);
           }
         }
-      }, 1000);
+      }, 800);
       
     } catch (error: any) {
       console.error('Cash App order error:', error);
