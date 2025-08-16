@@ -201,7 +201,7 @@ export default function Checkout() {
           }
         } else {
           // Desktop: try to open in new tab, fallback to same window
-          const desktopLink = response.cashAppLinks?.web || cashAppLink;
+          const desktopLink = response.cashAppLinks?.web || response.primaryLink;
           const newWindow = window.open(desktopLink, '_blank', 'noopener,noreferrer,width=600,height=800');
           // If popup was blocked, redirect in same window after delay
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
