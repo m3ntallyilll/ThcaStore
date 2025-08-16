@@ -271,18 +271,37 @@ export function SEOOptimizer({
           <meta name="keywords" content={keywords.join(', ')} />
         )}
         
+        {/* Enhanced Meta Tags for SEO */}
+        <meta name="author" content="Mentally-Chill THCA Store" />
+        <meta name="copyright" content="2025 Mentally-Chill" />
+        <meta name="rating" content="General" />
+        <meta name="distribution" content="Global" />
+        <meta name="language" content="EN" />
+        <meta name="revisit-after" content="1 days" />
+        <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+        <meta name="bingbot" content="index, follow" />
+        
         {/* Open Graph */}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={image} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality" />
         <meta property="og:url" content={url || window.location.href} />
         <meta property="og:type" content={type} />
+        <meta property="og:site_name" content="Mentally-Chill THCA Store" />
+        <meta property="og:locale" content="en_US" />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={image} />
+        <meta name="twitter:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality" />
+        <meta name="twitter:site" content="@MentallyChill" />
+        <meta name="twitter:creator" content="@MentallyChill" />
         
         {/* Canonical URL */}
         <link rel="canonical" href={url || window.location.href} />

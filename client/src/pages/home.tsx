@@ -24,6 +24,7 @@ import { PageSpeedOptimizer } from '@/components/seo/page-speed-optimizer';
 import { CoreWebVitals } from '@/components/seo/core-web-vitals';
 import { SEOOptimizer } from '@/components/seo/seo-optimizer';
 import { CustomerReviews } from '@/components/reviews/customer-reviews';
+import { ContentImages, TrustIndicators, ProcessSteps } from '@/components/seo/content-images';
 
 // Particle system for 3D effects
 const ParticleSystem = () => {
@@ -230,7 +231,7 @@ export default function Home() {
     <div ref={containerRef} className="min-h-screen overflow-hidden">
       <SEOOptimizer 
         title="Premium THCA Hemp Products | Lab-Tested & Legal | 150+ Happy Customers"
-        description="Buy premium lab-tested THCA products online. 150+ happy customers, 117 products available. Legal hemp-derived flower, diamonds, and pre-rolls with 99.8% success rate."
+        description="Shop 117 premium THCA products: lab-tested flower, diamonds, pre-rolls & concentrates. Free shipping over $50. 150+ happy customers. Legal hemp. 99.8% satisfaction rate."
         keywords={['THCA flower', 'buy THCA online', 'premium THCA', 'lab-tested THCA', 'hemp flower', 'THCA concentrates', 'legal THCA', 'THCA pre-rolls', 'THCA diamonds', 'THCA near me']}
         url="https://mentally-chill.online/"
         image="https://mentally-chill.online/social-thumbnail.png"
@@ -445,6 +446,16 @@ export default function Home() {
                       </Button>
                     </Link>
                   </motion.div>
+                </motion.div>
+
+                {/* Hero Content Image */}
+                <motion.div 
+                  className="mt-12 flex justify-center"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.6 }}
+                >
+                  <ContentImages type="hero" className="w-full max-w-md" />
                 </motion.div>
 
                 {/* Prominent Shipping Information Banner */}
@@ -745,9 +756,12 @@ export default function Home() {
             <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
               Expert THCA Knowledge Hub
             </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-12">
               Your complete guide to THCA - from comprehensive education to expert reviews and legal information
             </p>
+            
+            {/* Process Steps for Better User Experience */}
+            <ProcessSteps />
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

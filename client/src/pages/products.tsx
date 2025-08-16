@@ -33,6 +33,7 @@ import { CoreWebVitals } from '@/components/seo/core-web-vitals';
 import { SEOOptimizer } from '@/components/seo/seo-optimizer';
 import { CustomerReviews } from '@/components/reviews/customer-reviews';
 import { OptimizedImage } from '@/components/seo/optimized-image';
+import { ContentImages, TrustIndicators } from '@/components/seo/content-images';
 import type { Product } from '@shared/schema';
 
 const categories = [
@@ -229,7 +230,7 @@ export default function Products() {
       {/* Dynamic SEO Meta Tags */}
       <SEOOptimizer 
         title="Shop 117 Premium THCA Products | Lab-Tested Quality"
-        description="Shop 117 premium THCA products. Lab-tested quality, fast nationwide shipping, 99.8% customer satisfaction rate."
+        description="Shop 117+ THCA products: flower, diamonds, pre-rolls, concentrates. Lab-tested quality. Free shipping over $50. 99.8% satisfaction. Buy premium hemp online."
         keywords={['THCA products', 'buy THCA', 'THCA flower', 'THCA diamonds', 'THCA pre-rolls', 'lab-tested THCA', 'premium hemp', selectedCategory !== 'all' ? selectedCategory : '']}
         url="https://mentally-chill.online/products"
         image="https://mentally-chill.online/social-thumbnail.png"
@@ -262,6 +263,9 @@ export default function Products() {
             <p className="text-xl max-w-3xl mx-auto mb-8 text-[#4cff4c]">
               Expertly crafted THCA products designed to elevate your experience with uncompromising quality and purity. All products comply with federal regulations outlined by the <a href="https://www.congress.gov/bill/115th-congress/house-bill/2" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-400 underline">2018 Farm Bill</a> and <a href="https://www.deadiversion.usdoj.gov/schedules/" target="_blank" rel="noopener noreferrer" className="text-gold hover:text-gold-400 underline">DEA scheduling guidelines</a>.
             </p>
+            
+            {/* Trust Indicators with Images */}
+            <TrustIndicators />
             
             {/* Social Share Section */}
             <div className="flex justify-center items-center gap-4 mb-8">
