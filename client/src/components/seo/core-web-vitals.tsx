@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { onCLS, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
 
 export function CoreWebVitals() {
   useEffect(() => {
@@ -28,8 +29,8 @@ export function CoreWebVitals() {
       document.head.appendChild(fontPreload);
     };
 
-    // First Input Delay (FID) optimization
-    const optimizeFID = () => {
+    // Interaction to Next Paint (INP) optimization
+    const optimizeINP = () => {
       // Use passive event listeners
       const addPassiveListeners = () => {
         const events = ['touchstart', 'touchmove', 'wheel', 'scroll'];
@@ -111,17 +112,36 @@ export function CoreWebVitals() {
 
     // Initialize optimizations
     optimizeLCP();
-    optimizeFID();
+    optimizeINP();
     optimizeCLS();
 
-    // Observe and report Core Web Vitals (optional enhancement)
+    // Observe and report Core Web Vitals
     const observeWebVitals = () => {
-      // This would require installing web-vitals package
-      // For now, we'll focus on the critical optimizations above
-      console.log('Core Web Vitals monitoring ready');
+      // Log web vitals for monitoring and debugging
+      const sendToAnalytics = (metric: any) => {
+        console.log('Core Web Vital:', metric.name, metric.value, metric.rating);
+        
+        // In production, you might want to send this to Google Analytics
+        // or another analytics service
+        if (typeof window !== 'undefined' && (window as any).gtag) {
+          (window as any).gtag('event', metric.name, {
+            event_category: 'Web Vitals',
+            event_label: metric.id,
+            value: Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value),
+            non_interaction: true,
+          });
+        }
+      };
+
+      // Monitor Core Web Vitals
+      onCLS(sendToAnalytics);
+      onINP(sendToAnalytics);
+      onFCP(sendToAnalytics);
+      onLCP(sendToAnalytics);
+      onTTFB(sendToAnalytics);
     };
 
-    // Initialize basic monitoring
+    // Initialize web vitals monitoring
     observeWebVitals();
 
   }, []);
