@@ -22,9 +22,10 @@ export default function Checkout() {
   
   const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.product.price) * item.quantity), 0);
   
-  // Fetch store credit balance
+  // Fetch store credit balance - only if user is authenticated
   const { data: storeCreditBalance } = useQuery({
     queryKey: ['/api/store-credit/balance'],
+    enabled: !!localStorage.getItem('authToken'), // Only fetch if authenticated
   });
   
   const availableStoreCredit = (storeCreditBalance as any)?.balance || 0;
@@ -127,12 +128,13 @@ export default function Checkout() {
       setTimeout(() => {
         if (isMobile) {
           // Enhanced mobile Cash App forwarding - more reliable approach
-          const cashtag = response.cashAppLink.split('$')[1] || response.cashAppLink.replace('https://cash.app/$', '');
+          const cashAppLink = response.primaryLink || response.cashAppLinks?.universal || response.cashAppLink;
+          const cashtag = response.cashtag?.replace('$', '') || 'iLLAithegptstore';
           
           if (isIOS) {
             // iOS: Sequential approach with better detection
-            const deepLink = `cashapp://qr?code=${cashtag}`;
-            const webFallback = `https://cash.app/$${cashtag}`;
+            const deepLink = response.cashAppLinks?.mobile || `cashapp://cash.app/pay/${cashtag}/${response.total}`;
+            const webFallback = response.cashAppLinks?.web || cashAppLink;
             
             // First attempt: Try deep link with visibility change detection
             let hasLeftPage = false;
@@ -155,7 +157,7 @@ export default function Checkout() {
               
               if (!hasLeftPage) {
                 // Deep link failed, use web fallback
-                console.log('Deep link failed, opening web fallback');
+                // Deep link failed, opening web fallback
                 window.location.href = webFallback;
               }
             }, 2500);
@@ -163,10 +165,10 @@ export default function Checkout() {
           } else if (isAndroid) {
             // Android: More robust intent handling
             const cashAppPackage = 'com.squareup.cash';
-            const webFallback = `https://cash.app/$${cashtag}`;
+            const webFallback = response.cashAppLinks?.web || cashAppLink;
             
             // First try: Cash App intent with comprehensive fallbacks
-            const intentUrl = `intent://qr?code=${cashtag}#Intent;` +
+            const intentUrl = `intent://pay/${cashtag}/${response.total}#Intent;` +
               `package=${cashAppPackage};` +
               `scheme=cashapp;` +
               `S.browser_fallback_url=${encodeURIComponent(webFallback)};` +
@@ -176,7 +178,7 @@ export default function Checkout() {
             try {
               window.location.href = intentUrl;
             } catch (error) {
-              console.log('Intent failed, trying web fallback:', error);
+              // Intent failed, trying web fallback
               // Direct web fallback if intent completely fails
               setTimeout(() => {
                 window.location.href = webFallback;
@@ -185,19 +187,20 @@ export default function Checkout() {
             
           } else {
             // Other mobile devices: Direct web approach
-            const webUrl = `https://cash.app/$${cashtag}`;
-            console.log('Using direct web link for mobile:', webUrl);
+            const webUrl = response.cashAppLinks?.web || cashAppLink;
+            // Using direct web link for mobile
             
             // Force current window navigation for mobile compatibility
             window.location.href = webUrl;
           }
         } else {
           // Desktop: try to open in new tab, fallback to same window
-          const newWindow = window.open(response.cashAppLink, '_blank', 'noopener,noreferrer,width=600,height=800');
+          const desktopLink = response.cashAppLinks?.web || cashAppLink;
+          const newWindow = window.open(desktopLink, '_blank', 'noopener,noreferrer,width=600,height=800');
           // If popup was blocked, redirect in same window after delay
           if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
             setTimeout(() => {
-              window.location.href = response.cashAppLink;
+              window.location.href = desktopLink;
             }, 500);
           }
         }

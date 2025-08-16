@@ -8,7 +8,7 @@ export function SmokeBackground({ className = '' }: SmokeBackgroundProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log('SmokeBackground mounted - Pure CSS version');
+    // SmokeBackground mounted - Pure CSS version
   }, []);
 
   return (
