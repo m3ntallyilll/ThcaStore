@@ -210,7 +210,8 @@ export default function Products() {
   );
 
   const handleProductClick = (product: Product) => {
-    setSelectedProduct(product);
+    // Navigate to individual product detail page
+    window.location.href = `/product/${product.id}`;
   };
 
   const closeProductModal = () => {

@@ -20,6 +20,7 @@ import { Footer } from "@/components/layout/footer";
 // Pages
 import Home from "@/pages/home";
 import Products from "@/pages/products";
+import ProductDetail from "@/pages/product-detail";
 import Cart from "@/pages/cart";
 import Checkout from '@/pages/checkout';
 import OrderConfirmation from '@/pages/order-confirmation';
@@ -53,6 +54,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/products" component={Products} />
+      <Route path="/product/:id" component={ProductDetail} />
       <Route path="/cart" component={Cart} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/order-confirmation" component={OrderConfirmation} />
