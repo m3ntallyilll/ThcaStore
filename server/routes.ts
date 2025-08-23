@@ -3093,14 +3093,15 @@ Provide actionable insights with specific tactics and projected outcomes.`;
 
   app.get("/api/admin/seo/pyramid-health", authenticateToken, requireAdmin, async (req: any, res) => {
     try {
-      const { aiLinkPyramidService } = await import('./ai-link-pyramid-service');
-      const healthReport = await aiLinkPyramidService.analyzePyramidHealth();
+      const { aiSEOService } = await import('./ai-seo-service');
+      const healthReport = await aiSEOService.analyzePyramidHealth();
 
       res.json({
         success: true,
         healthReport
       });
     } catch (error: any) {
+      console.error('Pyramid health endpoint error:', error);
       res.status(500).json({ 
         success: false, 
         message: error.message 

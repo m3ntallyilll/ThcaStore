@@ -65,15 +65,23 @@ export function AISEOManager() {
   const queryClient = useQueryClient();
 
   // Fetch blog posts for selection
-  const { data: blogPosts } = useQuery({
+  const { data: blogPosts, error: blogError } = useQuery({
     queryKey: ['/api/admin/blog'],
     queryFn: () => apiRequest('/api/admin/blog'),
+    retry: 2,
+    enabled: true,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // Fetch pyramid health
-  const { data: pyramidHealth, isLoading: healthLoading } = useQuery<{ healthReport: PyramidHealth }>({
+  const { data: pyramidHealth, isLoading: healthLoading, error: healthError } = useQuery<{ healthReport: PyramidHealth }>({
     queryKey: ['/api/admin/seo/pyramid-health'],
     queryFn: () => apiRequest('/api/admin/seo/pyramid-health'),
+    retry: 2,
+    enabled: true,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   // SEO Enhancement Mutation
@@ -225,6 +233,17 @@ export function AISEOManager() {
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
               <span>Analyzing pyramid structure...</span>
             </div>
+          ) : healthError ? (
+            <div className="text-center py-4">
+              <p className="text-red-600 mb-2">Authentication required for SEO data</p>
+              <p className="text-red-500 text-sm">Please ensure you're logged in as an admin to access SEO analytics</p>
+              <Button 
+                onClick={() => window.location.reload()} 
+                className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                Refresh Page
+              </Button>
+            </div>
           ) : pyramidHealth?.healthReport ? (
             <div className="space-y-4">
               <div className="flex items-center gap-4">
@@ -295,7 +314,14 @@ export function AISEOManager() {
               )}
             </div>
           ) : (
-            <p className="text-gray-500">No pyramid data available. Create some blog posts first.</p>
+            <div className="text-center py-8 text-gray-500">
+              <div className="mb-4">
+                <BarChart3 className="w-12 h-12 mx-auto text-gray-400" />
+              </div>
+              <p className="text-lg font-medium mb-2">No pyramid data available</p>
+              <p className="text-sm">Build your first link pyramid to get started!</p>
+              <p className="text-xs text-gray-400 mt-2">Generate blog posts first, then create a link pyramid structure for better SEO</p>
+            </div>
           )}
         </CardContent>
       </Card>
@@ -320,7 +346,9 @@ export function AISEOManager() {
                 className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="">Choose a post...</option>
-                {blogPosts?.map((post: any) => (
+                {blogError ? (
+                  <option disabled>Error loading posts - please refresh</option>
+                ) : blogPosts?.map((post: any) => (
                   <option key={post.id} value={post.id}>
                     {post.title}
                   </option>
