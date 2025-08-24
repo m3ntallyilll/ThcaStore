@@ -1,5 +1,5 @@
 import { storage } from './database-storage';
-import { groqAI } from './ai-assistant';
+import { aiAssistant } from './ai-assistant';
 
 interface PyramidHealth {
   overallScore: number;
@@ -18,7 +18,7 @@ class AISEOService {
   async analyzePyramidHealth(): Promise<PyramidHealth> {
     try {
       // Get all blog posts
-      const posts = await storage.getAllBlogPosts();
+      const posts = await storage.getBlogPosts();
       
       if (!posts || posts.length === 0) {
         return {
@@ -40,10 +40,10 @@ class AISEOService {
       let totalInternalLinks = 0;
       
       // Count internal links in post content
-      posts.forEach(post => {
+      posts.forEach((post: any) => {
         if (post.content) {
           const linkMatches = post.content.match(/href="[^"]*"/g) || [];
-          const internalLinks = linkMatches.filter(link => 
+          const internalLinks = linkMatches.filter((link: string) => 
             link.includes('/blog/') || 
             link.includes('/products/') || 
             link.includes(process.env.DOMAIN || 'mentally-chill.online')
@@ -53,12 +53,12 @@ class AISEOService {
       });
 
       // Calculate pyramid tiers based on content length and topic depth
-      const topTier = posts.filter(post => 
+      const topTier = posts.filter((post: any) => 
         (post.content?.length || 0) > 2000 && 
         (post.keywords?.length || 0) >= 3
       ).length;
       
-      const middleTier = posts.filter(post => 
+      const middleTier = posts.filter((post: any) => 
         (post.content?.length || 0) > 1000 && 
         (post.content?.length || 0) <= 2000
       ).length;
@@ -118,7 +118,7 @@ class AISEOService {
 
   async enhanceBlogPostSEO(postId: string, targetKeywords?: string[]): Promise<any> {
     try {
-      const post = await storage.getBlogPostById(postId);
+      const post = await storage.getBlogPost(postId);
       if (!post) {
         throw new Error('Blog post not found');
       }
@@ -138,11 +138,17 @@ Please provide:
 
 Format as JSON with metaTitle, metaDescription, keywords, internalLinks fields.`;
 
-      const aiResponse = await groqAI.generateText(prompt);
+      const aiResponse = await aiAssistant.generateResponse(
+        prompt,
+        {}, // Empty context for SEO enhancement
+        `seo-${postId}-${Date.now()}` // Unique session ID
+      );
       
       let enhancedSEO;
       try {
-        enhancedSEO = JSON.parse(aiResponse);
+        // Try to parse the response as JSON if it contains structured data
+        const responseText = aiResponse.response;
+        enhancedSEO = JSON.parse(responseText);
       } catch {
         // Fallback if AI doesn't return valid JSON
         enhancedSEO = {
