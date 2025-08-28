@@ -38,11 +38,11 @@ export default function THCADosageGuide() {
         <title>THCA Dosage Guide: How to Use THCA Safely & Effectively | Mentally-Chill</title>
         <meta name="description" content="Complete THCA dosage guide with dosing charts, safety tips, and personalized recommendations. Learn how to use THCA properly for optimal benefits." />
         <meta name="keywords" content="THCA dosage guide, how to use THCA, THCA dosing chart, THCA dosage calculator, safe THCA dosing, THCA dose recommendations" />
-        <link rel="canonical" href="https://mentally-chill.com/thca-dosage-guide" />
+        <link rel="canonical" href="https://mentally-chill.online/thca-dosage-guide" />
         <meta property="og:title" content="THCA Dosage Guide: Complete Guide to Safe Dosing" />
         <meta property="og:description" content="Learn how to dose THCA safely with our comprehensive dosage guide including personalized recommendations and dosing charts." />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content="https://mentally-chill.com/thca-dosage-guide" />
+        <meta property="og:url" content="https://mentally-chill.online/thca-dosage-guide" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="THCA Dosage Guide: How to Use THCA Safely" />
         <meta name="twitter:description" content="Complete guide to THCA dosing with safety tips and personalized recommendations for optimal benefits." />

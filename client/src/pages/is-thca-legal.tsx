@@ -23,11 +23,11 @@ export default function IsTHCALegal() {
         <title>Is THCA Legal? Complete Legal Guide 2025 | Mentally-Chill</title>
         <meta name="description" content="Is THCA legal in your state? Complete guide to THCA legality, 2018 Farm Bill compliance, state laws, and hemp-derived THCA regulations." />
         <meta name="keywords" content="is THCA legal, THCA legal status, THCA law, hemp THCA legal, 2018 Farm Bill THCA, THCA state laws, legal THCA products" />
-        <link rel="canonical" href="https://mentally-chill.com/is-thca-legal" />
+        <link rel="canonical" href="https://mentally-chill.online/is-thca-legal" />
         <meta property="og:title" content="Is THCA Legal? Complete Legal Status Guide" />
         <meta property="og:description" content="Comprehensive guide to THCA legality including federal law, state regulations, and 2018 Farm Bill compliance." />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content="https://mentally-chill.com/is-thca-legal" />
+        <meta property="og:url" content="https://mentally-chill.online/is-thca-legal" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Is THCA Legal? 2025 Legal Status Guide" />
         <meta name="twitter:description" content="Find out if THCA is legal in your area with our complete guide to federal and state THCA laws." />

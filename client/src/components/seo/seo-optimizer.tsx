@@ -291,7 +291,7 @@ export function SEOOptimizer({
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:alt" content="Premium THCA Hemp Products - Lab-Tested Quality - Mentally Chill Store" />
-        <meta property="og:url" content={url || window.location.href} />
+        <meta property="og:url" content={url || `https://mentally-chill.online${window.location.pathname}`} />
         <meta property="og:type" content={type} />
         <meta property="og:site_name" content="Mentally-Chill THCA Store" />
         <meta property="og:locale" content="en_US" />
@@ -307,7 +307,7 @@ export function SEOOptimizer({
         
         {/* Single Canonical URL - conditional to prevent duplicates */}
         {url && <link rel="canonical" href={url} />}
-        {!url && typeof window !== 'undefined' && <link rel="canonical" href={window.location.href} />}
+        {!url && typeof window !== 'undefined' && <link rel="canonical" href={`https://mentally-chill.online${window.location.pathname}`} />}
         
         {/* Structured Data */}
         {structuredData.map((data, index) => (

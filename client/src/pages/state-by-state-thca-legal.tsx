@@ -112,7 +112,7 @@ export default function StateByStateTHCALegal() {
         <meta name="keywords" content="THCA legal states map, THCA legal by state, THCA state laws 2025, where is THCA legal, THCA shipping states, THCA legality guide" />
         <meta property="og:title" content="THCA Legal States Map 2025 - Complete State Guide | Mentally-Chill" />
         <meta property="og:description" content="Comprehensive guide to THCA legality across all 50 states. Updated regulations, shipping info, and legal status for 2025." />
-        <link rel="canonical" href={`${window.location.origin}/state-by-state-thca-legal`} />
+        <link rel="canonical" href="https://mentally-chill.online/state-by-state-thca-legal" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">

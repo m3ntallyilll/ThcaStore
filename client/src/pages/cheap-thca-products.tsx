@@ -86,7 +86,7 @@ export default function CheapTHCAProducts() {
         <meta name="keywords" content="cheap THCA products, affordable THCA, discount THCA, best value THCA, cheap THCA flower, budget THCA, low cost THCA, THCA deals" />
         <meta property="og:title" content="Cheap THCA Products - Best Value & Deals 2025 | Mentally-Chill" />
         <meta property="og:description" content="Quality THCA products at unbeatable prices. Lab-tested, legal, and affordable THCA flower, concentrates, and pre-rolls." />
-        <link rel="canonical" href={`${window.location.origin}/cheap-thca-products`} />
+        <link rel="canonical" href="https://mentally-chill.online/cheap-thca-products" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">

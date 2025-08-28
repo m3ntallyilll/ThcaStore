@@ -23,11 +23,11 @@ export default function THCABenefits() {
         <title>THCA Benefits: Complete Guide to Tetrahydrocannabinolic Acid | Mentally-Chill</title>
         <meta name="description" content="Discover the amazing benefits of THCA (tetrahydrocannabinolic acid). Learn about anti-inflammatory, neuroprotective, and wellness properties from legal hemp-derived THCA." />
         <meta name="keywords" content="THCA benefits, tetrahydrocannabinolic acid benefits, THCA health effects, THCA wellness, THCA anti-inflammatory, THCA neuroprotective" />
-        <link rel="canonical" href="https://mentally-chill.com/thca-benefits" />
+        <link rel="canonical" href="https://mentally-chill.online/thca-benefits" />
         <meta property="og:title" content="THCA Benefits: Complete Scientific Guide" />
         <meta property="og:description" content="Comprehensive guide to THCA benefits including anti-inflammatory, neuroprotective, and wellness properties from legal hemp-derived products." />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content="https://mentally-chill.com/thca-benefits" />
+        <meta property="og:url" content="https://mentally-chill.online/thca-benefits" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="THCA Benefits: Complete Scientific Guide" />
         <meta name="twitter:description" content="Discover the amazing benefits of THCA from legal hemp-derived products. Anti-inflammatory, neuroprotective, and wellness properties explained." />

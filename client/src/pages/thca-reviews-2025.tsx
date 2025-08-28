@@ -31,7 +31,7 @@ export default function THCAReviews2025() {
         <meta name="keywords" content="best THCA products 2025, THCA product reviews, THCA flower review 2025, best THCA concentrates, THCA product rankings, expert THCA reviews" />
         <meta property="og:title" content="Best THCA Products 2025 - Expert Reviews & Rankings | Mentally-Chill" />
         <meta property="og:description" content="Unbiased expert reviews and rankings of the top THCA products in 2025. Lab-tested quality analysis and comprehensive buying guides." />
-        <link rel="canonical" href={`${window.location.origin}/thca-reviews-2025`} />
+        <link rel="canonical" href="https://mentally-chill.online/thca-reviews-2025" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">

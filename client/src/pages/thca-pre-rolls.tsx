@@ -69,7 +69,7 @@ export default function THCAPreRolls() {
         <meta name="keywords" content="THCA pre rolls, THCA joints, ready to smoke THCA, premium pre-rolls, legal THCA pre rolls, lab-tested joints, THCA pre roll delivery" />
         <meta property="og:title" content="Premium THCA Pre Rolls - Ready-to-Smoke THCA Joints | Mentally-Chill" />
         <meta property="og:description" content="Shop premium THCA pre rolls and joints. Lab-tested quality, multiple sizes, fast nationwide shipping. Legal THCA pre-rolls ready to enjoy." />
-        <link rel="canonical" href={`${window.location.origin}/thca-pre-rolls`} />
+        <link rel="canonical" href="https://mentally-chill.online/thca-pre-rolls" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8">

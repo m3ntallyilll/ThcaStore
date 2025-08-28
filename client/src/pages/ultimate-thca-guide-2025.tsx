@@ -18,7 +18,7 @@ export default function UltimateTHCAGuide2025() {
         <meta name="keywords" content="ultimate THCA guide 2025, complete THCA guide, THCA expert guide, THCA comprehensive guide, THCA education 2025, THCA flower guide, THCA concentrates guide" />
         <meta property="og:title" content="Ultimate THCA Guide 2025 - Complete Expert Guide | Mentally-Chill" />
         <meta property="og:description" content="The definitive 2025 guide to THCA. Expert insights, product reviews, legal updates, and everything you need to know about THCA products." />
-        <link rel="canonical" href={`${window.location.origin}/ultimate-thca-guide-2025`} />
+        <link rel="canonical" href="https://mentally-chill.online/ultimate-thca-guide-2025" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-12">

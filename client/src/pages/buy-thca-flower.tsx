@@ -80,7 +80,7 @@ export default function BuyTHCAFlower() {
         <meta name="keywords" content="buy THCA flower online, THCA flower for sale, premium THCA flower, legal THCA flower, THCA flower strains, lab-tested THCA flower, best THCA flower" />
         <meta property="og:title" content="Buy THCA Flower Online - Premium Legal THCA Flower | Mentally-Chill" />
         <meta property="og:description" content="Premium THCA flower strains with lab-tested quality. Buy legal THCA flower online with fast nationwide shipping and best prices." />
-        <link rel="canonical" href={`${window.location.origin}/buy-thca-flower`} />
+        <link rel="canonical" href="https://mentally-chill.online/buy-thca-flower" />
       </Helmet>
 
       <div className="container mx-auto px-4 py-8">

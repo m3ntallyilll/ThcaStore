@@ -136,7 +136,7 @@ export default function StateTHCA() {
   const seoTitle = `Buy THCA in ${currentState?.name} | Premium THCA Flower & Pre-Rolls | Mentally Chill`;
   const seoDescription = `Buy legal THCA in ${currentState?.name} - premium hemp products with fast delivery. Lab-tested flower, diamonds, and concentrates available.`;
   const seoKeywords = `THCA ${currentState?.name}, buy THCA in ${currentState?.name}, THCA flower ${currentState?.name}, THCA delivery ${currentState?.name}, legal THCA ${currentState?.name}, THCA store ${currentState?.name}, THCA dispensary ${currentState?.name}, premium THCA ${currentState?.name}`;
-  const canonicalUrl = `https://mentally-chill.replit.app/thca/${selectedState}`;
+  const canonicalUrl = `https://mentally-chill.online/thca/${selectedState}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-emerald-950/20 to-black">

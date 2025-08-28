@@ -23,11 +23,11 @@ export default function WhatIsTHCAVsTHC() {
         <title>What is THCA vs THC? Complete Comparison Guide | Mentally-Chill</title>
         <meta name="description" content="Learn the key differences between THCA vs THC. Comprehensive guide covering effects, legality, benefits, and molecular structure of both cannabinoids." />
         <meta name="keywords" content="THCA vs THC, what is THCA vs THC, THCA THC difference, tetrahydrocannabinolic acid vs tetrahydrocannabinol, THCA legal THC illegal" />
-        <link rel="canonical" href="https://mentally-chill.com/what-is-thca-vs-thc" />
+        <link rel="canonical" href="https://mentally-chill.online/what-is-thca-vs-thc" />
         <meta property="og:title" content="THCA vs THC: Complete Comparison Guide" />
         <meta property="og:description" content="Understand the complete differences between THCA and THC including effects, legality, benefits, and molecular structure." />
         <meta property="og:type" content="article" />
-        <meta property="og:url" content="https://mentally-chill.com/what-is-thca-vs-thc" />
+        <meta property="og:url" content="https://mentally-chill.online/what-is-thca-vs-thc" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="THCA vs THC: What's the Difference?" />
         <meta name="twitter:description" content="Complete guide to understanding THCA vs THC differences, effects, legality, and benefits." />
