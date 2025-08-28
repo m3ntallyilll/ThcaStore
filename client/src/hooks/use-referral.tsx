@@ -60,8 +60,11 @@ export function useReferral() {
   // Validate referral code
   const validateReferralMutation = useMutation<ReferralInfo, Error, string>({
     mutationFn: async (code: string): Promise<ReferralInfo> => {
-      const response = await apiRequest('POST', '/api/referrals/validate', { code });
-      return response.json();
+      const response = await apiRequest('/api/referrals/validate', { 
+        method: 'POST',
+        body: { code }
+      });
+      return response;
     },
   });
 
@@ -71,10 +74,11 @@ export function useReferral() {
       const referralCode = code || storedReferralCode;
       if (!referralCode) throw new Error('No referral code to apply');
       
-      const response = await apiRequest('POST', '/api/referrals/apply', { 
-        referralCode 
+      const response = await apiRequest('/api/referrals/apply', { 
+        method: 'POST',
+        body: { referralCode }
       });
-      return response.json();
+      return response;
     },
     onSuccess: (data) => {
       clearStoredReferralCode();
@@ -101,7 +105,7 @@ export function useReferral() {
     if (user && storedReferralCode && !userReferralData?.hasUsedReferral) {
       // Small delay to ensure user is fully authenticated
       const timer = setTimeout(() => {
-        applyReferralMutation.mutate();
+        applyReferralMutation.mutate(storedReferralCode);
       }, 1000);
       
       return () => clearTimeout(timer);

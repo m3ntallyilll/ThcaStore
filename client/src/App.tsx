@@ -81,10 +81,22 @@ function Router() {
       <Route path="/thca/:state" component={StateTHCA} />
       <Route path="/thca" component={StateTHCA} />
       <Route path="/strains/:strainType" component={StrainLanding} />
-      <Route path="/ref/:code" component={() => { 
-        // Redirect to affiliate tracking endpoint
-        window.location.href = `/api/affiliate/track/${window.location.pathname.split('/')[2]}?redirect=/`;
-        return null;
+      <Route path="/ref/:code" component={({ params }) => { 
+        // Extract the code from URL and redirect to tracking endpoint
+        const code = params?.code;
+        if (code) {
+          // Server-side redirect for proper tracking
+          window.location.replace(`/api/affiliate/track/${code}?redirect=${window.location.origin}/`);
+        } else {
+          // Fallback to home if no code
+          window.location.replace('/');
+        }
+        return <div className="min-h-screen bg-black text-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-4"></div>
+            <p>Processing referral link...</p>
+          </div>
+        </div>;
       }} />
       <Route path="/admin" component={Admin} />
       <Route component={NotFound} />
