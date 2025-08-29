@@ -34,10 +34,11 @@ export default function Checkout() {
     enabled: hasAuthToken, // Only fetch if authenticated
   });
   
+  const shippingCost = 8.99; // Envelope shipping cost (10 stamps + profit margin)
   const availableStoreCredit = (storeCreditBalance as any)?.balance || 0;
   const maxStoreCreditUsable = Math.min(availableStoreCredit, subtotal);
   const promoDiscount = appliedPromo?.discountAmount ? parseFloat(appliedPromo.discountAmount) : 0;
-  const total = subtotal - usedStoreCredit - promoDiscount;
+  const total = subtotal + shippingCost - usedStoreCredit - promoDiscount;
 
   const handleApplyPromo = async () => {
     if (!promoCode.trim()) {
@@ -303,6 +304,11 @@ export default function Checkout() {
                   <span className="text-white">${subtotal.toFixed(2)}</span>
                 </div>
                 
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-white/80">Shipping (Envelope):</span>
+                  <span className="text-white">${shippingCost.toFixed(2)}</span>
+                </div>
+                
                 {/* Promo Code Section */}
                 <div className="bg-purple-500/20 rounded-lg p-3 mb-2">
                   <div className="flex items-center gap-2 mb-2">
@@ -407,10 +413,6 @@ export default function Checkout() {
                   </div>
                 )}
                 
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-white/80">Shipping:</span>
-                  <span className="text-green-400">FREE</span>
-                </div>
                 <div className="flex justify-between items-center text-lg font-bold">
                   <span className="text-white">Total:</span>
                   <span className="text-white">${total.toFixed(2)}</span>
@@ -464,13 +466,16 @@ export default function Checkout() {
                 </div>
               </div>
 
-              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Shield className="w-5 h-5 text-green-400" />
-                  <span className="text-green-400 font-semibold">Free Shipping</span>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-blue-400" />
+                    <span className="text-blue-400 font-semibold">Envelope Shipping</span>
+                  </div>
+                  <span className="text-xl font-bold text-blue-400">$8.99</span>
                 </div>
                 <p className="text-white/80 text-sm">
-                  No shipping charges on all orders. Fast, reliable delivery included.
+                  Discreet USPS envelope shipping. Professional service with profit margin included.
                 </p>
               </div>
 
