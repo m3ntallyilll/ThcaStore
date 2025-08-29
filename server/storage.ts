@@ -704,7 +704,7 @@ export class MemStorage implements IStorage {
       id,
       status: insertOrder.status || "pending",
       shippingCost: insertOrder.shippingCost || "0.00",
-      shippingMethod: insertOrder.shippingMethod || "standard",
+      shippingMethod: insertOrder.shippingMethod || "envelope",
       trackingNumber: insertOrder.trackingNumber || null,
       estimatedDelivery: insertOrder.estimatedDelivery || null,
       totalWeight: insertOrder.totalWeight || null,
@@ -820,8 +820,9 @@ export class MemStorage implements IStorage {
 
     // Initialize sample shipping rates
     const sampleRates = [
-      { id: '1', method: 'standard', name: 'Standard Shipping', baseRate: '9.99', estimatedDays: '5-7 days' },
-      { id: '2', method: 'express', name: 'Express Shipping', baseRate: '19.99', estimatedDays: '2-3 days' }
+      { id: '1', method: 'envelope', name: 'Envelope Shipping', baseRate: '8.99', estimatedDays: '5-7 days', description: 'Discreet envelope shipping via USPS' },
+      { id: '2', method: 'standard', name: 'Standard Shipping', baseRate: '12.99', estimatedDays: '3-5 days', description: 'Standard package shipping with tracking' },
+      { id: '3', method: 'express', name: 'Express Shipping', baseRate: '24.99', estimatedDays: '1-2 days', description: 'Fast priority shipping with tracking' }
     ];
     sampleRates.forEach(rate => this.shippingRates.set(rate.id, rate));
 
@@ -1020,7 +1021,21 @@ export class MemStorage implements IStorage {
 
   async calculateShippingCost(weight: number, method: string): Promise<number> {
     const rate = Array.from(this.shippingRates.values()).find((r: any) => r.method === method);
-    return rate ? parseFloat(rate.baseRate) : 9.99;
+    if (rate) {
+      return parseFloat(rate.baseRate);
+    }
+    
+    // Default fallback rates
+    switch (method) {
+      case 'envelope':
+        return 8.99; // 10 stamps cost + profit margin
+      case 'standard':
+        return 12.99;
+      case 'express':
+        return 24.99;
+      default:
+        return 8.99; // Default to cheapest option (envelope shipping)
+    }
   }
 
   // Daily Promotions

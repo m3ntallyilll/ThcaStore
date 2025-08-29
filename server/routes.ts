@@ -3175,7 +3175,10 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       const subtotal = items.reduce((sum: number, item: any) => 
         sum + (parseFloat(item.product.price) * item.quantity), 0);
       
-      const total = subtotal - storeCreditUsed - promoDiscount;
+      // Add profitable envelope shipping cost (10 stamps + profit margin)
+      const shippingCost = 8.99;
+      const totalBeforeAdjustments = subtotal + shippingCost;
+      const total = totalBeforeAdjustments - storeCreditUsed - promoDiscount;
       
       // Generate product names for payment note
       const productNames = items.map((item: any) => 
@@ -3188,6 +3191,8 @@ Provide actionable insights with specific tactics and projected outcomes.`;
         status: 'pending_payment',
         paymentMethod: 'cash_app',
         subtotal: subtotal.toFixed(2),
+        shippingCost: shippingCost.toFixed(2),
+        shippingMethod: 'envelope',
         tax: '0.00',
         total: total.toFixed(2),
         shippingName: '',
