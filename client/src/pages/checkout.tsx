@@ -12,7 +12,7 @@ import { Loader2, Package, Truck, Shield, CreditCard, ArrowRight, Trophy, Coins,
 import { useQuery } from '@tanstack/react-query';
 
 export default function Checkout() {
-  const { items } = useCart();
+  const { items, clearCart } = useCart();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [usedStoreCredit, setUsedStoreCredit] = useState(0);
@@ -115,6 +115,14 @@ export default function Checkout() {
           affiliateCode: affiliateCode
         }
       });
+
+      // Store order information for return from Cash App
+      if (response.orderId && response.orderRef) {
+        localStorage.setItem('pendingOrderId', response.orderId);
+        localStorage.setItem('pendingOrderRef', response.orderRef);
+        // Clear cart since order is created
+        clearCart();
+      }
 
       // Enhanced mobile detection for better payment experience
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -513,6 +521,20 @@ export default function Checkout() {
                     <p>Step 3: Complete the ${total.toFixed(2)} payment</p>
                     <p>Step 4: Include your order items in the payment note</p>
                     <p className="text-green-400 mt-2">✅ Order confirmed within 24 hours via email</p>
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t border-white/10">
+                    <p className="text-white/70 text-xs mb-3">Already completed your payment?</p>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full border-green-500/30 text-green-400 hover:bg-green-500/10"
+                    >
+                      <Link href="/order-confirmation">
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Check My Order Status
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </div>

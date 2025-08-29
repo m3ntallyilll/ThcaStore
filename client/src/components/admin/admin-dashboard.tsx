@@ -387,10 +387,23 @@ export function AdminDashboard() {
         }
 
         // Extract the object path from the upload URL
-        const objectPath = uploadURL.split('?')[0].split('/').slice(-2).join('/');
-        const finalPath = `/objects/${objectPath}`;
+        // The uploadURL is a signed URL, we need to extract the object path properly
+        const urlWithoutQuery = uploadURL.split('?')[0];
+        const urlParts = urlWithoutQuery.split('/');
+        // Get the bucket and object path from the URL structure
+        const bucketIndex = urlParts.findIndex((part: string) => part === 'b');
+        if (bucketIndex !== -1 && bucketIndex + 2 < urlParts.length) {
+          const bucketName = urlParts[bucketIndex + 1];
+          const objectPath = urlParts.slice(bucketIndex + 3).join('/');
+          const finalPath = `/objects/${bucketName}/${objectPath}`;
+          setImageUrl(finalPath);
+        } else {
+          // Fallback: try to construct path from URL end
+          const objectId = urlParts[urlParts.length - 1];
+          const finalPath = `/objects/${objectId}`;
+          setImageUrl(finalPath);
+        }
         
-        setImageUrl(finalPath);
         toast({
           title: "Image Uploaded",
           description: "Product image has been uploaded successfully.",

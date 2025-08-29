@@ -19,6 +19,18 @@ export default function OrderConfirmation() {
       setSessionId(session_id);
       // Clear the cart on successful payment
       clearCart();
+    } else {
+      // Check for stored order information from Cash App return
+      const storedOrderId = localStorage.getItem('pendingOrderId');
+      const storedOrderRef = localStorage.getItem('pendingOrderRef');
+      
+      if (storedOrderRef) {
+        setSessionId(storedOrderRef);
+        // Clear stored order info and cart
+        localStorage.removeItem('pendingOrderId');
+        localStorage.removeItem('pendingOrderRef');
+        clearCart();
+      }
     }
   }, [location, clearCart]);
 
