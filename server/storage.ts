@@ -820,7 +820,7 @@ export class MemStorage implements IStorage {
 
     // Initialize sample shipping rates
     const sampleRates = [
-      { id: '1', method: 'envelope', name: 'Envelope Shipping', baseRate: '8.99', estimatedDays: '5-7 days', description: 'Discreet envelope shipping via USPS' },
+      { id: '1', method: 'envelope', name: 'Basic Shipping', baseRate: '8.99', estimatedDays: '5-7 days', description: 'FREE over $100 - Discreet envelope shipping via USPS', freeShippingThreshold: '100.00' },
       { id: '2', method: 'standard', name: 'Standard Shipping', baseRate: '12.99', estimatedDays: '3-5 days', description: 'Standard package shipping with tracking' },
       { id: '3', method: 'express', name: 'Express Shipping', baseRate: '24.99', estimatedDays: '1-2 days', description: 'Fast priority shipping with tracking' }
     ];

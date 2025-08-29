@@ -15,7 +15,7 @@ export function ShippingInfo({ variant = 'card', className = '' }: ShippingInfoP
         <div className="flex flex-wrap items-center justify-center gap-6 text-center">
           <div className="flex items-center gap-2 text-green-300">
             <Truck className="h-5 w-5" />
-            <span className="font-semibold">FREE Shipping Over $75</span>
+            <span className="font-semibold">FREE Shipping Over $100</span>
           </div>
           <div className="flex items-center gap-2 text-blue-300">
             <Clock className="h-5 w-5" />
@@ -40,7 +40,7 @@ export function ShippingInfo({ variant = 'card', className = '' }: ShippingInfoP
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2 text-green-400">
             <Truck className="h-4 w-4" />
-            <span>FREE Shipping on orders $75+</span>
+            <span>FREE Shipping on orders $100+</span>
           </div>
           <div className="flex items-center gap-2 text-white/80">
             <Clock className="h-4 w-4" />
@@ -71,7 +71,7 @@ export function ShippingInfo({ variant = 'card', className = '' }: ShippingInfoP
               <Truck className="h-5 w-5 text-green-400 mt-0.5" />
               <div>
                 <div className="font-semibold text-green-300">Free Shipping</div>
-                <div className="text-white/80 text-sm">Orders over $75</div>
+                <div className="text-white/80 text-sm">Orders over $100</div>
               </div>
               <Badge className="bg-green-500 text-white ml-auto">FREE</Badge>
             </div>
@@ -136,7 +136,7 @@ export function ShippingInfo({ variant = 'card', className = '' }: ShippingInfoP
       <CardContent className="space-y-3">
         <div className="flex justify-between items-center p-2 bg-green-500/10 rounded">
           <span className="text-white">Free Shipping</span>
-          <span className="text-green-400 font-semibold">Orders $75+</span>
+          <span className="text-green-400 font-semibold">Orders $100+</span>
         </div>
         <div className="flex justify-between items-center p-2 bg-white/5 rounded">
           <span className="text-white">Express (1-2 days)</span>

@@ -3175,8 +3175,8 @@ Provide actionable insights with specific tactics and projected outcomes.`;
       const subtotal = items.reduce((sum: number, item: any) => 
         sum + (parseFloat(item.product.price) * item.quantity), 0);
       
-      // Add profitable envelope shipping cost (10 stamps + profit margin)
-      const shippingCost = 8.99;
+      // Calculate shipping cost - free over $100, otherwise $8.99
+      const shippingCost = subtotal >= 100 ? 0 : 8.99;
       const totalBeforeAdjustments = subtotal + shippingCost;
       const total = totalBeforeAdjustments - storeCreditUsed - promoDiscount;
       
