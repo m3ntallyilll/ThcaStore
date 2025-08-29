@@ -60,6 +60,47 @@ export default function OrderConfirmation() {
                 </div>
               )}
 
+              {/* Invoice Download Section */}
+              {sessionId && (
+                <div className="bg-white/5 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white font-medium">Download Invoice</p>
+                      <p className="text-white/60 text-sm">Get a professional invoice for your records</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="border-white/20 text-white hover:bg-white/10"
+                      >
+                        <a 
+                          href={`/api/orders/${sessionId}/invoice?format=html`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          View HTML
+                        </a>
+                      </Button>
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="sm"
+                        className="border-white/20 text-white hover:bg-white/10"
+                      >
+                        <a 
+                          href={`/api/orders/${sessionId}/invoice?format=pdf`} 
+                          download
+                        >
+                          Download PDF
+                        </a>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">What's Next?</h3>
                 

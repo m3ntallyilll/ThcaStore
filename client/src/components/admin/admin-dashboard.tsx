@@ -16,7 +16,8 @@ import {
   AlertCircle,
   Search,
   Upload,
-  Link
+  Link,
+  Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -1370,6 +1371,35 @@ export function AdminDashboard() {
                                     />
                                   </DialogContent>
                                 </Dialog>
+
+                                {/* Invoice Generation */}
+                                <div className="flex gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      window.open(`/api/orders/${order.id}/invoice?format=html`, '_blank');
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    <FileText className="w-3 h-3 mr-1" />
+                                    View Invoice
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      const link = document.createElement('a');
+                                      link.href = `/api/orders/${order.id}/invoice?format=pdf`;
+                                      link.download = `invoice-${order.id.slice(0, 8)}.pdf`;
+                                      link.click();
+                                    }}
+                                    className="text-xs"
+                                  >
+                                    <Download className="w-3 h-3 mr-1" />
+                                    PDF
+                                  </Button>
+                                </div>
 
                                 <div className="text-xs text-gray-500 space-y-1">
                                   <p>Subtotal: ${parseFloat(order.subtotal).toFixed(2)}</p>

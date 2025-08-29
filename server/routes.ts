@@ -4177,6 +4177,98 @@ Provide actionable insights with specific tactics and projected outcomes.`;
     }
   });
 
+  // Invoice generation routes
+  app.get("/api/orders/:orderId/invoice", authenticateToken, async (req, res) => {
+    try {
+      const { generateInvoiceHTML, generateInvoiceNumber } = await import('./invoice-generator');
+      const orderId = req.params.orderId;
+      const format = req.query.format as string || 'html';
+      
+      // Get order and order items
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const orderItems = await storage.getOrderItems(orderId);
+      const invoiceNumber = generateInvoiceNumber(orderId);
+      const dueDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long', 
+        day: 'numeric'
+      });
+      
+      const invoiceData = {
+        order,
+        orderItems,
+        invoiceNumber,
+        dueDate
+      };
+      
+      if (format === 'pdf') {
+        const { generateInvoicePDF } = await import('./invoice-generator');
+        const pdfBuffer = await generateInvoicePDF(invoiceData);
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="invoice-${invoiceNumber}.pdf"`);
+        res.send(pdfBuffer);
+      } else {
+        const invoiceHTML = generateInvoiceHTML(invoiceData);
+        res.setHeader('Content-Type', 'text/html');
+        res.send(invoiceHTML);
+      }
+    } catch (error: any) {
+      console.error('Invoice generation error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Generate invoice for any order (admin only)
+  app.post("/api/admin/orders/:orderId/generate-invoice", authenticateToken, async (req, res) => {
+    try {
+      const user = req.user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { generateInvoiceHTML, generateInvoiceNumber } = await import('./invoice-generator');
+      const orderId = req.params.orderId;
+      
+      // Get order and order items
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const orderItems = await storage.getOrderItems(orderId);
+      const invoiceNumber = generateInvoiceNumber(orderId);
+      const dueDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      
+      const invoiceData = {
+        order,
+        orderItems,
+        invoiceNumber,
+        dueDate
+      };
+      
+      const invoiceHTML = generateInvoiceHTML(invoiceData);
+      
+      res.json({ 
+        success: true, 
+        invoiceNumber,
+        invoiceHTML,
+        message: "Invoice generated successfully" 
+      });
+    } catch (error: any) {
+      console.error('Admin invoice generation error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Object storage routes
   app.post("/api/objects/upload", async (req, res) => {
     try {
