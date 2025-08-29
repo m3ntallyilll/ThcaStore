@@ -78,10 +78,13 @@ export function AISEOManager() {
   const { data: pyramidHealth, isLoading: healthLoading, error: healthError } = useQuery<{ healthReport: PyramidHealth }>({
     queryKey: ['/api/admin/seo/pyramid-health'],
     queryFn: () => apiRequest('/api/admin/seo/pyramid-health'),
-    retry: 2,
+    retry: 1,
     enabled: true,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    onError: (error: any) => {
+      console.error('SEO health check failed:', error);
+    }
   });
 
   // SEO Enhancement Mutation
@@ -235,14 +238,31 @@ export function AISEOManager() {
             </div>
           ) : healthError ? (
             <div className="text-center py-4">
-              <p className="text-red-600 mb-2">Authentication required for SEO data</p>
-              <p className="text-red-500 text-sm">Please ensure you're logged in as an admin to access SEO analytics</p>
-              <Button 
-                onClick={() => window.location.reload()} 
-                className="mt-4 bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                Refresh Page
-              </Button>
+              <div className="mb-4">
+                <AlertTriangle className="w-12 h-12 mx-auto text-red-400" />
+              </div>
+              <p className="text-red-600 mb-2">SEO Health Check Unavailable</p>
+              <p className="text-red-500 text-sm mb-4">Unable to load SEO analytics. This could be due to:</p>
+              <ul className="text-left text-red-500 text-xs space-y-1 max-w-md mx-auto mb-4">
+                <li>• Authentication issue - try logging out and back in</li>
+                <li>• Network connectivity problem</li>
+                <li>• Service temporarily unavailable</li>
+              </ul>
+              <div className="space-x-2">
+                <Button 
+                  onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/admin/seo/pyramid-health'] })} 
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  Retry
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => window.location.href = '/login'} 
+                  className="border-red-500 text-red-500 hover:bg-red-50"
+                >
+                  Re-login
+                </Button>
+              </div>
             </div>
           ) : pyramidHealth?.healthReport ? (
             <div className="space-y-4">
@@ -347,12 +367,16 @@ export function AISEOManager() {
               >
                 <option value="">Choose a post...</option>
                 {blogError ? (
-                  <option disabled>Error loading posts - please refresh</option>
-                ) : blogPosts?.map((post: any) => (
-                  <option key={post.id} value={post.id}>
-                    {post.title}
-                  </option>
-                ))}
+                  <option disabled>Error loading posts - check admin access</option>
+                ) : blogPosts?.length ? (
+                  blogPosts.map((post: any) => (
+                    <option key={post.id} value={post.id}>
+                      {post.title}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No blog posts available - create posts first</option>
+                )}
               </select>
             </div>
 
