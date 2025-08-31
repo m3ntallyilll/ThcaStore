@@ -145,7 +145,7 @@ export function processSupportRequest(request: SupportRequest): SupportResponse 
     return {
       response,
       category: matchedPattern.category,
-      priority: matchedPattern.priority,
+      priority: matchedPattern.priority as 'low' | 'medium' | 'high' | 'urgent',
       ticketId: matchedPattern.priority === 'high' ? generateTicketId() : undefined
     };
   }

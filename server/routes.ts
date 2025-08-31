@@ -952,7 +952,7 @@ function shuffleArray(array: any[]) {
         if (!guestUser) {
           // Create guest user with the provided guest ID
           guestUser = await storage.createUser({
-            id: guestId,
+
             email: `${guestId}@guest.temp`,
             password: await bcrypt.hash('guest', 10),
             firstName: 'Guest',
@@ -1004,7 +1004,7 @@ function shuffleArray(array: any[]) {
         if (!guestUser) {
           // Create guest user with the provided guest ID
           guestUser = await storage.createUser({
-            id: guestId,
+
             email: `${guestId}@guest.temp`,
             password: await bcrypt.hash('guest', 10),
             firstName: 'Guest',
@@ -1691,7 +1691,6 @@ function shuffleArray(array: any[]) {
           if (!guestUser) {
             // Create guest user with the provided guest ID
             guestUser = await storage.createUser({
-              id: guestId,
               email: `${guestId}@guest.temp`,
               password: await bcrypt.hash('guest', 10),
               firstName: 'Guest',
@@ -1754,7 +1753,6 @@ function shuffleArray(array: any[]) {
                   if (!guestUser) {
                     // Create guest user with the provided guest ID
                     guestUser = await storage.createUser({
-                      id: guestId,
                       email: `${guestId}@guest.temp`,
                       password: await bcrypt.hash('guest', 10),
                       firstName: 'Guest',

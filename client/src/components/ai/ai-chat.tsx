@@ -54,6 +54,7 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
   const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const speechSynthesisRef = useRef<SpeechSynthesis | null>(null);
+  const sendMessageRef = useRef<() => void>(() => {});
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -69,6 +70,11 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Keep sendMessage ref current to avoid stale closures
+  useEffect(() => {
+    sendMessageRef.current = sendMessage;
+  });
 
   // Text-to-Speech functions
   const speakText = (text: string) => {
@@ -151,9 +157,9 @@ export function AIChat({ onProductRecommendation, onOfferSuggestion, onProductUp
         // Add the message and trigger AI response
         if (event.detail.message) {
           setInputMessage(event.detail.message);
-          // Trigger the send message after setting input
+          // Use a ref to access latest sendMessage function
           setTimeout(() => {
-            sendMessage();
+            sendMessageRef.current();
           }, 100);
         }
       }
